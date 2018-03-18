@@ -3,14 +3,14 @@ package ttt;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-public class Server implements AutoCloseable {
+public class Server implements AutoCloseable, Runnable {
 
 	private final ServerSocket server;
 	private final Client[] clients;
 	private final int totalClients;
 
-	public Server(int port) throws IOException {
-		totalClients = 2;
+	public Server(int port, int num) throws IOException {
+		totalClients = num;
 
 		server = new ServerSocket(port);
 		System.out.println(this);
@@ -19,6 +19,11 @@ public class Server implements AutoCloseable {
 		for (int i = 0; i < totalClients; i++) {
 			clients[i] = new Client(0);
 		}
+
+	}
+
+	@Override
+	public void run() {
 
 	}
 
