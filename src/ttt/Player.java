@@ -33,7 +33,7 @@ public class Player implements AutoCloseable {
 
 		reader = new Scanner(in);
 
-		buffer = new Buffer();
+		buffer = new Buffer(4 * 2);
 	}
 
 	@Override
