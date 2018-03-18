@@ -31,7 +31,7 @@ public abstract class SocketSide implements AutoCloseable {
 		this(-1, bufferSize);
 	}
 
-	protected abstract void connect(int port);
+	protected abstract void connect(int port) throws IOException;
 
 	@Override
 	public void close() throws Exception {
