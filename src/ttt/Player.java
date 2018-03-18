@@ -5,6 +5,8 @@ import java.net.Socket;
 
 public class Player extends SocketSide implements AutoCloseable {
 
+	private static final String LOCALHOST = "127.0.0.1";
+
 	public static int main(String[] args) {
 		final int port = Integer.parseInt(args[0]);
 		try (Player player = new Player(port)) {
