@@ -33,7 +33,7 @@ public abstract class SocketSide implements AutoCloseable {
 	protected abstract void connect(int port) throws IOException;
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		reader.close();
 		socket.close();
 	}

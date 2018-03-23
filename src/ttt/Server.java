@@ -16,14 +16,18 @@ public class Server implements AutoCloseable, Runnable {
 		System.out.println(this);
 
 		clients = new Client[totalClients];
-		for (int i = 0; i < totalClients; i++) {
-			clients[i] = new Client(0);
-		}
-
 	}
 
 	@Override
 	public void run() {
+		try {
+			for (int i = 0; i < totalClients; i++) {
+				clients[i] = new Client(0);
+			}
+		} catch (IOException e) {
+			System.out.println("Thread Failed: " + this);
+			e.printStackTrace();
+		}
 
 	}
 

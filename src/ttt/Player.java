@@ -7,20 +7,22 @@ public class Player extends SocketSide implements AutoCloseable {
 
 	private static final String LOCALHOST = "127.0.0.1";
 
-	public static void main(String[] args) throws Exception {
-		System.out.println(LOCALHOST);
-		/*final int port = Integer.parseInt(args[0]);
+	public static int main(String[] args) throws Exception {
+		final int port = Integer.parseInt(args[0]);
 		try (Player player = new Player(port)) {
 
 		} catch (Exception e) {
-			System.out.println("Failed: " + e);
+			System.out.println("Failed!");
 			e.printStackTrace();
 		}
-		return 0;*/
+		return 0;
 	}
+
+	private final Board board;
 
 	public Player(int port) throws IOException {
 		super(port, 2 * 4);
+		board = new Board();
 	}
 
 	@Override
