@@ -1,15 +1,17 @@
-package ttt;
+package ttt.agents;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+
+import ttt.StreamRedirect;
 
 public class Spawn implements Runnable {
 
 	private final ProcessBuilder builder;
 
 	public Spawn(int port) {
-		builder = new ProcessBuilder("java", "-cp", Paths.get("").toAbsolutePath().toString() + "\\bin", "ttt.Player",
-				Integer.toString(port));
+		builder = new ProcessBuilder("java", "-cp", Paths.get("").toAbsolutePath().toString() + "\\bin",
+				"ttt.agents.Player", Integer.toString(port));
 		builder.redirectErrorStream(true);
 	}
 

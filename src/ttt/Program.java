@@ -3,6 +3,9 @@ package ttt;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ttt.agents.Server;
+import ttt.agents.Spawn;
+
 public class Program {
 
 	public static final int PORT = 6327;

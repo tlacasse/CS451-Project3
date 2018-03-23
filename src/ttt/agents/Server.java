@@ -1,4 +1,4 @@
-package ttt;
+package ttt.agents;
 
 import java.io.IOException;
 import java.net.ServerSocket;

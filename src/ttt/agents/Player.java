@@ -1,7 +1,9 @@
-package ttt;
+package ttt.agents;
 
 import java.io.IOException;
 import java.net.Socket;
+
+import ttt.Board;
 
 public class Player extends SocketSide implements AutoCloseable {
 
