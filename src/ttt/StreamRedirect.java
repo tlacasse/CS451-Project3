@@ -19,7 +19,7 @@ public class StreamRedirect implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws InterruptedException {
 		end = true;
 		thread.join();
 		scanner.close();
@@ -30,7 +30,7 @@ public class StreamRedirect implements AutoCloseable {
 		@Override
 		public void run() {
 			while (!end) {
-				if (!scanner.hasNextLine()) {
+				if (scanner.hasNextLine()) {
 					System.out.println(prefix + ": " + scanner.nextLine());
 				}
 			}
