@@ -23,8 +23,10 @@ public class Spawn implements Runnable {
 	public void run() {
 		try {
 			Process process = builder.start();
-			int exitCode = process.waitFor();
-			System.out.println(exitCode);
+			try (StreamRedirect sr = new StreamRedirect(process.getInputStream(), "Test")) {
+				int exitCode = process.waitFor();
+				System.out.println(exitCode);
+			}
 		} catch (IOException | InterruptedException e) {
 			System.out.println("Thread Failed: " + this + "\n" + e);
 			e.printStackTrace();

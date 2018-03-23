@@ -21,12 +21,16 @@ public class StreamRedirect implements AutoCloseable {
 	@Override
 	public void close() throws InterruptedException {
 		end = true;
-		thread.join();
-		scanner.close();
+		try {
+			thread.join();
+			scanner.close();
+		} catch (InterruptedException ie) {
+			scanner.close();
+			throw ie;
+		}
 	}
 
 	private class RedirectThread implements Runnable {
-
 		@Override
 		public void run() {
 			while (!end) {
@@ -35,7 +39,6 @@ public class StreamRedirect implements AutoCloseable {
 				}
 			}
 		}
-
 	}
 
 }
