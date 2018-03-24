@@ -11,7 +11,7 @@ public class Spawn implements Runnable {
 
 	public Spawn(int port) {
 		builder = new ProcessBuilder("java", "-cp", Paths.get("").toAbsolutePath().toString() + "\\bin",
-				"ttt.agents.Player", Integer.toString(port));
+				"ttt.agents.Player", Integer.toString(port)); //separate by tokens
 		builder.redirectErrorStream(true);
 	}
 
