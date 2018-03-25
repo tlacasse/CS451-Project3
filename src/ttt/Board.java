@@ -7,6 +7,7 @@ public class Board {
 	public static final byte EMPTY = 0;
 
 	public static final int SIZE = 13;
+	public static final int CELLS = SIZE * SIZE;
 
 	private final byte[][] board;
 

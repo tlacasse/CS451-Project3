@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 
-public class GameIO {
+public final class GameIO {
 
-	public final static String DIRECTORY_WEIGHTS = Paths.get("").toAbsolutePath().toString() + "\\data\\";
-	public final static String DIRECTORY_GAMES = DIRECTORY_WEIGHTS + "games\\";
+	public final static String DIRECTORY_NN = Paths.get("").toAbsolutePath().toString() + "\\data\\";
+	public final static String DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
 
 	public static void saveNetwork(NeuralNetwork nn) throws IOException {
 		final Matrix[] weights = nn.getWeights();
@@ -74,12 +74,15 @@ public class GameIO {
 	}
 
 	private static String nnFileName(int... nodes) {
-		final StringBuffer sb = new StringBuffer(DIRECTORY_WEIGHTS + "weights_");
+		final StringBuffer sb = new StringBuffer(DIRECTORY_NN + "nn_");
 		for (int i = 0; i < nodes.length - 1; i++) {
 			sb.append(nodes[i]).append("-");
 		}
 		sb.append(nodes[nodes.length - 1]).append(".nn");
 		return sb.toString();
+	}
+
+	private GameIO() {
 	}
 
 }

@@ -32,7 +32,7 @@ public class Server implements AutoCloseable, Runnable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		for (Client client : clients) {
 			if (client != null) {
 				client.close();

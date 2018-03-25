@@ -1,44 +1,36 @@
 package ttt;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import ttt.agents.Server;
-import ttt.agents.Spawn;
+import ttt.learning.GameIO;
+import ttt.learning.NeuralNetwork;
 
-public class Program {
+public final class Program {
 
 	public static final int PORT = 6327;
 
+	public static final int[][] NETWORKS;
+
+	static {
+		int i = 0;
+		NETWORKS = new int[8][];
+		NETWORKS[i++] = new int[] { Board.CELLS, 10, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 50, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 100, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 50, 10, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, 25, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 70, 70, 70, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 10, 10, 10, 10, 10, Board.CELLS };
+	}
+
 	public static void main(String[] args) throws IOException, Exception {
-	}
-
-	private static void go() throws IOException, Exception {
-		try (Server server = new Server(PORT)) {
-			final ArrayList<Thread> threads = new ArrayList<>();
-			final Thread serverThread = new Thread(server);
-
-			threads.add(new Thread(new Spawn(PORT)));
-			threads.add(new Thread(new Spawn(PORT)));
-
-			serverThread.start();
-			for (Thread thread : threads) {
-				thread.start();
-			}
-
-			for (Thread thread : threads) {
-				join(thread);
-			}
-			join(serverThread);
+		for (int[] i : NETWORKS) {
+			GameIO.saveNetwork(new NeuralNetwork(i));
 		}
 	}
 
-	private static void join(Thread thread) {
-		try {
-			thread.join();
-		} catch (InterruptedException ie) {
-			ie.printStackTrace();
-		}
+	private Program() {
 	}
 
 }
