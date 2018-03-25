@@ -1,5 +1,7 @@
 package ttt.learning;
 
+import java.io.IOException;
+
 public class NeuralNetwork {
 
 	private final int size;
@@ -17,7 +19,7 @@ public class NeuralNetwork {
 				throw new IllegalArgumentException("Layers must have at least 1 node.");
 			}
 		}
-		nodes = is.clone();
+		nodes = is;
 		size = nodes.length;
 		weights = new Matrix[size - 1];
 		for (int i = 0; i < is.length - 1; i++) {
@@ -35,6 +37,30 @@ public class NeuralNetwork {
 
 	public Matrix output() {
 		return layer[size - 1];
+	}
+
+	/////////////////////////////////////////////////////////////
+
+	// these do not copy the matrix array
+
+	public Matrix[] getWeights() {
+		return weights;
+	}
+
+	public void setWeights(Matrix[] ws) {
+		// no exception messages, just look in stack trace to get to which line
+		if (ws.length != weights.length) {
+			throw new IllegalArgumentException();
+		}
+		for (int i = 0; i < weights.length; i++) {
+			if (ws[i].rows() != weights[i].rows()) {
+				throw new IllegalArgumentException();
+			}
+			if (ws[i].columns() != weights[i].columns()) {
+				throw new IllegalArgumentException();
+			}
+		}
+		weights = ws;
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -91,7 +117,7 @@ public class NeuralNetwork {
 
 	/////////////////////////////////////////////////////////////
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// test ANN, housing prices based of #bedrooms, #bathroom, sq ft
 		// not much data, is overfitting, just an example though.
 
@@ -140,6 +166,15 @@ public class NeuralNetwork {
 		nn.calculate(t).scalar(2000000).display();
 
 		System.out.println("Testing Cost: " + nn.cost(yt));
+
+		System.out.println();
+		System.out.println();
+
+		GameIO.saveNetwork(nn);
+
+		nn = GameIO.loadNetwork(3, 3, 2, 1);
+
+		nn.calculate(t).scalar(2000000).display();
 	}
 
 }

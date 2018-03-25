@@ -9,8 +9,8 @@ public class Server implements AutoCloseable, Runnable {
 	private final Client[] clients;
 	private final int totalClients;
 
-	public Server(int port, int num) throws IOException {
-		totalClients = num;
+	public Server(int port) throws IOException {
+		totalClients = 2;
 
 		server = new ServerSocket(port);
 		System.out.println(this);

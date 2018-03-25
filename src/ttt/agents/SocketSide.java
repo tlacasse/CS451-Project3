@@ -1,11 +1,11 @@
 package ttt.agents;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.util.Scanner;
 
 public abstract class SocketSide implements AutoCloseable {
 
@@ -14,14 +14,14 @@ public abstract class SocketSide implements AutoCloseable {
 	private final ByteBuffer buffer;
 	private final InputStream in;
 	private final OutputStream out;
-	private final Scanner reader;
+	private final DataInputStream reader;
 
 	public SocketSide(int port, int bufferSize) throws IOException {
 		connect(port);
 		in = socket.getInputStream();
 		out = socket.getOutputStream();
 
-		reader = new Scanner(in);
+		reader = new DataInputStream(in);
 
 		buffer = ByteBuffer.allocate(bufferSize);
 	}
