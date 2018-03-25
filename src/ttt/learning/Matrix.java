@@ -119,6 +119,10 @@ public class Matrix {
 		return data[row][col];
 	}
 
+	public void set(int row, int col, double val) {
+		data[row][col] = val;
+	}
+
 	/////////////////////////////////////////////////////////////
 
 	public Matrix scalar(double s) {

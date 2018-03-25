@@ -166,15 +166,6 @@ public class NeuralNetwork {
 		nn.calculate(t).scalar(2000000).display();
 
 		System.out.println("Testing Cost: " + nn.cost(yt));
-
-		System.out.println();
-		System.out.println();
-
-		GameIO.saveNetwork(nn);
-
-		nn = GameIO.loadNetwork(3, 3, 2, 1);
-
-		nn.calculate(t).scalar(2000000).display();
 	}
 
 }

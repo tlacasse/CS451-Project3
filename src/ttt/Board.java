@@ -1,5 +1,7 @@
 package ttt;
 
+import ttt.learning.Matrix;
+
 public class Board {
 
 	public static final byte X = 1;
@@ -9,27 +11,31 @@ public class Board {
 	public static final int SIZE = 13;
 	public static final int CELLS = SIZE * SIZE;
 
-	private final byte[][] board;
+	private final Matrix board;
 
 	public Board() {
-		board = new byte[SIZE][SIZE];
+		board = new Matrix(SIZE, SIZE, d(EMPTY));
+	}
+
+	public Matrix getBoard() {
+		return board;
 	}
 
 	public boolean set(int x, int y, byte val) {
-		board[x][y] = val;
-		return isWin(val, x, y);
+		board.set(x, y, d(val));
+		return isWin(d(val), x, y);
 	}
 
-	private boolean isWin(byte val, int addedX, int addedY) {
+	private boolean isWin(double val, int addedX, int addedY) {
 		boolean win1 = true;
 		boolean win2 = true;
 
 		// orthogonal
 		for (int i = 0; i < SIZE; i++) {
-			if (win1 = win1 && board[addedX][i] == val) {
+			if (win1 = win1 && board.get(addedX, i) == val) {
 				return true;
 			}
-			if (win2 = win2 && board[i][addedY] == val) {
+			if (win2 = win2 && board.get(i, addedY) == val) {
 				return true;
 			}
 		}
@@ -37,15 +43,19 @@ public class Board {
 		win1 = (win2 = true);
 		// diagonals
 		for (int i = 0; i < SIZE; i++) {
-			if (win1 = win1 && board[i][i] == val) {
+			if (win1 = win1 && board.get(i, i) == val) {
 				return true;
 			}
-			if (win2 = win2 && board[i][SIZE - i - 1] == val) {
+			if (win2 = win2 && board.get(i, SIZE - i - 1) == val) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	private static double d(byte b) {
+		return (double) b;
 	}
 
 }
