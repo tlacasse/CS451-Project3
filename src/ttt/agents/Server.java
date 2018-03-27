@@ -7,16 +7,19 @@ import java.util.Queue;
 
 import ttt.Board;
 import ttt.Code;
+import ttt.Game;
 
 public class Server implements AutoCloseable, Runnable {
 
 	private final ServerSocket server;
 	private final Queue<Client> clients;
 	private final Board board;
+	private final Game game;
 	private final int totalPlayers;
 	private int turn;
 
-	public Server(int port, int players) throws IOException {
+	public Server(Game game, int port, int players) throws IOException {
+		this.game = game;
 		totalPlayers = players;
 
 		server = new ServerSocket(port);
@@ -43,14 +46,15 @@ public class Server implements AutoCloseable, Runnable {
 				case Code.MOVE:
 					final int x = active.readInt();
 					final int y = active.readInt();
-					board.set(x, y, (byte) turn);
+					board.set(x, y, turn);
+					game.writeMove(turn, x, y);
 					for (Client other : clients) {
 						other.writeByte(Code.OTHER_PLAYER_MOVE);
 						other.writeInt(x);
 						other.writeInt(y);
 						other.send();
 					}
-					if (board.isWin((byte) turn, x, y)) {
+					if (board.isWin(turn, x, y)) {
 						active.writeByte(Code.GAME_DONE);
 						active.writeBoolean(true);
 						for (Client other : clients) {
@@ -58,6 +62,7 @@ public class Server implements AutoCloseable, Runnable {
 							other.writeBoolean(false);
 							other.send();
 						}
+						game.setWinner(turn);
 						return;
 					}
 					break;

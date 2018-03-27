@@ -8,6 +8,7 @@ import java.util.List;
 
 import ttt.agents.Server;
 import ttt.agents.Spawn;
+import ttt.learning.GameIO;
 
 public class Game {
 
@@ -44,13 +45,15 @@ public class Game {
 		return buffer;
 	}
 
-	public static void start(int port) throws IOException {
-		try (Server server = new Server(port, 2)) {
+	public static void start(int port, int players) throws IOException {
+		Game game = new Game();
+		try (Server server = new Server(game, port, players)) {
 			final ArrayList<Thread> threads = new ArrayList<>();
 			final Thread serverThread = new Thread(server);
 
-			threads.add(new Thread(new Spawn(port)));
-			threads.add(new Thread(new Spawn(port)));
+			for (int i = 0; i < players; i++) {
+				threads.add(new Thread(new Spawn(port)));
+			}
 
 			serverThread.start();
 			for (Thread thread : threads) {
@@ -62,6 +65,7 @@ public class Game {
 			}
 			join(serverThread);
 		}
+		GameIO.saveGame(game);
 	}
 
 	private static void join(Thread thread) {
