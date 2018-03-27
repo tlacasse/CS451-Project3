@@ -43,8 +43,24 @@ public abstract class SocketSide implements AutoCloseable {
 		buffer.clear();
 	}
 
-	public void write(int x) {
+	// writing
+
+	public void writeInt(int x) {
 		buffer.putInt(x);
+	}
+
+	public void writeByte(byte x) {
+		buffer.put(x);
+	}
+
+	// reading blocks until data exists
+
+	public int readInt() throws IOException {
+		return reader.readInt();
+	}
+
+	public byte readByte() throws IOException {
+		return reader.readByte();
 	}
 
 }

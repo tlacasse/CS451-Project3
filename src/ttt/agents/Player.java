@@ -39,11 +39,11 @@ public class Player extends SocketSide {
 		}
 	}
 
-	public boolean choose() {
+	public void choose() {
 		final Matrix out = nn.calculate(board.getBoard());
 		final int ord = out.indexOfMax()[1]; // column of row matrix
 		final int[] coord = Board.ordinalToCoord(ord);
-		return board.set(coord[0], coord[1], Board.SELF);
+		board.set(coord[0], coord[1], (byte) 1);
 	}
 
 }

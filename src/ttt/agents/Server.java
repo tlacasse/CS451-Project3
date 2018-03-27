@@ -2,27 +2,53 @@ package ttt.agents;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import ttt.Board;
+import ttt.Code;
 
 public class Server implements AutoCloseable, Runnable {
 
 	private final ServerSocket server;
-	private final Client[] clients;
-	private final int totalClients;
+	private final Queue<Client> clients;
+	private final Board board;
+	private final int totalPlayers;
+	private int turn;
 
-	public Server(int port) throws IOException {
-		totalClients = 2;
+	public Server(int port, int players) throws IOException {
+		totalPlayers = players;
 
 		server = new ServerSocket(port);
 		System.out.println(this);
 
-		clients = new Client[totalClients];
+		clients = new LinkedList<Client>();
+		board = new Board();
+		turn = 0;
 	}
 
 	@Override
 	public void run() {
 		try {
-			for (int i = 0; i < totalClients; i++) {
-				clients[i] = new Client(0);
+			for (int i = 0; i < totalPlayers; i++) {
+				clients.add(new Client());
+			}
+			for (;; turn = (turn + 1) % totalPlayers) {
+				final Client active = clients.poll();
+				active.writeByte(Code.TURN);
+				active.send();
+
+				final byte mode = active.readByte();
+				switch (mode) {
+				case Code.MOVE:
+					final int x = active.readInt();
+					final int y = active.readInt();
+					break;
+				default:
+					throw new UnsupportedOperationException("You did something wrong");
+				}
+
+				clients.add(active);
 			}
 		} catch (IOException e) {
 			System.out.println("Thread Failed: " + this);
@@ -43,14 +69,16 @@ public class Server implements AutoCloseable, Runnable {
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 
+	private static final int CLIENT_BUFFER_SIZE = 0;
+
 	private static int clientIdInc = 0;
 
 	private class Client extends SocketSide {
 
 		private final int id;
 
-		public Client(int bufferSize) throws IOException {
-			super(bufferSize);
+		public Client() throws IOException {
+			super(CLIENT_BUFFER_SIZE);
 			id = clientIdInc++;
 		}
 

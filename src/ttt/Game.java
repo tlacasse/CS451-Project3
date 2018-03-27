@@ -9,7 +9,7 @@ import ttt.agents.Spawn;
 public final class Game {
 
 	public static void start(int port) throws IOException {
-		try (Server server = new Server(port)) {
+		try (Server server = new Server(port, 2)) {
 			final ArrayList<Thread> threads = new ArrayList<>();
 			final Thread serverThread = new Thread(server);
 

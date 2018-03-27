@@ -9,8 +9,8 @@ import java.nio.file.Paths;
 
 public final class GameIO {
 
-	public final static String DIRECTORY_NN = Paths.get("").toAbsolutePath().toString() + "\\data\\";
-	public final static String DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
+	public static final String DIRECTORY_NN = Paths.get("").toAbsolutePath().toString() + "\\data\\";
+	public static final String DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
 
 	public static void saveNetwork(NeuralNetwork nn) throws IOException {
 		final Matrix[] weights = nn.getWeights();

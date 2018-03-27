@@ -9,11 +9,7 @@ public class Board {
 	// each player sees board as their selections as SELF, and the other
 	// player's as OTHER
 
-	public static final byte X = 1;
-	public static final byte O = -1;
-	public static final byte EMPTY = 0;
-	public static final byte SELF = 1;
-	public static final byte OTHER = -1;
+	public static final byte EMPTY = -1;
 
 	public static final int SIZE = 13;
 	public static final int CELLS = SIZE * SIZE;
@@ -31,10 +27,9 @@ public class Board {
 		return new Matrix(false, matrix);
 	}
 
-	public boolean set(int x, int y, byte val) {
+	public void set(int x, int y, byte val) {
 		board[x][y] = val;
 		matrix[coordToOrdinal(x, y)] = d(val);
-		return isWin(val, x, y);
 	}
 
 	public static int coordToOrdinal(int x, int y) {
@@ -45,7 +40,7 @@ public class Board {
 		return new int[] { n % SIZE, Math.floorDiv(n, SIZE) };
 	}
 
-	private boolean isWin(byte val, int addedX, int addedY) {
+	public boolean isWin(byte val, int addedX, int addedY) {
 		boolean win1 = true;
 		boolean win2 = true;
 
