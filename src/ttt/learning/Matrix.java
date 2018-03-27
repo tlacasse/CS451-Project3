@@ -279,6 +279,22 @@ public class Matrix {
 		return m;
 	}
 
+	// would be useful for a classification problem
+	public int[] indexOfMax() {
+		int[] pos = new int[] { -1, -1 };
+		double max = (double) Integer.MIN_VALUE;
+		for (int i = 0; i < this.rows; i++) {
+			for (int j = 0; j < this.cols; j++) {
+				if (data[i][j] > max) {
+					max = data[i][j];
+					pos[0] = i;
+					pos[1] = j;
+				}
+			}
+		}
+		return pos;
+	}
+
 	/////////////////////////////////////////////////////////////
 
 	@Override
