@@ -11,9 +11,6 @@ import ttt.learning.NeuralNetwork;
 
 public class Player extends SocketSide {
 
-	public static final byte SELF = 1;
-	public static final byte OTHER = -1;
-
 	public static int main(String[] args) throws IOException {
 		final int port = Integer.parseInt(args[0]);
 		try (Player player = new Player(port)) {
@@ -33,14 +30,18 @@ public class Player extends SocketSide {
 					player.setOtherPlayerMove(x, y);
 					break;
 				case Code.GAME_DONE:
-					final boolean didWin = player.readBoolean();
-					return didWin ? 1 : 0;
+					return 0;
+				case Code.FULL_BOARD:
+					return 1;
 				default:
 					throw new UnsupportedOperationException();
 				}
 			}
 		}
 	}
+
+	public static final int SELF = 1;
+	public static final int OTHER = -1;
 
 	private static final String LOCALHOST = "127.0.0.1";
 
@@ -62,10 +63,22 @@ public class Player extends SocketSide {
 
 	public int[] choose() {
 		final Matrix out = nn.calculate(board.getBoard());
-		final int ord = out.indexOfMax()[1]; // column of row matrix
-		final int[] coord = Board.ordinalToCoord(ord);
-		board.set(coord[0], coord[1], SELF);
-		return coord;
+		final double min = (double) Integer.MIN_VALUE;
+
+		int[] pos = null;
+		double max = min;
+		for (int i = 0; i < Board.CELLS; i++) {
+			final int[] coord = Board.ordinalToCoord(i);
+			final double get = out.get(0, i);
+
+			if (get > max && board.isSpaceEmpty(coord[0], coord[1])) {
+				max = get;
+				pos = coord;
+			}
+		}
+
+		board.set(pos[0], pos[1], SELF);
+		return pos;
 	}
 
 	public void setOtherPlayerMove(int x, int y) {

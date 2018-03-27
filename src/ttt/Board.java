@@ -11,10 +11,12 @@ public class Board {
 
 	private final int[][] board;
 	private final double[] matrix;
+	private int moves;
 
 	public Board() {
 		board = new int[SIZE][SIZE];
 		matrix = new double[CELLS];
+		moves = 0;
 	}
 
 	public Matrix getBoard() {
@@ -22,9 +24,18 @@ public class Board {
 		return new Matrix(false, matrix);
 	}
 
+	public boolean isFull() {
+		return moves == CELLS;
+	}
+
+	public boolean isSpaceEmpty(int x, int y) {
+		return board[x][y] == EMPTY;
+	}
+
 	public void set(int x, int y, int val) {
 		board[x][y] = val;
 		matrix[coordToOrdinal(x, y)] = (double) val;
+		moves++;
 	}
 
 	public static int coordToOrdinal(int x, int y) {

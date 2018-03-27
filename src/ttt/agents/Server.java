@@ -46,7 +46,7 @@ public class Server implements AutoCloseable, Runnable {
 				case Code.MOVE:
 					final int x = active.readInt();
 					final int y = active.readInt();
-					board.set(x, y, turn);
+					board.set(x, y, turn + 1);// 0 is empty so add one;
 					game.writeMove(turn, x, y);
 					for (Client other : clients) {
 						other.writeByte(Code.OTHER_PLAYER_MOVE);
@@ -54,15 +54,20 @@ public class Server implements AutoCloseable, Runnable {
 						other.writeInt(y);
 						other.send();
 					}
-					if (board.isWin(turn, x, y)) {
-						active.writeByte(Code.GAME_DONE);
-						active.writeBoolean(true);
+					final boolean isWin = board.isWin(turn, x, y);
+					final boolean isFull = board.isFull();
+					if (isWin || isFull) {
+						final byte code = isWin ? Code.GAME_DONE : Code.FULL_BOARD;
+						active.writeByte(code);
+						active.send();
 						for (Client other : clients) {
-							other.writeByte(Code.GAME_DONE);
-							other.writeBoolean(false);
+							other.writeByte(code);
 							other.send();
 						}
-						game.setWinner(turn);
+						if (isWin) {
+							game.setWinner(turn);
+						}
+						clients.add(active);
 						return;
 					}
 					break;
