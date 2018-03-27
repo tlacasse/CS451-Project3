@@ -43,18 +43,31 @@ public class Server implements AutoCloseable, Runnable {
 				case Code.MOVE:
 					final int x = active.readInt();
 					final int y = active.readInt();
+					board.set(x, y, (byte) turn);
+					for (Client other : clients) {
+						other.writeByte(Code.OTHER_PLAYER_MOVE);
+						other.writeInt(x);
+						other.writeInt(y);
+						other.send();
+					}
+					if (board.isWin((byte) turn, x, y)) {
+						for (Client other : clients) {
+							other.writeByte(Code.GAME_DONE);
+							other.send();
+						}
+						return;
+					}
 					break;
 				default:
-					throw new UnsupportedOperationException("You did something wrong");
+					throw new UnsupportedOperationException();
 				}
 
 				clients.add(active);
 			}
-		} catch (IOException e) {
+		} catch (IOException | UnsupportedOperationException e) {
 			System.out.println("Thread Failed: " + this);
 			e.printStackTrace();
 		}
-
 	}
 
 	@Override

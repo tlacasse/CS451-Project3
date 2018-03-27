@@ -10,6 +10,9 @@ import ttt.learning.NeuralNetwork;
 
 public class Player extends SocketSide {
 
+	public static final byte SELF = 1;
+	public static final byte OTHER = -1;
+
 	public static int main(String[] args) throws Exception {
 		final int port = Integer.parseInt(args[0]);
 		try (Player player = new Player(port)) {
@@ -43,7 +46,7 @@ public class Player extends SocketSide {
 		final Matrix out = nn.calculate(board.getBoard());
 		final int ord = out.indexOfMax()[1]; // column of row matrix
 		final int[] coord = Board.ordinalToCoord(ord);
-		board.set(coord[0], coord[1], (byte) 1);
+		board.set(coord[0], coord[1], (byte) SELF);
 	}
 
 }

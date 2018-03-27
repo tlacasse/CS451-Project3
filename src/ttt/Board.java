@@ -4,12 +4,7 @@ import ttt.learning.Matrix;
 
 public class Board {
 
-	// server sees board as X & O
-
-	// each player sees board as their selections as SELF, and the other
-	// player's as OTHER
-
-	public static final byte EMPTY = -1;
+	public static final byte EMPTY = 0;
 
 	public static final int SIZE = 13;
 	public static final int CELLS = SIZE * SIZE;
@@ -29,7 +24,7 @@ public class Board {
 
 	public void set(int x, int y, byte val) {
 		board[x][y] = val;
-		matrix[coordToOrdinal(x, y)] = d(val);
+		matrix[coordToOrdinal(x, y)] = (double) val;
 	}
 
 	public static int coordToOrdinal(int x, int y) {
@@ -68,7 +63,4 @@ public class Board {
 		return false;
 	}
 
-	private static double d(byte b) {
-		return (double) b;
-	}
 }
