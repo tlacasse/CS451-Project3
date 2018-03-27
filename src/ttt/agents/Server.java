@@ -87,15 +87,15 @@ public class Server implements AutoCloseable, Runnable {
 
 	private static final int CLIENT_BUFFER_SIZE = 0;
 
-	private static int clientIdInc = 0;
+	// private static int clientIdInc = 0;
 
 	private class Client extends SocketSide {
 
-		private final int id;
+		// private final int id;
 
 		public Client() throws IOException {
 			super(CLIENT_BUFFER_SIZE);
-			id = clientIdInc++;
+			// id = clientIdInc++;
 		}
 
 		@Override

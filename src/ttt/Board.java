@@ -4,16 +4,16 @@ import ttt.learning.Matrix;
 
 public class Board {
 
-	public static final byte EMPTY = 0;
+	public static final int EMPTY = 0;
 
 	public static final int SIZE = 13;
 	public static final int CELLS = SIZE * SIZE;
 
-	private final byte[][] board;
+	private final int[][] board;
 	private final double[] matrix;
 
 	public Board() {
-		board = new byte[SIZE][SIZE];
+		board = new int[SIZE][SIZE];
 		matrix = new double[CELLS];
 	}
 
@@ -22,7 +22,7 @@ public class Board {
 		return new Matrix(false, matrix);
 	}
 
-	public void set(int x, int y, byte val) {
+	public void set(int x, int y, int val) {
 		board[x][y] = val;
 		matrix[coordToOrdinal(x, y)] = (double) val;
 	}
@@ -35,7 +35,7 @@ public class Board {
 		return new int[] { n % SIZE, Math.floorDiv(n, SIZE) };
 	}
 
-	public boolean isWin(byte val, int addedX, int addedY) {
+	public boolean isWin(int val, int addedX, int addedY) {
 		boolean win1 = true;
 		boolean win2 = true;
 

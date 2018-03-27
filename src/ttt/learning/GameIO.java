@@ -6,6 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+
+import ttt.Game;
 
 public final class GameIO {
 
@@ -73,12 +77,28 @@ public final class GameIO {
 		return nn;
 	}
 
+	public static void saveGame(Game game) throws IOException {
+		try (FileOutputStream fos = new FileOutputStream(gameFileName())) {
+			fos.write(game.toByteBuffer().array());
+		}
+	}
+
 	private static String nnFileName(int... nodes) {
-		final StringBuffer sb = new StringBuffer(DIRECTORY_NN + "nn_");
+		final StringBuilder sb = new StringBuilder(DIRECTORY_NN);
+		sb.append("nn_");
 		for (int i = 0; i < nodes.length - 1; i++) {
 			sb.append(nodes[i]).append("-");
 		}
 		sb.append(nodes[nodes.length - 1]).append(".nn");
+		return sb.toString();
+	}
+
+	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+
+	private static String gameFileName() {
+		final StringBuilder sb = new StringBuilder(DIRECTORY_GAMES);
+		sb.append(FORMAT.format(LocalDateTime.now()));
+		sb.append(".game");
 		return sb.toString();
 	}
 
