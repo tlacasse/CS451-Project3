@@ -51,8 +51,11 @@ public class Server implements AutoCloseable, Runnable {
 						other.send();
 					}
 					if (board.isWin((byte) turn, x, y)) {
+						active.writeByte(Code.GAME_DONE);
+						active.writeBoolean(true);
 						for (Client other : clients) {
 							other.writeByte(Code.GAME_DONE);
+							other.writeBoolean(false);
 							other.send();
 						}
 						return;

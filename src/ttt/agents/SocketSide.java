@@ -53,6 +53,10 @@ public abstract class SocketSide implements AutoCloseable {
 		buffer.put(x);
 	}
 
+	public void writeBoolean(boolean x) {
+		buffer.put((byte) (x ? 1 : 0));
+	}
+
 	// reading blocks until data exists
 
 	public int readInt() throws IOException {
@@ -61,6 +65,10 @@ public abstract class SocketSide implements AutoCloseable {
 
 	public byte readByte() throws IOException {
 		return reader.readByte();
+	}
+
+	public boolean readBoolean() throws IOException {
+		return reader.readByte() == 1;
 	}
 
 }
