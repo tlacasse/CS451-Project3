@@ -12,7 +12,7 @@ import ttt.learning.GameIO;
 
 public class Game {
 
-	public static final int MOVE_SIZE = (Integer.BYTES * 3);
+	private static final int MOVE_SIZE = (Integer.BYTES * 3);
 
 	private List<Integer> moves;
 	private int winner;
@@ -24,7 +24,7 @@ public class Game {
 		winner = -1;
 	}
 
-	public void writeMove(int player, int x, int y) {
+	public void recordMove(int player, int x, int y) {
 		moves.add(player);
 		moves.add(x);
 		moves.add(y);

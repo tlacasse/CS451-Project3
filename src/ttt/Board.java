@@ -52,10 +52,10 @@ public class Board {
 
 		// orthogonal
 		for (int i = 0; i < SIZE; i++) {
-			if (win1 = win1 && board[addedX][i] == val) {
+			if (win1 = (win1 && board[addedX][i] == val)) {
 				return true;
 			}
-			if (win2 = win2 && board[i][addedY] == val) {
+			if (win2 = (win2 && board[i][addedY] == val)) {
 				return true;
 			}
 		}
@@ -63,10 +63,10 @@ public class Board {
 		win1 = (win2 = true);
 		// diagonals
 		for (int i = 0; i < SIZE; i++) {
-			if (win1 = win1 && board[i][i] == val) {
+			if (win1 = (win1 && board[i][i] == val)) {
 				return true;
 			}
-			if (win2 = win2 && board[i][SIZE - i - 1] == val) {
+			if (win2 = (win2 && board[i][SIZE - i - 1] == val)) {
 				return true;
 			}
 		}

@@ -11,7 +11,7 @@ import ttt.learning.NeuralNetwork;
 
 public class Player extends SocketSide {
 
-	public static int main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, Exception {
 		final int port = Integer.parseInt(args[0]);
 		try (Player player = new Player(port)) {
 			for (;;) {
@@ -30,9 +30,9 @@ public class Player extends SocketSide {
 					player.setOtherPlayerMove(x, y);
 					break;
 				case Code.GAME_DONE:
-					return 0;
+					return; // problem with int return type
 				case Code.FULL_BOARD:
-					return 1;
+					throw new Exception("Tie"); // throw exception to return 1
 				default:
 					throw new UnsupportedOperationException();
 				}
@@ -44,12 +44,13 @@ public class Player extends SocketSide {
 	public static final int OTHER = -1;
 
 	private static final String LOCALHOST = "127.0.0.1";
+	private static final int BUFFER_SIZE = 1 + (Integer.BYTES * 2);
 
 	private final Board board;
 	private final NeuralNetwork nn;
 
 	public Player(int port) throws IOException {
-		super(port, 2 * 4);
+		super(port, BUFFER_SIZE);
 		board = new Board();
 		nn = Learning.pickRandomNN();
 	}

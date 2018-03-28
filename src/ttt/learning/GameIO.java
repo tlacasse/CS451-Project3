@@ -6,8 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 import ttt.Game;
 
@@ -93,11 +92,9 @@ public final class GameIO {
 		return sb.toString();
 	}
 
-	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-
 	private static String gameFileName() {
 		final StringBuilder sb = new StringBuilder(DIRECTORY_GAMES);
-		sb.append(FORMAT.format(LocalDateTime.now()));
+		sb.append(UUID.randomUUID().toString());
 		sb.append(".game");
 		return sb.toString();
 	}

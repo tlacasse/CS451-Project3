@@ -16,6 +16,7 @@ public class Server implements AutoCloseable, Runnable {
 	private final Board board;
 	private final Game game;
 	private final int totalPlayers;
+
 	private int turn;
 
 	public Server(Game game, int port, int players) throws IOException {
@@ -23,7 +24,7 @@ public class Server implements AutoCloseable, Runnable {
 		totalPlayers = players;
 
 		server = new ServerSocket(port);
-		System.out.println(this);
+		System.out.println(server);
 
 		clients = new LinkedList<Client>();
 		board = new Board();
@@ -47,7 +48,7 @@ public class Server implements AutoCloseable, Runnable {
 					final int x = active.readInt();
 					final int y = active.readInt();
 					board.set(x, y, turn + 1);// 0 is empty so add one;
-					game.writeMove(turn, x, y);
+					game.recordMove(turn, x, y);
 					for (Client other : clients) {
 						other.writeByte(Code.OTHER_PLAYER_MOVE);
 						other.writeInt(x);
@@ -72,7 +73,7 @@ public class Server implements AutoCloseable, Runnable {
 					}
 					break;
 				default:
-					throw new UnsupportedOperationException();
+					throw new UnsupportedOperationException("" + mode);
 				}
 
 				clients.add(active);
@@ -95,7 +96,7 @@ public class Server implements AutoCloseable, Runnable {
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 
-	private static final int CLIENT_BUFFER_SIZE = 0;
+	private static final int CLIENT_BUFFER_SIZE = 1 + (Integer.BYTES * 2);
 
 	// private static int clientIdInc = 0;
 
@@ -112,7 +113,7 @@ public class Server implements AutoCloseable, Runnable {
 		protected void connect(int port) throws IOException {
 			if (socket == null || socket.isClosed()) {
 				socket = server.accept();
-				System.out.println(this);
+				System.out.println(socket);
 			}
 		}
 

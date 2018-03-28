@@ -11,7 +11,8 @@ public class Spawn implements Runnable {
 
 	public Spawn(int port) {
 		builder = new ProcessBuilder("java", "-cp", Paths.get("").toAbsolutePath().toString() + "\\bin",
-				"ttt.agents.Player", Integer.toString(port)); //separate by tokens
+				"ttt.agents.Player", Integer.toString(port)); // separate by
+																// tokens
 		builder.redirectErrorStream(true);
 	}
 
@@ -19,7 +20,7 @@ public class Spawn implements Runnable {
 	public void run() {
 		try {
 			Process process = builder.start();
-			try (StreamRedirect sr = new StreamRedirect(process.getInputStream(), "Test")) {
+			try (StreamRedirect sr = new StreamRedirect(process.getInputStream(), this.toString())) {
 				int exitCode = process.waitFor();
 				System.out.println(exitCode);
 			}
