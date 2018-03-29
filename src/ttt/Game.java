@@ -17,11 +17,13 @@ public class Game {
 	private List<Integer> moves;
 	private int winner;
 	private int count;
+	private int players;
 
 	private Game() {
 		moves = new LinkedList<>();
 		count = 0;
 		winner = -1;
+		players = -1;
 	}
 
 	public void recordMove(int player, int x, int y) {
@@ -36,7 +38,8 @@ public class Game {
 	}
 
 	public ByteBuffer toByteBuffer() {
-		ByteBuffer buffer = ByteBuffer.allocate((Integer.BYTES * 2) + (MOVE_SIZE * count));
+		ByteBuffer buffer = ByteBuffer.allocate((Integer.BYTES * 3) + (MOVE_SIZE * count));
+		buffer.putInt(players);
 		buffer.putInt(winner);
 		buffer.putInt(count);
 		for (Integer i : moves) {
@@ -47,6 +50,7 @@ public class Game {
 
 	public static void start(int port, Config config) throws IOException {
 		Game game = new Game();
+		game.players = config.get(Param.PLAYERS);
 		try (Server server = new Server(game, port, config)) {
 			final ArrayList<Thread> threads = new ArrayList<>();
 			final Thread serverThread = new Thread(server);
