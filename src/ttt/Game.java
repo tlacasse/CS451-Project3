@@ -45,13 +45,13 @@ public class Game {
 		return buffer;
 	}
 
-	public static void start(int port, int players) throws IOException {
+	public static void start(int port, Config config) throws IOException {
 		Game game = new Game();
-		try (Server server = new Server(game, port, players)) {
+		try (Server server = new Server(game, port, config)) {
 			final ArrayList<Thread> threads = new ArrayList<>();
 			final Thread serverThread = new Thread(server);
 
-			for (int i = 0; i < players; i++) {
+			for (int i = 0; i < config.get(Param.PLAYERS); i++) {
 				threads.add(new Thread(new Spawn(port)));
 			}
 

@@ -7,7 +7,9 @@ import java.util.Queue;
 
 import ttt.Board;
 import ttt.Code;
+import ttt.Config;
 import ttt.Game;
+import ttt.Param;
 
 public class Server implements AutoCloseable, Runnable {
 
@@ -15,13 +17,15 @@ public class Server implements AutoCloseable, Runnable {
 	private final Queue<Client> clients;
 	private final Board board;
 	private final Game game;
+	private final Config config;
 	private final int totalPlayers;
 
 	private int turn;
 
-	public Server(Game game, int port, int players) throws IOException {
+	public Server(Game game, int port, Config config) throws IOException {
 		this.game = game;
-		totalPlayers = players;
+		this.config = config;
+		totalPlayers = config.get(Param.PLAYERS);
 
 		server = new ServerSocket(port);
 		System.out.println(server);
