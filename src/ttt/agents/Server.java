@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Scanner;
 
 import ttt.Board;
 import ttt.Code;
@@ -39,7 +40,7 @@ public class Server implements AutoCloseable, Runnable {
 	public void run() {
 		try {
 			for (int i = 0; i < totalPlayers; i++) {
-				clients.offer(new Client());
+				clients.offer(i == 0 && config.get(Param.HAVE_USER) > 0 ? new ClientUser() : new ClientWeb());
 			}
 			System.out.println();
 			for (;; turn = (turn + 1) % totalPlayers) {
@@ -100,14 +101,20 @@ public class Server implements AutoCloseable, Runnable {
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////
+	/* Nested classes to allow access to private Server variables. */
+
+	// type representing Clients, to allow a "user" Client
+	private interface Client extends SocketReadWrite {
+	}
 
 	// private static int clientIdInc = 0;
 
-	private class Client extends SocketSide {
+	// normal IPC Player Client
+	private class ClientWeb extends SocketSide implements Client {
 
 		// private final int id;
 
-		public Client() throws IOException {
+		public ClientWeb() throws IOException {
 			super();
 			// id = clientIdInc++;
 		}
@@ -118,6 +125,79 @@ public class Server implements AutoCloseable, Runnable {
 				socket = server.accept();
 				System.out.println(socket);
 			}
+		}
+
+	}
+
+	// Client with User Input
+	private class ClientUser implements Client {
+
+		private final Scanner scan;
+		private boolean askSecond;
+		private int save;
+
+		public ClientUser() {
+			this.scan = config.getScanner();
+			askSecond = false;
+			save = -1;
+		}
+
+		@Override
+		public void close() throws IOException {
+			// nothing to close
+		}
+
+		@Override
+		public void flush() throws IOException {
+			System.out.println(board);
+		}
+
+		@Override
+		public void writeInt(int x) throws IOException {
+			// nothing to receive, everything is in Server class
+		}
+
+		@Override
+		public void writeByte(byte x) throws IOException {
+			// nothing to receive, everything is in Server class
+		}
+
+		@Override
+		public int readInt() throws IOException {
+			// switch x & y
+			if (askSecond) {
+				askSecond = !askSecond;
+				return save;
+			}
+			for (boolean useX : new boolean[] { true, false }) {
+				System.out.println("??? Input your move:");
+				int value = -1;
+				while (value == -1) {
+					try {
+						System.out.println(useX ? "?? Input x:" : "?? Input y:");
+						// not scan.nextInt()
+						// to make sure we are dealing with lines
+						value = Integer.parseInt(scan.nextLine());
+					} catch (NumberFormatException nfe) {
+						System.out.println(useX ? "?? Input x:" : "?? Input y:");
+					}
+					if (value > Board.SIZE - 1) {
+						value = -1;
+					}
+				}
+				if (useX) {
+					save = value;
+				} else {
+					askSecond = !askSecond;
+					return value;
+				}
+			}
+			return -1; // won't get here
+		}
+
+		@Override
+		public byte readByte() throws IOException {
+			return (byte) Code.MOVE;
 		}
 
 	}

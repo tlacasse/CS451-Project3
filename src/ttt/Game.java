@@ -50,8 +50,9 @@ public class Game {
 		try (Server server = new Server(game, port, config)) {
 			final ArrayList<Thread> threads = new ArrayList<>();
 			final Thread serverThread = new Thread(server);
+			final int spawnCount = config.get(Param.PLAYERS) - (config.get(Param.HAVE_USER));
 
-			for (int i = 0; i < config.get(Param.PLAYERS); i++) {
+			for (int i = 0; i < spawnCount; i++) {
 				threads.add(new Thread(new Spawn(port)));
 			}
 

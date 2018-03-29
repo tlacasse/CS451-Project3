@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Config {
 
 	private static enum Key {
-		PLAYERS("Players", 2);
+		PLAYERS("Players", 2), HAVEUSER("Have a User Input player", 0);
 
 		public final String desc;
 		public final short base;
@@ -18,13 +18,15 @@ public class Config {
 	}
 
 	private final HashMap<Key, Integer> values;
+	private final Scanner scan;
 
-	private Config() {
+	private Config(Scanner scan) {
+		this.scan = scan;
 		values = new HashMap<>();
 	}
 
 	public static Config create(Scanner scan) {
-		final Config config = new Config();
+		final Config config = new Config(scan);
 		System.out.println("\n\n=== Change Parameters, leave blank for default ===");
 		for (Key key : Key.values()) {
 			System.out.println(key.desc + " (" + key.base + "):");
@@ -38,9 +40,17 @@ public class Config {
 		return config;
 	}
 
+	public Scanner getScanner() {
+		return scan;
+	}
+
 	public int get(Param param) {
 		if (param == Param.PLAYERS) {
 			return values.get(Key.PLAYERS).intValue();
+		}
+		if (param == Param.HAVE_USER) {
+			final int val = values.get(Key.HAVEUSER).intValue();
+			return val > 0 ? 1 : 0;
 		}
 		return -1;
 	}

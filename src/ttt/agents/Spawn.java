@@ -33,7 +33,7 @@ public class Spawn implements Runnable {
 
 	@Override
 	public String toString() {
-		return strOut == null ? strOut = super.toString().substring(getClass().getPackage().getName().length())
+		return strOut == null ? strOut = super.toString().substring(getClass().getPackage().getName().length() + 1)
 				: strOut;
 	}
 

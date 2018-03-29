@@ -1,5 +1,5 @@
 package ttt;
 
 public enum Param {
-	PLAYERS;
+	PLAYERS, HAVE_USER;
 }

@@ -64,4 +64,33 @@ public class Board {
 		return win[0] || win[1] || win[2] || win[3];
 	}
 
+	@Override
+	public String toString() {
+		String result = "";
+		int maxSize = 0;
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				maxSize = Math.max(maxSize, ("" + board[i][j]).length());
+			}
+		}
+		maxSize += 2;
+		for (int i = 0; i < SIZE; i++) {
+			result += "[ ";
+			for (int j = 0; j < SIZE; j++) {
+				int thisSize = ("" + board[i][j]).length();
+				int sb = (int) Math.floor((maxSize - thisSize) / 2);
+				int sa = maxSize - thisSize - sb;
+				for (int k = 0; k < sb; k++) {
+					result += " ";
+				}
+				result += board[i][j];
+				for (int k = 0; k < sa; k++) {
+					result += " ";
+				}
+			}
+			result += " ]\n";
+		}
+		return result;
+	}
+
 }
