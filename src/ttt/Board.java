@@ -11,12 +11,15 @@ public class Board {
 
 	private final int[][] board;
 	private final double[] matrix;
+	private final boolean isServer;
 	private int moves;
 
-	public Board() {
+	// server will add one to player, because 0 means empty;
+	public Board(boolean isServerImplementation) {
 		board = new int[SIZE][SIZE];
 		matrix = new double[CELLS];
 		moves = 0;
+		isServer = isServerImplementation;
 	}
 
 	public Matrix getBoard() {
@@ -33,6 +36,7 @@ public class Board {
 	}
 
 	public void set(int x, int y, int val) {
+		val = isServer ? val + 1 : val;
 		board[x][y] = val;
 		matrix[coordToOrdinal(x, y)] = (double) val;
 		moves++;
@@ -47,31 +51,17 @@ public class Board {
 	}
 
 	public boolean isWin(int val, int addedX, int addedY) {
-		boolean win1 = true;
-		boolean win2 = true;
-
-		// orthogonal
+		val = isServer ? val + 1 : val;
+		boolean[] win = new boolean[] { true, true, true, true };
 		for (int i = 0; i < SIZE; i++) {
-			if (win1 = (win1 && board[addedX][i] == val)) {
-				return true;
-			}
-			if (win2 = (win2 && board[i][addedY] == val)) {
-				return true;
-			}
+			// orthogonal
+			win[0] = (win[0] && board[addedX][i] == val);
+			win[1] = (win[1] && board[i][addedY] == val);
+			// diagonal
+			win[2] = (win[2] && board[i][i] == val);
+			win[3] = (win[3] && board[i][SIZE - i - 1] == val);
 		}
-
-		win1 = (win2 = true);
-		// diagonals
-		for (int i = 0; i < SIZE; i++) {
-			if (win1 = (win1 && board[i][i] == val)) {
-				return true;
-			}
-			if (win2 = (win2 && board[i][SIZE - i - 1] == val)) {
-				return true;
-			}
-		}
-
-		return false;
+		return win[0] || win[1] || win[2] || win[3];
 	}
 
 }

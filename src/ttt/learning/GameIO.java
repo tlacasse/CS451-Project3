@@ -77,9 +77,15 @@ public final class GameIO {
 	}
 
 	public static void saveGame(Game game) throws IOException {
-		try (FileOutputStream fos = new FileOutputStream(gameFileName())) {
+		if (game == null) {
+			System.out.println("No Game File Written on Tie!");
+			return;
+		}
+		final String fileName = gameFileName();
+		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(game.toByteBuffer().array());
 		}
+		System.out.println("Game File Created: \"" + fileName + "\"");
 	}
 
 	private static String nnFileName(int... nodes) {

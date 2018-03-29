@@ -65,7 +65,7 @@ public class Game {
 			}
 			join(serverThread);
 		}
-		GameIO.saveGame(game);
+		GameIO.saveGame(game.winner == -1 ? null : game);
 	}
 
 	private static void join(Thread thread) {

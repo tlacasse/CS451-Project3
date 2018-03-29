@@ -21,13 +21,20 @@ public class Spawn implements Runnable {
 		try {
 			Process process = builder.start();
 			try (StreamRedirect sr = new StreamRedirect(process.getInputStream(), this.toString())) {
-				int exitCode = process.waitFor();
-				System.out.println(exitCode);
+				System.out.println(this + " exit code: " + process.waitFor());
 			}
 		} catch (IOException | InterruptedException e) {
 			System.out.println("Thread Failed: " + this + "\n" + e);
 			e.printStackTrace();
 		}
+	}
+
+	private String strOut = null;
+
+	@Override
+	public String toString() {
+		return strOut == null ? strOut = super.toString().substring(getClass().getPackage().getName().length())
+				: strOut;
 	}
 
 }

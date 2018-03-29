@@ -22,19 +22,25 @@ public class Player extends SocketSide {
 					player.writeByte(Code.MOVE);
 					player.writeInt(move[0]);
 					player.writeInt(move[1]);
-					player.send();
+					player.flush();
+					System.out.println("Turn: " + move[0] + "," + move[1]);
 					break;
 				case Code.OTHER_PLAYER_MOVE:
 					final int x = player.readInt();
 					final int y = player.readInt();
 					player.setOtherPlayerMove(x, y);
+					System.out.println("Other Move: " + x + "," + y);
 					break;
 				case Code.GAME_DONE:
-					return; // problem with int return type
+					System.out.println("Game Done!");
+					System.exit(0);
+					return;
 				case Code.FULL_BOARD:
-					throw new Exception("Tie"); // throw exception to return 1
+					System.out.println("Full Board!");
+					System.exit(1);
+					return;
 				default:
-					throw new UnsupportedOperationException();
+					throw new UnsupportedOperationException("Code: " + mode);
 				}
 			}
 		}
@@ -44,14 +50,13 @@ public class Player extends SocketSide {
 	public static final int OTHER = -1;
 
 	private static final String LOCALHOST = "127.0.0.1";
-	private static final int BUFFER_SIZE = 1 + (Integer.BYTES * 2);
 
 	private final Board board;
 	private final NeuralNetwork nn;
 
 	public Player(int port) throws IOException {
-		super(port, BUFFER_SIZE);
-		board = new Board();
+		super(port);
+		board = new Board(false);
 		nn = Learning.pickRandomNN();
 	}
 

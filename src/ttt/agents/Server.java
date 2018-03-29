@@ -27,7 +27,7 @@ public class Server implements AutoCloseable, Runnable {
 		System.out.println(server);
 
 		clients = new LinkedList<Client>();
-		board = new Board();
+		board = new Board(true);
 		turn = 0;
 	}
 
@@ -35,48 +35,49 @@ public class Server implements AutoCloseable, Runnable {
 	public void run() {
 		try {
 			for (int i = 0; i < totalPlayers; i++) {
-				clients.add(new Client());
+				clients.offer(new Client());
 			}
+			System.out.println();
 			for (;; turn = (turn + 1) % totalPlayers) {
 				final Client active = clients.poll();
+				System.out.println("Turn: " + turn);
 				active.writeByte(Code.TURN);
-				active.send();
+				active.flush();
 
 				final byte mode = active.readByte();
 				switch (mode) {
 				case Code.MOVE:
 					final int x = active.readInt();
 					final int y = active.readInt();
-					board.set(x, y, turn + 1);// 0 is empty so add one;
+					board.set(x, y, turn);
 					game.recordMove(turn, x, y);
+					System.out.println("Move: " + x + ", " + y);
 					for (Client other : clients) {
 						other.writeByte(Code.OTHER_PLAYER_MOVE);
 						other.writeInt(x);
 						other.writeInt(y);
-						other.send();
+						other.flush();
 					}
 					final boolean isWin = board.isWin(turn, x, y);
 					final boolean isFull = board.isFull();
 					if (isWin || isFull) {
 						final byte code = isWin ? Code.GAME_DONE : Code.FULL_BOARD;
-						active.writeByte(code);
-						active.send();
-						for (Client other : clients) {
-							other.writeByte(code);
-							other.send();
+						clients.offer(active);
+						for (Client client : clients) {
+							client.writeByte(code);
+							client.flush();
 						}
 						if (isWin) {
 							game.setWinner(turn);
+							System.out.println("Winner: " + turn);
 						}
-						clients.add(active);
 						return;
 					}
 					break;
 				default:
-					throw new UnsupportedOperationException("" + mode);
+					throw new UnsupportedOperationException("Code: " + mode);
 				}
-
-				clients.add(active);
+				clients.offer(active);
 			}
 		} catch (IOException | UnsupportedOperationException e) {
 			System.out.println("Thread Failed: " + this);
@@ -96,8 +97,6 @@ public class Server implements AutoCloseable, Runnable {
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 
-	private static final int CLIENT_BUFFER_SIZE = 1 + (Integer.BYTES * 2);
-
 	// private static int clientIdInc = 0;
 
 	private class Client extends SocketSide {
@@ -105,7 +104,7 @@ public class Server implements AutoCloseable, Runnable {
 		// private final int id;
 
 		public Client() throws IOException {
-			super(CLIENT_BUFFER_SIZE);
+			super();
 			// id = clientIdInc++;
 		}
 
