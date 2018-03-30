@@ -1,7 +1,5 @@
 package ttt;
 
-import ttt.learning.Matrix;
-
 public class Board {
 
 	public static final int EMPTY = 0;
@@ -30,7 +28,6 @@ public class Board {
 		return moves == CELLS;
 	}
 
-	
 	public boolean isSpaceEmpty(int x, int y) {
 		return board[x][y] == EMPTY;
 	}

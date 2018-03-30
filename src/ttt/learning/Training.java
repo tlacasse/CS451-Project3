@@ -1,6 +1,7 @@
 package ttt.learning;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Random;
 
 import javafx.util.Pair;
@@ -35,8 +36,38 @@ public class Training {
 		DATA = GameIO.readGamesForNetworkTraining();
 	}
 
-	public void train() {
+	public void train(int interations, int displayIntervals) throws IOException {
+		final LinkedList<NeuralNetwork> networks = new LinkedList<>();
+		for (int i = 0; i < NETWORKS.length; i++) {
+			networks.add(GameIO.loadNetwork(NETWORKS[i]));
+		}
+		int displayInterval = interations / displayIntervals;
+		for (int t = 1; t <= interations; t++) {
+			if (t % displayInterval == 0 || t == interations) {
+				System.out.println("Cost at " + t + ":");
+				for (NeuralNetwork nn : networks) {
+					System.out.println("W - " + nn + ":\t\t" + nn.cost(winData().getValue()));
+					System.out.println("L - " + nn + ":\t\t" + nn.cost(lossData().getValue()));
+				}
+			}
+			for (NeuralNetwork nn : networks) {
+				Matrix[] derivative, weights;
+				// reference -> no need to set again
+				weights = nn.getWeights();
 
+				derivative = nn.costPrime(winData().getValue());
+
+				for (int w = 0; w < weights.length; w++) {
+					// win data -> move downhill -> negative derivative
+					weights[w] = weights[w].add(derivative[w].negative());
+				}
+				derivative = nn.costPrime(lossData().getValue());
+				for (int w = 0; w < weights.length; w++) {
+					// loss data -> move uphill -> positive derivative
+					weights[w] = weights[w].add(derivative[w]);
+				}
+			}
+		}
 	}
 
 	// wrap because it makes more sense than <code>.getKey()</code>

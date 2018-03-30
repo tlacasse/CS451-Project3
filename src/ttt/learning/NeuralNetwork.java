@@ -1,6 +1,7 @@
 package ttt.learning;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class NeuralNetwork {
 
@@ -76,7 +77,7 @@ public class NeuralNetwork {
 
 	private static final double TUNING = 0.000001;
 
-	private double cost(Matrix y) {
+	public double cost(Matrix y) {
 		final double cost = 0.5 * y.add(output().negative()).elementSquare().sum();
 		double change = 0.0;
 		for (int i = 0; i < size - 1; i++) {
@@ -86,7 +87,7 @@ public class NeuralNetwork {
 		return (cost / layer[0].rows()) + change;
 	}
 
-	private Matrix[] costPrime(Matrix y) {
+	public Matrix[] costPrime(Matrix y) {
 		final Matrix[] derivative = new Matrix[size - 1];
 		final Matrix[] delta = new Matrix[size - 1];
 		delta[size - 2] = output().add(y.negative()).product(transition[size - 2].sigmoidPrime());
@@ -97,6 +98,11 @@ public class NeuralNetwork {
 			derivative[i] = layer[i].transpose().multiply(delta[i]).add(weights[i].scalar(TUNING));
 		}
 		return derivative;
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.toString(nodes);
 	}
 
 	/////////////////////////////////////////////////////////////

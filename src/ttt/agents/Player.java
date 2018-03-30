@@ -5,7 +5,6 @@ import java.net.Socket;
 
 import ttt.Board;
 import ttt.Code;
-import ttt.learning.Learning;
 import ttt.learning.Matrix;
 import ttt.learning.NeuralNetwork;
 import ttt.learning.Training;
