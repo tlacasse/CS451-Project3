@@ -1,26 +1,27 @@
 package ttt;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
-public class Config {
+public final class Config {
 
-	private static enum Key {
-		PLAYERS("Players", 2), HAVEUSER("Have a User Input player", 0, true);
+	public static final class Key {
 
 		public final String desc;
 		public final short base;
-		public final boolean allowZero;
+		public final boolean isBoolean;
 
-		private Key(String desc, int base, boolean allowZero) {
+		public Key(String desc, int base, boolean isBoolean) {
 			this.desc = desc;
 			this.base = (short) base;
-			this.allowZero = allowZero;
+			this.isBoolean = isBoolean;
 		}
 
-		private Key(String desc, int base) {
+		public Key(String desc, int base) {
 			this(desc, base, false);
 		}
+
 	}
 
 	private final HashMap<Key, Integer> values;
@@ -31,14 +32,14 @@ public class Config {
 		values = new HashMap<>();
 	}
 
-	public static Config create(Scanner scan) {
+	public static Config create(Scanner scan, List<Key> keys) {
 		final Config config = new Config(scan);
 		System.out.println("\n\n=== Change Parameters, leave blank for default ===");
-		for (Key key : Key.values()) {
+		for (Key key : keys) {
 			System.out.println(key.desc + " (" + key.base + "):");
 			final String line;
 			final int value = (line = scan.nextLine()).equals("") ? key.base : Integer.parseInt(line);
-			if (value < (key.allowZero ? 0 : 1)) {
+			if (!key.isBoolean && value < 1) {
 				throw new IllegalArgumentException(key.desc + " must be greater than 0.");
 			}
 			config.values.put(key, value);
@@ -50,15 +51,9 @@ public class Config {
 		return scan;
 	}
 
-	public int get(Param param) {
-		if (param == Param.PLAYERS) {
-			return values.get(Key.PLAYERS).intValue();
-		}
-		if (param == Param.HAVE_USER) {
-			final int val = values.get(Key.HAVEUSER).intValue();
-			return val > 0 ? 1 : 0;
-		}
-		return -1;
+	public int get(Key key) {
+		final int result = values.get(key).intValue();
+		return key.isBoolean ? (result > 0 ? 1 : 0) : result;
 	}
 
 }

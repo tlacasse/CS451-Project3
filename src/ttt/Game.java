@@ -1,5 +1,8 @@
 package ttt;
 
+import static ttt.Program.HAVE_USER;
+import static ttt.Program.PLAYERS;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -54,11 +57,11 @@ public class Game {
 
 	public static void start(int port, Config config) throws IOException {
 		Game game = new Game();
-		game.players = config.get(Param.PLAYERS);
+		game.players = config.get(PLAYERS);
 		try (Server server = new Server(game, port, config)) {
 			final ArrayList<Thread> threads = new ArrayList<>();
 			final Thread serverThread = new Thread(server);
-			final int spawnCount = config.get(Param.PLAYERS) - (config.get(Param.HAVE_USER));
+			final int spawnCount = config.get(PLAYERS) - (config.get(HAVE_USER));
 
 			for (int i = 0; i < spawnCount; i++) {
 				threads.add(new Thread(new Spawn(port)));

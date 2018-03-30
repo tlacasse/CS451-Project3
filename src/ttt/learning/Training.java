@@ -30,13 +30,16 @@ public class Training {
 		return GameIO.loadNetwork(NETWORKS[RANDOM.nextInt(8)]);
 	}
 
-	private final Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> DATA;
-
-	public Training() throws IOException {
-		DATA = GameIO.readGamesForNetworkTraining();
+	public static void restartNeuralNetworks() throws IOException {
+		for (int i = 0; i < NETWORKS.length; i++) {
+			GameIO.saveNetwork(new NeuralNetwork(NETWORKS[i]));
+		}
 	}
 
-	public void train(int interations, int displayIntervals) throws IOException {
+	private static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> DATA;
+
+	public static void train(int interations, int displayIntervals) throws IOException {
+		DATA = GameIO.readGamesForNetworkTraining();
 		final LinkedList<NeuralNetwork> networks = new LinkedList<>();
 		for (int i = 0; i < NETWORKS.length; i++) {
 			networks.add(GameIO.loadNetwork(NETWORKS[i]));
@@ -46,7 +49,9 @@ public class Training {
 			if (t % displayInterval == 0 || t == interations) {
 				System.out.println("Cost at " + t + ":");
 				for (NeuralNetwork nn : networks) {
+					nn.calculate(winData().getKey());
 					System.out.println("W - " + nn + ":\t\t" + nn.cost(winData().getValue()));
+					nn.calculate(lossData().getKey());
 					System.out.println("L - " + nn + ":\t\t" + nn.cost(lossData().getValue()));
 				}
 			}
@@ -55,12 +60,14 @@ public class Training {
 				// reference -> no need to set again
 				weights = nn.getWeights();
 
+				nn.calculate(winData().getKey());
 				derivative = nn.costPrime(winData().getValue());
-
 				for (int w = 0; w < weights.length; w++) {
 					// win data -> move downhill -> negative derivative
 					weights[w] = weights[w].add(derivative[w].negative());
 				}
+
+				nn.calculate(lossData().getKey());
 				derivative = nn.costPrime(lossData().getValue());
 				for (int w = 0; w < weights.length; w++) {
 					// loss data -> move uphill -> positive derivative
@@ -68,15 +75,18 @@ public class Training {
 				}
 			}
 		}
+		for (NeuralNetwork nn : networks) {
+			GameIO.saveNetwork(nn);
+		}
 	}
 
 	// wrap because it makes more sense than <code>.getKey()</code>
-	private Pair<Matrix, Matrix> winData() {
+	private static Pair<Matrix, Matrix> winData() {
 		return DATA.getKey();
 	}
 
 	// wrap because it makes more sense than <code>.getValue()</code>
-	private Pair<Matrix, Matrix> lossData() {
+	private static Pair<Matrix, Matrix> lossData() {
 		return DATA.getValue();
 	}
 

@@ -1,5 +1,8 @@
 package ttt.agents;
 
+import static ttt.Program.HAVE_USER;
+import static ttt.Program.PLAYERS;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.LinkedList;
@@ -10,7 +13,6 @@ import ttt.Board;
 import ttt.Code;
 import ttt.Config;
 import ttt.Game;
-import ttt.Param;
 
 public class Server implements AutoCloseable, Runnable {
 
@@ -26,7 +28,7 @@ public class Server implements AutoCloseable, Runnable {
 	public Server(Game game, int port, Config config) throws IOException {
 		this.game = game;
 		this.config = config;
-		totalPlayers = config.get(Param.PLAYERS);
+		totalPlayers = config.get(PLAYERS);
 
 		server = new ServerSocket(port);
 		System.out.println(server);
@@ -40,7 +42,7 @@ public class Server implements AutoCloseable, Runnable {
 	public void run() {
 		try {
 			for (int i = 0; i < totalPlayers; i++) {
-				clients.offer(i == 0 && config.get(Param.HAVE_USER) > 0 ? new ClientUser() : new ClientWeb());
+				clients.offer(i == 0 && config.get(HAVE_USER) > 0 ? new ClientUser() : new ClientWeb());
 			}
 			System.out.println();
 			for (;; turn = (turn + 1) % totalPlayers) {
