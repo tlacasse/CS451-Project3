@@ -6,7 +6,7 @@ import java.util.Random;
 import javafx.util.Pair;
 import ttt.Board;
 
-public class Learning {
+public class Training {
 
 	public static final int[][] NETWORKS;
 
@@ -31,8 +31,12 @@ public class Learning {
 
 	private final Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> DATA;
 
-	public Learning() throws IOException {
+	public Training() throws IOException {
 		DATA = GameIO.readGamesForNetworkTraining();
+	}
+
+	public void train() {
+
 	}
 
 	// wrap because it makes more sense than <code>.getKey()</code>
