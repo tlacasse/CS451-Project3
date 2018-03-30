@@ -68,7 +68,8 @@ public class Player extends SocketSide {
 	}
 
 	public int[] choose() {
-		final Matrix out = nn.calculate(board.getBoard());
+		// row matrix
+		final Matrix out = nn.calculate(new Matrix(false, board.getDoubleArray()));
 		final double min = (double) Integer.MIN_VALUE;
 
 		int[] pos = null;

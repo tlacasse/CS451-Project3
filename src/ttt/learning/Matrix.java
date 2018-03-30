@@ -279,7 +279,6 @@ public class Matrix {
 		return m;
 	}
 
-	// would be useful for a classification problem
 	public int[] indexOfMax() {
 		int[] pos = new int[] { -1, -1 };
 		double max = (double) Integer.MIN_VALUE;

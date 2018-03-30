@@ -11,12 +11,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import javafx.util.Pair;
+import ttt.Board;
 import ttt.Game;
+import ttt.agents.Player;
 
 public final class GameIO {
 
 	public static final String DIRECTORY_NN = Paths.get("").toAbsolutePath().toString() + "\\data\\";
 	public static final String DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
+	public static final String DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
+	public static final String DIRECTORY_TRAINING = DIRECTORY_NN + "training\\";
 
 	public static void saveNetwork(NeuralNetwork nn) throws IOException {
 		final Matrix[] weights = nn.getWeights();
@@ -80,36 +85,51 @@ public final class GameIO {
 	}
 
 	public static void saveGame(Game game) throws IOException {
-		if (game == null) {
-			System.out.println("No Game File Written on Tie!");
-			return;
-		}
-		final String fileName = gameFileName();
+		final String fileName = gameFileName(game.hasWinner() ? DIRECTORY_GAMES : DIRECTORY_TIES);
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(game.toByteBuffer().array());
 		}
 		System.out.println("Game File Created: \"" + fileName + "\"");
 	}
 
-	public static List<Result> readGames() throws IOException {
+	public static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> readGamesForNetworkTraining() throws IOException {
 		final File directory = new File(DIRECTORY_GAMES);
-		LinkedList<Result> list = new LinkedList<>();
+		final Pair<List<double[]>, List<double[]>> win = new Pair<>(new LinkedList<>(), new LinkedList<>());
+		final Pair<List<double[]>, List<double[]>> lose = new Pair<>(new LinkedList<>(), new LinkedList<>());
 		for (File file : directory.listFiles()) {
 			try (FileInputStream fis = new FileInputStream(file); DataInputStream reader = new DataInputStream(fis)) {
-				final int players = reader.readInt();
+				final int playerCount = reader.readInt();
 				final int winner = reader.readInt();
-				final int count = reader.readInt();
-				final Result result = new Result(players, winner, count);
-				for (int i = 0; i < count; i++) {
-					final int player = reader.readInt();
-					final int x = reader.readInt();
-					final int y = reader.readInt();
-					result.addMove(player, x, y);
+				final int moveCount = reader.readInt();
+				for (int player = 0; player < playerCount; player++) {
+					final Board board = new Board(false);
+					for (int i = 0; i < moveCount; i++) {
+						final boolean moveIsCurrentPlayer = (reader.readInt() == player);
+						final boolean playerIsWinner = (winner == player);
+						final int moveX = reader.readInt();
+						final int moveY = reader.readInt();
+						if (moveIsCurrentPlayer) {
+							(playerIsWinner ? win : lose).getKey().add(board.getDoubleArray()); // input
+							board.set(moveX, moveY, Player.SELF);
+							(playerIsWinner ? win : lose).getValue().add(createDesiredArray(moveX, moveY)); // output
+						} else {
+							board.set(moveX, moveY, Player.OTHER);
+						}
+					}
 				}
-				list.add(result);
 			}
 		}
-		return list;
+		return new Pair<>(
+				new Pair<>(new Matrix(win.getKey().toArray(new double[win.getKey().size()][Board.CELLS])),
+						new Matrix(win.getValue().toArray(new double[win.getValue().size()][Board.CELLS]))),
+				new Pair<>(new Matrix(lose.getKey().toArray(new double[lose.getKey().size()][Board.CELLS])),
+						new Matrix(lose.getValue().toArray(new double[lose.getValue().size()][Board.CELLS]))));
+	}
+
+	private static double[] createDesiredArray(int x, int y) {
+		final double[] result = new double[Board.CELLS];
+		result[Board.coordToOrdinal(x, y)] = 1.0;
+		return result;
 	}
 
 	private static String nnFileName(int... nodes) {
@@ -122,8 +142,8 @@ public final class GameIO {
 		return sb.toString();
 	}
 
-	private static String gameFileName() {
-		final StringBuilder sb = new StringBuilder(DIRECTORY_GAMES);
+	private static String gameFileName(String directory) {
+		final StringBuilder sb = new StringBuilder(directory);
 		sb.append(UUID.randomUUID().toString());
 		sb.append(".game");
 		return sb.toString();

@@ -22,21 +22,24 @@ public class Board {
 		isServer = isServerImplementation;
 	}
 
-	public Matrix getBoard() {
-		// row matrix
-		return new Matrix(false, matrix);
+	public double[] getDoubleArray() {
+		return matrix;
 	}
 
 	public boolean isFull() {
 		return moves == CELLS;
 	}
 
+	
 	public boolean isSpaceEmpty(int x, int y) {
 		return board[x][y] == EMPTY;
 	}
 
 	public void set(int x, int y, int val) {
 		val = isServer ? val + 1 : val;
+		if (!isSpaceEmpty(x, y)) {
+			throw new IllegalStateException(x + "," + y);
+		}
 		board[x][y] = val;
 		matrix[coordToOrdinal(x, y)] = (double) val;
 		moves++;

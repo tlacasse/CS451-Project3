@@ -1,7 +1,9 @@
 package ttt.learning;
 
+import java.io.IOException;
 import java.util.Random;
 
+import javafx.util.Pair;
 import ttt.Board;
 
 public class Learning {
@@ -23,8 +25,24 @@ public class Learning {
 
 	private static final Random RANDOM = new Random();
 
-	public static NeuralNetwork pickRandomNN() {
-		return new NeuralNetwork(NETWORKS[RANDOM.nextInt(8)]);
+	public static NeuralNetwork pickRandomNN() throws IOException {
+		return GameIO.loadNetwork(NETWORKS[RANDOM.nextInt(8)]);
+	}
+
+	private final Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> DATA;
+
+	public Learning() throws IOException {
+		DATA = GameIO.readGamesForNetworkTraining();
+	}
+
+	// wrap because it makes more sense than <code>.getKey()</code>
+	private Pair<Matrix, Matrix> winData() {
+		return DATA.getKey();
+	}
+
+	// wrap because it makes more sense than <code>.getValue()</code>
+	private Pair<Matrix, Matrix> lossData() {
+		return DATA.getValue();
 	}
 
 }

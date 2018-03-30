@@ -37,6 +37,10 @@ public class Game {
 		this.winner = winner;
 	}
 
+	public boolean hasWinner() {
+		return winner != -1;
+	}
+
 	public ByteBuffer toByteBuffer() {
 		ByteBuffer buffer = ByteBuffer.allocate((Integer.BYTES * 3) + (MOVE_SIZE * count));
 		buffer.putInt(players);
