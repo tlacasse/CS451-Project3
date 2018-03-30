@@ -64,8 +64,7 @@ public class Server implements AutoCloseable, Runnable {
 						other.flush();
 					}
 					final boolean isWin = board.isWin(turn, x, y);
-					final boolean isFull = board.isFull();
-					if (isWin || isFull) {
+					if (isWin || board.isFull()) {
 						final byte code = isWin ? Code.GAME_DONE : Code.FULL_BOARD;
 						clients.offer(active);
 						for (Client client : clients) {

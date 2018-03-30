@@ -1,11 +1,14 @@
 package ttt.learning;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import ttt.Game;
@@ -86,6 +89,27 @@ public final class GameIO {
 			fos.write(game.toByteBuffer().array());
 		}
 		System.out.println("Game File Created: \"" + fileName + "\"");
+	}
+
+	public static List<Result> readGames() throws IOException {
+		final File directory = new File(DIRECTORY_GAMES);
+		LinkedList<Result> list = new LinkedList<>();
+		for (File file : directory.listFiles()) {
+			try (FileInputStream fis = new FileInputStream(file); DataInputStream reader = new DataInputStream(fis)) {
+				final int players = reader.readInt();
+				final int winner = reader.readInt();
+				final int count = reader.readInt();
+				final Result result = new Result(players, winner, count);
+				for (int i = 0; i < count; i++) {
+					final int player = reader.readInt();
+					final int x = reader.readInt();
+					final int y = reader.readInt();
+					result.addMove(player, x, y);
+				}
+				list.add(result);
+			}
+		}
+		return list;
 	}
 
 	private static String nnFileName(int... nodes) {
