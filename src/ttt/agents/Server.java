@@ -133,11 +133,13 @@ public class Server implements AutoCloseable, Runnable {
 
 		private final Scanner scan;
 		private boolean askSecond;
+		private boolean display;
 		private int save;
 
 		public ClientUser() {
 			this.scan = config.getScanner();
 			askSecond = false;
+			display = false;
 			save = -1;
 		}
 
@@ -148,17 +150,22 @@ public class Server implements AutoCloseable, Runnable {
 
 		@Override
 		public void flush() throws IOException {
-			System.out.println(board);
+			if (display) {
+				System.out.println(board);
+				display = false;
+			}
 		}
 
 		@Override
 		public void writeInt(int x) throws IOException {
-			// nothing to receive, everything is in Server class
+			// nothing to receive
 		}
 
 		@Override
 		public void writeByte(byte x) throws IOException {
-			// nothing to receive, everything is in Server class
+			if (x == Code.TURN) {
+				display = true;
+			}
 		}
 
 		@Override

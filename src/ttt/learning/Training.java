@@ -41,7 +41,7 @@ public class Training {
 		for (int i = 0; i < NETWORKS.length; i++) {
 			networks.add(GameIO.loadNetwork(NETWORKS[i]));
 		}
-		int displayInterval = interations / displayIntervals;
+		final int displayInterval = interations / displayIntervals;
 		for (int t = 1; t <= interations; t++) {
 			if (t % displayInterval == 0 || t == interations) {
 				System.out.println("Cost at " + t + ":");
