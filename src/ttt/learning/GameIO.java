@@ -101,25 +101,21 @@ public final class GameIO {
 		final Pair<List<double[]>, List<double[]>> win = new Pair<>(new LinkedList<>(), new LinkedList<>());
 		final Pair<List<double[]>, List<double[]>> lose = new Pair<>(new LinkedList<>(), new LinkedList<>());
 		for (File file : directory.listFiles()) {
-			try (FileInputStream fis = new FileInputStream(file); DataInputStream reader = new DataInputStream(fis)) {
-				final int playerCount = reader.readInt();
-				final int winner = reader.readInt();
-				final int moveCount = reader.readInt();
-				for (int player = 0; player < playerCount; player++) {
-					final Board board = new Board(false);
-					for (int i = 0; i < moveCount; i++) {
-						final boolean moveIsCurrentPlayer = (reader.readInt() == player);
-						final boolean playerIsWinner = (winner == player);
-						final int moveX = reader.readInt();
-						final int moveY = reader.readInt();
-						if (moveIsCurrentPlayer) {
-							(playerIsWinner ? win : lose).getKey().add(board.getDoubleArray()); // input
-							board.set(moveX, moveY, Player.SELF);
-							(playerIsWinner ? win : lose).getValue().add(createDesiredArray(moveX, moveY)); // output
-						} else {
-							board.set(moveX, moveY, Player.OTHER);
-						}
+			final Result game = new Result(file);
+			for (int player = 0; player < game.players; player++) {
+				final Board board = new Board(false);
+				final boolean playerIsWinner = (game.winner == player);
+				for (int move = 0; move < game.count; move++) {
+					final int moveX = game.getMoveX(move);
+					final int moveY = game.getMoveY(move);
+					if (game.getMovePlayer(move) == player) {
+						(playerIsWinner ? win : lose).getKey().add(board.getDoubleArray());
+						(playerIsWinner ? win : lose).getValue().add(createDesiredArray(moveX, moveY));
+						board.set(moveX, moveY, Player.SELF);
+					} else {
+						board.set(moveX, moveY, Player.OTHER);
 					}
+
 				}
 			}
 		}
@@ -151,6 +147,38 @@ public final class GameIO {
 		sb.append(UUID.randomUUID().toString());
 		sb.append(".game");
 		return sb.toString();
+	}
+
+	private static class Result {
+
+		public final int players, winner, count;
+		private final int[][] moves;
+
+		public Result(File file) throws IOException {
+			try (FileInputStream fis = new FileInputStream(file); DataInputStream reader = new DataInputStream(fis)) {
+				players = reader.readInt();
+				winner = reader.readInt();
+				count = reader.readInt();
+				moves = new int[count][3];
+				for (int i = 0; i < count; i++) {
+					moves[i][0] = reader.readInt();
+					moves[i][1] = reader.readInt();
+					moves[i][2] = reader.readInt();
+				}
+			}
+		}
+
+		public int getMovePlayer(int move) {
+			return moves[move][0];
+		}
+
+		public int getMoveX(int move) {
+			return moves[move][1];
+		}
+
+		public int getMoveY(int move) {
+			return moves[move][2];
+		}
 	}
 
 	private GameIO() {

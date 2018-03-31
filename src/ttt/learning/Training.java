@@ -40,6 +40,9 @@ public class Training {
 
 	public static void train(int interations, int displayIntervals) throws IOException {
 		DATA = GameIO.readGamesForNetworkTraining();
+		System.out.println("Win Training Data Points: " + winData().getKey().rows());
+		System.out.println("Loss Training Data Points: " + lossData().getKey().rows());
+
 		final LinkedList<NeuralNetwork> networks = new LinkedList<>();
 		for (int i = 0; i < NETWORKS.length; i++) {
 			networks.add(GameIO.loadNetwork(NETWORKS[i]));
@@ -70,8 +73,9 @@ public class Training {
 				nn.calculate(lossData().getKey());
 				derivative = nn.costPrime(lossData().getValue());
 				for (int w = 0; w < weights.length; w++) {
-					// loss data -> move uphill -> positive derivative
-					weights[w] = weights[w].add(derivative[w]);
+					// loss data -> move uphill -> positive derivative (but
+					// don't change as much)
+					weights[w] = weights[w].add(derivative[w].scalar(0.5));
 				}
 			}
 		}
