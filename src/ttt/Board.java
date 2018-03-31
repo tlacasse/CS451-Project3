@@ -33,10 +33,10 @@ public class Board {
 	}
 
 	public void set(int x, int y, int val) {
-		val = isServer ? val + 1 : val;
 		if (!isSpaceEmpty(x, y)) {
 			throw new IllegalStateException(x + "," + y);
 		}
+		val = isServer ? val + 1 : val;
 		board[x][y] = val;
 		matrix[coordToOrdinal(x, y)] = (double) val;
 		moves++;

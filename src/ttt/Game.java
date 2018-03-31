@@ -22,11 +22,11 @@ public class Game {
 	private int count;
 	private int players;
 
-	private Game() {
+	public Game(int players) {
+		this.players = players;
 		moves = new LinkedList<>();
 		count = 0;
 		winner = -1;
-		players = -1;
 	}
 
 	public void recordMove(int player, int x, int y) {
@@ -56,8 +56,7 @@ public class Game {
 	}
 
 	public static void start(int port, Config config) throws IOException {
-		Game game = new Game();
-		game.players = config.get(PLAYERS);
+		final Game game = new Game(config.get(PLAYERS));
 		try (Server server = new Server(game, port, config)) {
 			final ArrayList<Thread> threads = new ArrayList<>();
 			final Thread serverThread = new Thread(server);

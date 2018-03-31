@@ -23,7 +23,7 @@ public final class GameIO {
 	public static final String DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
 	public static final String DIRECTORY_TRAINING = DIRECTORY_NN + "training\\";
 
-	public static void saveNetwork(NeuralNetwork nn) throws IOException {
+	public static File saveNetwork(NeuralNetwork nn) throws IOException {
 		final Matrix[] weights = nn.getWeights();
 		final int[] nodes = new int[weights.length + 1];
 		int bufferSize = Integer.BYTES;
@@ -54,6 +54,7 @@ public final class GameIO {
 			fos.write(buffer.array());
 		}
 		System.out.println("Neural Network Saved: \"" + fileName + "\"");
+		return new File(fileName);
 	}
 
 	public static NeuralNetwork loadNetwork(int... nameNodes) throws IOException {
@@ -86,12 +87,13 @@ public final class GameIO {
 		return nn;
 	}
 
-	public static void saveGame(Game game) throws IOException {
+	public static File saveGame(Game game) throws IOException {
 		final String fileName = gameFileName(game.hasWinner() ? DIRECTORY_GAMES : DIRECTORY_TIES);
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(game.toByteBuffer().array());
 		}
 		System.out.println("Game File Created: \"" + fileName + "\"");
+		return new File(fileName);
 	}
 
 	public static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> readGamesForNetworkTraining() throws IOException {
