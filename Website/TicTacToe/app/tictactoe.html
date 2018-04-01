@@ -1,1 +1,11 @@
-﻿<h2>{{vm.test}}</h2>
+﻿<div id="board">
+    <table>
+        <tr ng-repeat="y in vm.array">
+            <td ng-repeat="x in vm.array">
+                <div ng-class="vm.class[x][y]">
+
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
