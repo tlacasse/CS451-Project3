@@ -1,0 +1,24 @@
+{
+  "name": "tictactoe",
+  "version": "1.0.0",
+  "description": "game",
+  "main": "index.html",
+  "dependencies": {},
+  "devDependencies": {
+    "@uirouter/angularjs": "^1.0.13",
+    "gulp": "^4.0.0",
+    "gulp-angular-filesort": "^1.1.1",
+    "gulp-clean-css": "^3.9.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-inject": "^4.3.0",
+    "gulp-noop": "^1.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-uglify": "^3.0.0",
+    "minimist": "^1.2.0"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "author": "tlacasse"
+}
