@@ -1,0 +1,15 @@
+﻿<div class="message-box" ng-show="controller.message.show">
+    <div class="message-box-title">
+        <button class="message-box-button" ng-click="controller.message.show=false;">X</button>
+    </div>
+    <div class="message-box-detail">
+        <div class="message-box-pairs" ng-repeat="pair in controller.message.detail">
+            <div class="message-box-key">
+                {{pair[0]}}
+            </div>
+            <div class="message-box-value">
+                {{pair[1]}}
+            </div>
+        </div>
+    </div>
+</div>
