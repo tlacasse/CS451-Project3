@@ -11,7 +11,19 @@ public final class Program {
 
 	public static final int PORT = 6327;
 
+	private static void runMultiple(int num) throws IOException {
+		Config config;
+		try (Scanner scan = new Scanner(System.in)) {
+			config = Config.create(scan, KEYS_GAME);
+		}
+		for (int i = 0; i < num; i++) {
+			Game.start(PORT, config);
+		}
+		System.exit(0);
+	}
+
 	public static void main(String[] args) throws IOException {
+		runMultiple(500);
 		try (Scanner scan = new Scanner(System.in)) {
 			System.out.println("??? Train Neural Networks? (y/n)");
 			if (isYes(scan.nextLine())) {
@@ -20,7 +32,8 @@ public final class Program {
 					Training.restartNeuralNetworks();
 				}
 				final Config config = Config.create(scan, KEYS_TRAINING);
-				Training.train(config.get(TRAINING_ITERATIONS), config.get(TRAINING_DISPLAY_INTERVALS));
+				Training.train(config.get(TRAINING_ITERATIONS), config.get(TRAINING_DISPLAY_INTERVALS),
+						config.get(TRAINING_USE_LOSS) > 0);
 			}
 			System.out.println("??? Run Tic Tac Toe? (y/n)");
 			if (isYes(scan.nextLine())) {
@@ -44,15 +57,16 @@ public final class Program {
 
 	public static final Config.Key PLAYERS = new Config.Key("Players", 2);
 	public static final Config.Key HAVE_USER = new Config.Key("Have a User Input player", 0, true);
-	public static final Config.Key TRAINING_ITERATIONS = new Config.Key("Training Iterations", 1000);
+	public static final Config.Key TRAINING_ITERATIONS = new Config.Key("Training Iterations", 500);
 	public static final Config.Key TRAINING_DISPLAY_INTERVALS = new Config.Key(
 			"Number of Display Intervals while Training", 10);
+	public static final Config.Key TRAINING_USE_LOSS = new Config.Key("Use Losses to 'unlearn'", 1, true);
 
 	private static final List<Config.Key> KEYS_GAME, KEYS_TRAINING;
 
 	static {
 		KEYS_GAME = defineList(PLAYERS, HAVE_USER);
-		KEYS_TRAINING = defineList(TRAINING_ITERATIONS, TRAINING_DISPLAY_INTERVALS);
+		KEYS_TRAINING = defineList(TRAINING_ITERATIONS, TRAINING_DISPLAY_INTERVALS, TRAINING_USE_LOSS);
 	}
 
 	private static boolean isYes(String line) {

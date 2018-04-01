@@ -38,27 +38,24 @@ public class Training {
 
 	private static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> DATA;
 
-	public static void train(int interations, int displayIntervals) throws IOException {
+	public static void train(int interations, int displayIntervals, boolean useLosses) throws IOException {
 		DATA = GameIO.readGamesForNetworkTraining();
 		System.out.println("Win Training Data Points: " + winData().getKey().rows());
 		System.out.println("Loss Training Data Points: " + lossData().getKey().rows());
+		System.out.println();
 
 		final LinkedList<NeuralNetwork> networks = new LinkedList<>();
 		for (int i = 0; i < NETWORKS.length; i++) {
 			networks.add(GameIO.loadNetwork(NETWORKS[i]));
 		}
 		final int displayInterval = interations / displayIntervals;
-		for (int t = 1; t <= interations; t++) {
-			if (t % displayInterval == 0 || t == interations) {
-				System.out.println("Cost at " + t + ":");
-				for (NeuralNetwork nn : networks) {
+		for (NeuralNetwork nn : networks) {
+			for (int t = 1; t <= interations; t++) {
+				if (t % displayInterval == 0 || t == interations) {
 					nn.calculate(winData().getKey());
-					System.out.println("W - " + nn + ":\t\t" + nn.cost(winData().getValue()));
-					nn.calculate(lossData().getKey());
-					System.out.println("L - " + nn + ":\t\t" + nn.cost(lossData().getValue()));
+					System.out.println("Cost at " + t + ":\t" + nn.cost(winData().getValue()));
 				}
-			}
-			for (NeuralNetwork nn : networks) {
+
 				Matrix[] derivative, weights;
 				// reference -> no need to set again
 				weights = nn.getWeights();
@@ -69,15 +66,17 @@ public class Training {
 					// win data -> move downhill -> negative derivative
 					weights[w] = weights[w].add(derivative[w].negative());
 				}
-
-				nn.calculate(lossData().getKey());
-				derivative = nn.costPrime(lossData().getValue());
-				for (int w = 0; w < weights.length; w++) {
-					// loss data -> move uphill -> positive derivative (but
-					// don't change as much)
-					weights[w] = weights[w].add(derivative[w].scalar(0.5));
+				if (useLosses) {
+					nn.calculate(lossData().getKey());
+					derivative = nn.costPrime(lossData().getValue());
+					for (int w = 0; w < weights.length; w++) {
+						// loss data -> move uphill -> positive derivative (but
+						// don't change as much)
+						weights[w] = weights[w].add(derivative[w].scalar(0.5));
+					}
 				}
 			}
+			System.out.println();
 		}
 		for (NeuralNetwork nn : networks) {
 			GameIO.saveNetwork(nn);
