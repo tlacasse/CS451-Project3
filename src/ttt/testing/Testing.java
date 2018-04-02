@@ -12,7 +12,10 @@ import ttt.learning.GameIO;
 import ttt.learning.Matrix;
 import ttt.learning.NeuralNetwork;
 
-public class Testing {
+final class Testing {
+
+	private Testing() {
+	}
 
 	private static class TestingException extends RuntimeException {
 
