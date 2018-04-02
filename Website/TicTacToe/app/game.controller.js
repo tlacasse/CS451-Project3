@@ -4,8 +4,9 @@
     angular
         .module('tttModule')
 
-        .controller('gameController', ['$http'
-                , function ($http) {
+        .controller('gameController', ['$http', '$filter'
+                , function ($http, $filter) {
+
             var vm = this;
 
             function getArray(n) {
@@ -27,6 +28,11 @@
                 }
             }
 
+            vm.message = {
+                show: false,
+                detail: ''
+            }
+
             vm.size = 13;
             vm.array = getArray(vm.size);
 
@@ -34,6 +40,18 @@
 
             vm.state = getArray2d(vm.size, 0);
             vm.class = getArray2d(vm.size, "");
+
+            vm.postMove = function (xx, yy) {
+                console.log("send");
+                $http.post('/api/post/move', { x: xx, y: yy }
+                ).then(function (data) {
+                    console.log("done!");
+                }, function (data) {
+                    console.log("fail");
+                    vm.message.show = true;
+                    vm.message.detail = $filter('objectToArray')(angular.fromJson(data).data);
+                });
+            }
 
 
         }]);

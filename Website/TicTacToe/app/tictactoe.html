@@ -2,7 +2,7 @@
     <table>
         <tr ng-repeat="y in vm.array">
             <td ng-repeat="x in vm.array">
-                <div ng-class="vm.class[x][y]">
+                <div ng-class="vm.class[x][y]" ng-click="vm.postMove(x,y)">
 
                 </div>
             </td>
