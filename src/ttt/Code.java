@@ -11,6 +11,10 @@ public final class Code {
 	public static final byte MOVE = 3;
 	public static final byte FULL_BOARD = 4;
 
+	// only for Website
+	public static final byte FIRST_PLAYER = 5;
+	public static final byte START_GAME = 6;
+
 	private Code() {
 
 	}

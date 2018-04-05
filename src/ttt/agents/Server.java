@@ -14,7 +14,7 @@ import ttt.Code;
 import ttt.Config;
 import ttt.Game;
 
-public class Server implements AutoCloseable, Runnable {
+public class Server extends ServerLoop implements AutoCloseable, Runnable {
 
 	private final ServerSocket server;
 	private final Queue<Client> clients;
@@ -46,48 +46,12 @@ public class Server implements AutoCloseable, Runnable {
 			}
 			System.out.println();
 			for (;; turn = (turn + 1) % totalPlayers) {
-				final Client active = clients.poll();
-				System.out.println("Turn: " + turn);
-				active.writeByte(Code.TURN);
-				active.flush();
-
-				final byte mode = active.readByte();
-				switch (mode) {
-				case Code.MOVE:
-					final int x = active.readInt();
-					final int y = active.readInt();
-					board.set(x, y, turn);
-					game.recordMove(turn, x, y);
-					System.out.println("Move: " + x + ", " + y);
-					for (Client other : clients) {
-						other.writeByte(Code.OTHER_PLAYER_MOVE);
-						other.writeInt(x);
-						other.writeInt(y);
-						other.flush();
-					}
-					final boolean isWin = board.isWin(turn, x, y);
-					if (isWin || board.isFull()) {
-						final byte code = isWin ? Code.GAME_DONE : Code.FULL_BOARD;
-						clients.offer(active);
-						for (Client client : clients) {
-							client.writeByte(code);
-							client.flush();
-						}
-						if (isWin) {
-							game.setWinner(turn);
-							System.out.println("Winner: " + turn);
-						}
-						return;
-					}
-					break;
-				default:
-					throw new UnsupportedOperationException("Code: " + mode);
-				}
-				clients.offer(active);
+				processClient(game, board, clients, turn);
 			}
-		} catch (IOException | UnsupportedOperationException e) {
+		} catch (EndGameException ege) {
+		} catch (IOException | UnsupportedOperationException ioeuoe) {
 			System.out.println("Thread Failed: " + this);
-			e.printStackTrace();
+			ioeuoe.printStackTrace();
 		}
 	}
 
