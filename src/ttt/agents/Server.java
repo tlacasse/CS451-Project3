@@ -111,7 +111,7 @@ public class Server extends ServerLoop implements AutoCloseable, Runnable {
 
 		@Override
 		public void close() throws IOException {
-			// nothing to close
+			// nothing
 		}
 
 		@Override
@@ -124,7 +124,7 @@ public class Server extends ServerLoop implements AutoCloseable, Runnable {
 
 		@Override
 		public void writeInt(int x) throws IOException {
-			// nothing to receive
+			// nothing
 		}
 
 		@Override
@@ -169,7 +169,7 @@ public class Server extends ServerLoop implements AutoCloseable, Runnable {
 
 		@Override
 		public byte readByte() throws IOException {
-			return (byte) Code.MOVE;
+			return Code.MOVE;
 		}
 
 	}

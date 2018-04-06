@@ -39,28 +39,8 @@ final class WebServer extends ServerLoop {
 		totalPlayers = 0;
 
 		havePlayers = false;
-
 		lock = new Semaphore(0);
-		final Thread listener = new Thread(new Listener());
-		listener.start();
-
-		try {
-			lock.acquire(); // semaphore used just for waiting
-			WebClient first = clients.peek();
-			first.writeByte(Code.FIRST_PLAYER);
-			first.flush();
-			first.readByte(); // doesn't matter what it is
-			havePlayers = true;
-			listener.join();
-			for (WebClient client : clients) {
-				if (client != first) {
-					client.writeByte(Code.START_GAME);
-					client.flush();
-				}
-			}
-		} catch (InterruptedException ie) {
-			ie.printStackTrace();
-		}
+		collectClients();
 
 		final Game game = new Game(totalPlayers);
 		final Board board = new Board(true);
@@ -77,6 +57,22 @@ final class WebServer extends ServerLoop {
 		server.close();
 	}
 
+	private void collectClients() throws IOException {
+		final Thread listener = new Thread(new Listener());
+		listener.start();
+		try {
+			lock.acquire(); // semaphore used just for waiting
+			WebClient first = clients.peek();
+			first.writeByte(Code.FIRST_PLAYER);
+			first.flush();
+			first.readByte(); // doesn't matter what it is
+			havePlayers = true;
+			listener.join();
+		} catch (InterruptedException ie) {
+			ie.printStackTrace();
+		}
+	}
+
 	private final class Listener implements Runnable {
 		@Override
 		public void run() {
@@ -91,6 +87,9 @@ final class WebServer extends ServerLoop {
 							client.writeByte(Code.FIRST_PLAYER);
 							client.flush();
 							lock.release();
+						} else {
+							client.writeByte(Code.CONNECTED);
+							client.flush();
 						}
 					}
 				} catch (IOException ioe) {

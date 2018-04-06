@@ -17,6 +17,7 @@ namespace TicTacToe.Controllers {
 
 		private static readonly byte FIRST_PLAYER = 5;
 		private static readonly byte START_GAME = 6;
+		private static readonly byte CONNECTED = 7;
 
 		[HttpGet]
 		[Route("connect")]
