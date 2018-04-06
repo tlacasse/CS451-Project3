@@ -4,13 +4,14 @@
     angular
         .module('tttModule')
 
-        .controller('gameController', ['$http', '$filter'
-                , function ($http, $filter) {
+        .controller('gameController', ['$http', '$filter', '$timeout'
+                , function ($http, $filter, $timeout) {
 
             var vm = this;
 
             var FIRST_PLAYER = 5;
             var START_GAME = 6;
+            var CONNECTED = 7;
 
             function getArray(n) {
                 var a = [];
@@ -36,6 +37,23 @@
                 vm.message.detail = $filter('objectToArray')(angular.fromJson(data).data);
             }
 
+            function addLog(str) {
+                vm.log = str + '<br>' + vm.log;
+                document.getElementById('log').innerHTML = vm.log;
+            }
+
+            function getStatus() {
+                $http.get('/api/status'
+                ).then(function (data) {
+
+                }, function (data) {
+                    showError(data);
+                    if (!vm.gameDone) {
+                        $timeout(getStatus, 1000);
+                    }
+                });
+            }
+
             vm.message = {
                 show: false,
                 detail: ''
@@ -48,19 +66,26 @@
 
             vm.inGame = false;
             vm.firstPlayerGo = false;
+            vm.gameDone = false;
 
             vm.state = getArray2d(vm.size, 0);
             vm.class = getArray2d(vm.size, "");
 
+            vm.log = "";
+
+            vm.isTurn = false;
+
             vm.connect = function () {
                 $http.get('/api/connect'
                 ).then(function (data) {
+                    addLog('Connected To Game.');
                     var mode = parseInt(angular.fromJson(data).data);
                     switch (mode) {
                         case FIRST_PLAYER:
                             vm.firstPlayerGo = true;
+                            addLog('You are first player, continue when everyone is ready.');
                             break;
-                        case START_GAME:
+                        case CONNECTED:
                             vm.inGame = true;
                             break;
                     }
@@ -79,14 +104,18 @@
                 });
             }
 
-           /* vm.postMove = function (xx, yy) {
-                $http.post('/api/move', { x: xx, y: yy }
-                ).then(function (data) {
-                    console.log("done!");
-                }, function (data) {
-                    showError(data);
-                });
-            }*/
+            vm.postMove = function (xx, yy) {
+                if (vm.isTurn) {
+                    $http.post('/api/move', { x: xx, y: yy }
+                    ).then(function (data) {
+                        addLog('Sent Move (' + String(xx) + ',' + String(yy) + '.');
+                    }, function (data) {
+                        showError(data);
+                    });
+                } else {
+                    addLog('It is not your turn.');
+                }
+            }
 
 
         }]);

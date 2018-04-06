@@ -76,6 +76,10 @@ namespace TicTacToe.Controllers {
 			return BitConverter.ToInt32(bytes, 0);
 		}
 
+		public static bool hasData() {
+			return socket.Available > 0;
+		}
+
 	}
 
 }

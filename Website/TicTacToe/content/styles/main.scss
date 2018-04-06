@@ -8,6 +8,12 @@ body {
     padding: 0px;
 }
 
+#log {
+    position: absolute;
+    top: $outside + $board-pixels;
+    color: #ffffff;
+}
+
 #board {
     position: absolute;
     top: $outside;
@@ -31,7 +37,7 @@ body {
     background-color: #016c81;
 }
 
-#start-button{
+#start-button {
     background-color: #7ed018;
 }
 
