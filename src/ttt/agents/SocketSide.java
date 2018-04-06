@@ -41,7 +41,9 @@ public abstract class SocketSide implements AutoCloseable, SocketReadWrite {
 	public void close() throws IOException {
 		reader.close();
 		writer.close();
-		socket.close();
+		if (!socket.isClosed()) {
+			socket.close();
+		}
 	}
 
 	@Override

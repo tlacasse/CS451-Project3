@@ -1,13 +1,9 @@
 package ttt.web;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.SocketTimeoutException;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
-import ttt.Board;
 import ttt.Code;
 import ttt.Game;
 import ttt.agents.ServerBase;
@@ -18,53 +14,30 @@ final class WebServer extends ServerBase {
 
 	public static final int PORT = 98;
 
+	@SuppressWarnings("resource") // IDE can't figure out that this is being
+									// closed
 	public static void main(String[] args) throws IOException {
-		new WebServer();
+		(new WebServer()).collectClients().start().close();
 	}
 
 	private boolean havePlayers;
-	private final Semaphore lock;
-
-	private final ServerSocket server;
-	private final Queue<WebClient> clients;
-
 	private int totalPlayers;
 
 	private WebServer() throws IOException {
-		server = new ServerSocket(PORT);
+		super(new Game(-1), PORT); // set game player count later
 		server.setSoTimeout(1000);
-		System.out.println(server);
 
-		clients = new LinkedList<>();
 		totalPlayers = 0;
-
 		havePlayers = false;
-		lock = new Semaphore(0);
-		collectClients();
-
-		final Game game = new Game(totalPlayers);
-		final Board board = new Board(true);
-		int turn = 0;
-
-		try {
-			for (;; turn = (turn + 1) % totalPlayers) {
-				processClient(game, board, clients, turn);
-			}
-		} catch (EndGameException ege) {
-		}
-
-		for (WebClient client : clients) {
-			client.close();
-		}
-		server.close();
 	}
 
-	private void collectClients() throws IOException {
-		final Thread listener = new Thread(new Listener());
+	private WebServer collectClients() throws IOException {
+		final Semaphore lock = new Semaphore(0);
+		final Thread listener = new Thread(new Listener(lock));
 		listener.start();
 		try {
 			lock.acquire(); // semaphore used just for waiting
-			WebClient first = clients.peek();
+			Client first = clients.peek();
 			first.writeByte(Code.FIRST_PLAYER);
 			first.flush();
 			first.readByte(); // doesn't matter what it is
@@ -73,9 +46,28 @@ final class WebServer extends ServerBase {
 		} catch (InterruptedException ie) {
 			ie.printStackTrace();
 		}
+		return this;
+	}
+
+	private WebServer start() throws IOException {
+		game.setPlayerCount(totalPlayers);
+		try {
+			for (;; turn = (turn + 1) % totalPlayers) {
+				processClient();
+			}
+		} catch (EndGameException ege) {
+		}
+		return this;
 	}
 
 	private final class Listener implements Runnable {
+
+		private final Semaphore lock;
+
+		public Listener(Semaphore lock) {
+			this.lock = lock;
+		}
+
 		@Override
 		public void run() {
 			while (!havePlayers) {
@@ -101,7 +93,7 @@ final class WebServer extends ServerBase {
 		}
 	}
 
-	private final class WebClient extends SocketSide {
+	private final class WebClient extends SocketSide implements Client {
 
 		boolean connected;
 
@@ -123,4 +115,5 @@ final class WebServer extends ServerBase {
 		}
 
 	}
+
 }

@@ -4,9 +4,6 @@ import static ttt.Program.HAVE_USER;
 import static ttt.Program.PLAYERS;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Scanner;
 
 import ttt.Board;
@@ -16,37 +13,24 @@ import ttt.Game;
 
 public class Server extends ServerBase implements AutoCloseable, Runnable {
 
-	private final ServerSocket server;
-	private final Queue<Client> clients;
-	private final Board board;
-	private final Game game;
 	private final Config config;
 	private final int totalPlayers;
 
-	private int turn;
-
 	public Server(Game game, int port, Config config) throws IOException {
-		this.game = game;
+		super(game, port);
 		this.config = config;
 		totalPlayers = config.get(PLAYERS);
-
-		server = new ServerSocket(port);
-		System.out.println(server);
-
-		clients = new LinkedList<Client>();
-		board = new Board(true);
-		turn = 0;
 	}
 
 	@Override
 	public void run() {
 		try {
 			for (int i = 0; i < totalPlayers; i++) {
-				clients.offer(i == 0 && config.get(HAVE_USER) > 0 ? new ClientUser() : new ClientWeb());
+				clients.offer(i == 0 && config.get(HAVE_USER) > 0 ? new ClientUser() : new ClientSocket());
 			}
 			System.out.println();
 			for (;; turn = (turn + 1) % totalPlayers) {
-				processClient(game, board, clients, turn);
+				processClient();
 			}
 		} catch (EndGameException ege) {
 		} catch (IOException | UnsupportedOperationException ioeuoe) {
@@ -55,33 +39,13 @@ public class Server extends ServerBase implements AutoCloseable, Runnable {
 		}
 	}
 
-	@Override
-	public void close() throws IOException {
-		for (Client client : clients) {
-			if (client != null) {
-				client.close();
-			}
-		}
-		server.close();
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////
-	/* Nested classes to allow access to private Server variables. */
-
-	// type representing Clients, to allow a "user" Client
-	private interface Client extends SocketReadWrite {
-	}
-
-	// private static int clientIdInc = 0;
 
 	// normal IPC Player Client
-	private class ClientWeb extends SocketSide implements Client {
+	private class ClientSocket extends SocketSide implements Client {
 
-		// private final int id;
-
-		public ClientWeb() throws IOException {
+		public ClientSocket() throws IOException {
 			super();
-			// id = clientIdInc++;
 		}
 
 		@Override

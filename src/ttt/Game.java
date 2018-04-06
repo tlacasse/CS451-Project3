@@ -29,6 +29,10 @@ public class Game {
 		winner = -1;
 	}
 
+	public void setPlayerCount(int players) {
+		this.players = players;
+	}
+
 	public void recordMove(int player, int x, int y) {
 		moves.add(player);
 		moves.add(x);

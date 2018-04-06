@@ -1,16 +1,35 @@
 package ttt.agents;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.LinkedList;
 import java.util.Queue;
 
 import ttt.Board;
 import ttt.Code;
 import ttt.Game;
 
-public abstract class ServerBase {
+public abstract class ServerBase implements Closeable {
 
-	protected <Client extends SocketReadWrite> void processClient(Game game, Board board, Queue<Client> clients,
-			int turn) throws IOException, EndGameException {
+	protected final ServerSocket server;
+	protected final Game game;
+	protected final Board board;
+	protected final Queue<Client> clients;
+	protected int turn;
+
+	public ServerBase(Game game, int port) throws IOException {
+		this.game = game;
+		board = new Board(true);
+		clients = new LinkedList<>();
+
+		server = new ServerSocket(port);
+		System.out.println(server);
+
+		turn = 0;
+	}
+
+	protected void processClient() throws IOException, EndGameException {
 		System.out.println("Turn: " + turn);
 		final Client active = clients.poll();
 		active.writeByte(Code.TURN);
@@ -48,6 +67,19 @@ public abstract class ServerBase {
 			throw new UnsupportedOperationException("Code: " + mode);
 		}
 		clients.offer(active);
+	}
+
+	@Override
+	public void close() throws IOException {
+		for (Client client : clients) {
+			if (client != null) {
+				client.close();
+			}
+		}
+		server.close();
+	}
+
+	protected interface Client extends SocketReadWrite {
 	}
 
 	protected static final class EndGameException extends Exception {
