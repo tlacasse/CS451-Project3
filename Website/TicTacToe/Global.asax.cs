@@ -14,7 +14,6 @@ namespace TicTacToe {
 
 		protected void Application_Start() {
 			GlobalConfiguration.Configure(WebApiConfig.Register);
-			Connection.start();
 		}
 
 		protected void Application_End() {

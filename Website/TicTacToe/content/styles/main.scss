@@ -16,7 +16,27 @@ body {
     width: $board-pixels;
 }
 
-.cell {
+#start-button, #connect-button {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#connect-button {
+    background-color: #127d92;
+}
+
+#connect-button:active {
+    background-color: #016c81;
+}
+
+#start-button{
+    background-color: #7ed018;
+}
+
+#start-button:active {
+    background-color: #6dc007;
 }
 
 #board table {

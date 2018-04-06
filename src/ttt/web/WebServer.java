@@ -22,7 +22,7 @@ final class WebServer extends ServerLoop {
 		new WebServer();
 	}
 
-	private boolean havePlayers = false;
+	private boolean havePlayers;
 	private final Semaphore lock;
 
 	private final ServerSocket server;
@@ -38,18 +38,26 @@ final class WebServer extends ServerLoop {
 		clients = new LinkedList<>();
 		totalPlayers = 0;
 
+		havePlayers = false;
+
 		lock = new Semaphore(0);
 		final Thread listener = new Thread(new Listener());
+		listener.start();
 
 		try {
-			lock.acquire();
+			lock.acquire(); // semaphore used just for waiting
 			WebClient first = clients.peek();
+			first.writeByte(Code.FIRST_PLAYER);
+			first.flush();
 			first.readByte(); // doesn't matter what it is
-			for (WebClient client : clients) {
-				client.writeByte(Code.START_GAME);
-				client.flush();
-			}
+			havePlayers = true;
 			listener.join();
+			for (WebClient client : clients) {
+				if (client != first) {
+					client.writeByte(Code.START_GAME);
+					client.flush();
+				}
+			}
 		} catch (InterruptedException ie) {
 			ie.printStackTrace();
 		}
@@ -58,13 +66,10 @@ final class WebServer extends ServerLoop {
 		final Board board = new Board(true);
 		int turn = 0;
 
-		try {
-			for (;; turn = (turn + 1) % totalPlayers) {
-				processClient(game, board, clients, turn);
-				havePlayers = true;
-			}
-		} catch (EndGameException ege) {
-		}
+		/*
+		 * try { for (;; turn = (turn + 1) % totalPlayers) { processClient(game,
+		 * board, clients, turn); } } catch (EndGameException ege) { }
+		 */
 
 		for (WebClient client : clients) {
 			client.close();
@@ -77,7 +82,8 @@ final class WebServer extends ServerLoop {
 		public void run() {
 			while (!havePlayers) {
 				try {
-					WebClient client = new WebClient();
+					WebClient client = new WebClient(); // may or may not
+														// connect
 					if (client.connected) {
 						clients.offer(client);
 						totalPlayers++;

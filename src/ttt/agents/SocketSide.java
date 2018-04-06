@@ -18,10 +18,17 @@ public abstract class SocketSide implements AutoCloseable, SocketReadWrite {
 
 	public SocketSide(int port) throws IOException {
 		connect(port);
-		in = socket.getInputStream();
-		out = socket.getOutputStream();
-		reader = new DataInputStream(in);
-		writer = new DataOutputStream(out);
+		if (socket != null) {
+			in = socket.getInputStream();
+			out = socket.getOutputStream();
+			reader = new DataInputStream(in);
+			writer = new DataOutputStream(out);
+		} else {
+			in = null;
+			out = null;
+			reader = null;
+			writer = null;
+		}
 	}
 
 	public SocketSide() throws IOException {

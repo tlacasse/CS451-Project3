@@ -1,9 +1,14 @@
 ﻿<div id="board">
-    <table>
+    <div ng-hide="vm.inGame || vm.firstPlayerGo" id="connect-button" ng-click="vm.connect();">
+        --- Connect ---
+    </div>
+    <div ng-show="vm.firstPlayerGo" id="start-button" ng-click="vm.startGame();">
+        --- Start ---
+    </div>
+    <table ng-show="vm.inGame">
         <tr ng-repeat="y in vm.array">
             <td ng-repeat="x in vm.array">
-                <div ng-class="vm.class[x][y]" ng-click="vm.postMove(x,y)">
-
+                <div ng-class="vm.class[x][y]" ng-click="vm.postMove(x,y);">
                 </div>
             </td>
         </tr>

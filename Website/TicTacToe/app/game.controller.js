@@ -9,6 +9,9 @@
 
             var vm = this;
 
+            var FIRST_PLAYER = 5;
+            var START_GAME = 6;
+
             function getArray(n) {
                 var a = [];
                 for (var i = 0; i < n; i++) {
@@ -28,6 +31,11 @@
                 }
             }
 
+            function showError(data) {
+                vm.message.show = true;
+                vm.message.detail = $filter('objectToArray')(angular.fromJson(data).data);
+            }
+
             vm.message = {
                 show: false,
                 detail: ''
@@ -36,22 +44,49 @@
             vm.size = 13;
             vm.array = getArray(vm.size);
 
-            vm.percentString = String(100 / 13) + '%';
+            vm.percentString = String(100 / vm.size) + '%';
+
+            vm.inGame = false;
+            vm.firstPlayerGo = false;
 
             vm.state = getArray2d(vm.size, 0);
             vm.class = getArray2d(vm.size, "");
 
-            vm.postMove = function (xx, yy) {
-                console.log("send");
-                $http.post('/api/post/move', { x: xx, y: yy }
+            vm.connect = function () {
+                $http.get('/api/connect'
+                ).then(function (data) {
+                    var mode = parseInt(angular.fromJson(data).data);
+                    switch (mode) {
+                        case FIRST_PLAYER:
+                            vm.firstPlayerGo = true;
+                            break;
+                        case START_GAME:
+                            vm.inGame = true;
+                            break;
+                    }
+                }, function (data) {
+                    showError(data);
+                });
+            }
+
+            vm.startGame = function () {
+                $http.get('/api/start'
+                ).then(function (data) {
+                    vm.inGame = true;
+                    vm.firstPlayerGo = false;
+                }, function (data) {
+                    showError(data);
+                });
+            }
+
+           /* vm.postMove = function (xx, yy) {
+                $http.post('/api/move', { x: xx, y: yy }
                 ).then(function (data) {
                     console.log("done!");
                 }, function (data) {
-                    console.log("fail");
-                    vm.message.show = true;
-                    vm.message.detail = $filter('objectToArray')(angular.fromJson(data).data);
+                    showError(data);
                 });
-            }
+            }*/
 
 
         }]);
