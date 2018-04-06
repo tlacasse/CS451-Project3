@@ -7,7 +7,7 @@ import ttt.Board;
 import ttt.Code;
 import ttt.Game;
 
-public abstract class ServerLoop {
+public abstract class ServerBase {
 
 	protected <Client extends SocketReadWrite> void processClient(Game game, Board board, Queue<Client> clients,
 			int turn) throws IOException, EndGameException {

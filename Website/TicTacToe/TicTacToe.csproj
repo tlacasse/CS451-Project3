@@ -164,6 +164,7 @@
     </Compile>
     <Compile Include="Models\Move.cs" />
     <Compile Include="Controllers\Connection.cs" />
+    <Compile Include="Models\Status.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

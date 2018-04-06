@@ -10,11 +10,11 @@ import java.util.concurrent.Semaphore;
 import ttt.Board;
 import ttt.Code;
 import ttt.Game;
-import ttt.agents.ServerLoop;
+import ttt.agents.ServerBase;
 import ttt.agents.SocketSide;
 
 //Server deals with the C# web server, not the actual webpage client
-final class WebServer extends ServerLoop {
+final class WebServer extends ServerBase {
 
 	public static final int PORT = 98;
 
@@ -46,10 +46,12 @@ final class WebServer extends ServerLoop {
 		final Board board = new Board(true);
 		int turn = 0;
 
-		/*
-		 * try { for (;; turn = (turn + 1) % totalPlayers) { processClient(game,
-		 * board, clients, turn); } } catch (EndGameException ege) { }
-		 */
+		try {
+			for (;; turn = (turn + 1) % totalPlayers) {
+				processClient(game, board, clients, turn);
+			}
+		} catch (EndGameException ege) {
+		}
 
 		for (WebClient client : clients) {
 			client.close();

@@ -14,7 +14,7 @@ import ttt.Code;
 import ttt.Config;
 import ttt.Game;
 
-public class Server extends ServerLoop implements AutoCloseable, Runnable {
+public class Server extends ServerBase implements AutoCloseable, Runnable {
 
 	private final ServerSocket server;
 	private final Queue<Client> clients;
