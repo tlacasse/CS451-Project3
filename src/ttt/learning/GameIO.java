@@ -87,8 +87,8 @@ public final class GameIO {
 		return nn;
 	}
 
-	public static File saveGame(Game game) throws IOException {
-		final String fileName = gameFileName(game.hasWinner() ? DIRECTORY_GAMES : DIRECTORY_TIES);
+	public static File saveGame(Game game, boolean isUserGame) throws IOException {
+		final String fileName = gameFileName(game.hasWinner() ? DIRECTORY_GAMES : DIRECTORY_TIES, isUserGame);
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(game.toByteBuffer().array());
 		}
@@ -142,9 +142,12 @@ public final class GameIO {
 		return sb.toString();
 	}
 
-	private static String gameFileName(String directory) {
+	private static String gameFileName(String directory, boolean isUserGame) {
 		final StringBuilder sb = new StringBuilder(directory);
 		sb.append(UUID.randomUUID().toString());
+		if (isUserGame) {
+			sb.append("_user");
+		}
 		sb.append(".game");
 		return sb.toString();
 	}

@@ -80,7 +80,7 @@ public class Game {
 			}
 			join(serverThread);
 		}
-		GameIO.saveGame(game);
+		GameIO.saveGame(game, config.get(HAVE_USER) > 0);
 	}
 
 	private static void join(Thread thread) {

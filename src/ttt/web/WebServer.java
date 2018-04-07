@@ -8,14 +8,14 @@ import ttt.Code;
 import ttt.Game;
 import ttt.agents.ServerBase;
 import ttt.agents.SocketSide;
+import ttt.learning.GameIO;
 
 //Server deals with the C# web server, not the actual webpage client
 final class WebServer extends ServerBase {
 
 	public static final int PORT = 98;
 
-	@SuppressWarnings("resource") // IDE can't figure out that this is being
-									// closed
+	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
 		(new WebServer()).collectClients().start().close();
 	}
@@ -60,9 +60,15 @@ final class WebServer extends ServerBase {
 		return this;
 	}
 
+	@Override
+	public void close() throws IOException {
+		super.close();
+		GameIO.saveGame(game, true);
+	}
+
 	private final class Listener implements Runnable {
 
-		private final Semaphore lock;
+		final Semaphore lock;
 
 		public Listener(Semaphore lock) {
 			this.lock = lock;
