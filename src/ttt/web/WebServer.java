@@ -15,11 +15,17 @@ final class WebServer extends ServerBase {
 
 	public static final int PORT = 98;
 
-	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
-		(new WebServer()).collectClients().start().close();
+		try (WebServer s = new WebServer()) {
+			s.collectClients();
+			s.start();
+		} catch (IOException ioe) {
+			// catch to close server
+			throw ioe;
+		}
 	}
 
+	private final Semaphore mutex;
 	private boolean havePlayers;
 	private int totalPlayers;
 
@@ -29,27 +35,39 @@ final class WebServer extends ServerBase {
 
 		totalPlayers = 0;
 		havePlayers = false;
+
+		mutex = new Semaphore(1);
 	}
 
-	private WebServer collectClients() throws IOException {
+	private void collectClients() throws IOException {
 		final Semaphore lock = new Semaphore(0);
 		final Thread listener = new Thread(new Listener(lock));
 		listener.start();
 		try {
 			lock.acquire(); // semaphore used just for waiting
-			Client first = clients.peek();
-			first.writeByte(Code.FIRST_PLAYER);
-			first.flush();
-			first.readByte(); // doesn't matter what it is
+			waitForStart();
 			havePlayers = true;
 			listener.join();
 		} catch (InterruptedException ie) {
 			ie.printStackTrace();
 		}
-		return this;
 	}
 
-	private WebServer start() throws IOException {
+	private void waitForStart() throws IOException, InterruptedException {
+		for (;;) {
+			mutex.acquire();
+			for (Client client : clients) {
+				if (client.available() > 0) {
+					client.readByte(); // GAME_START
+					mutex.release();
+					return;
+				}
+			}
+			mutex.release();
+		}
+	}
+
+	private void start() throws IOException {
 		game.setPlayerCount(totalPlayers);
 		try {
 			for (;; turn = (turn + 1) % totalPlayers) {
@@ -57,14 +75,10 @@ final class WebServer extends ServerBase {
 			}
 		} catch (EndGameException ege) {
 		}
-		return this;
-	}
-
-	@Override
-	public void close() throws IOException {
-		super.close();
 		GameIO.saveGame(game, true);
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	private final class Listener implements Runnable {
 
@@ -81,7 +95,9 @@ final class WebServer extends ServerBase {
 					WebClient client = new WebClient(); // may or may not
 														// connect
 					if (client.connected) {
+						mutex.acquire();
 						clients.offer(client);
+						mutex.release();
 						totalPlayers++;
 						if (totalPlayers == 1) {
 							client.writeByte(Code.FIRST_PLAYER);
@@ -92,8 +108,8 @@ final class WebServer extends ServerBase {
 							client.flush();
 						}
 					}
-				} catch (IOException ioe) {
-					System.out.println(ioe);
+				} catch (IOException | InterruptedException ioeie) {
+					System.out.println(ioeie);
 				}
 			}
 		}

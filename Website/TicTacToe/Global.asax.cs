@@ -17,7 +17,9 @@ namespace TicTacToe {
 		}
 
 		protected void Application_End() {
-			Connection.end();
+			foreach (KeyValuePair<string, Connection> item in GameController.connections) {
+				item.Value.Dispose();
+			}
 		}
 
 	}

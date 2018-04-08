@@ -1,5 +1,6 @@
 package ttt.agents;
 
+import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -7,7 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public abstract class SocketSide implements AutoCloseable, SocketReadWrite {
+public abstract class SocketSide implements Closeable, SocketReadWrite {
 
 	protected Socket socket;
 
@@ -73,6 +74,11 @@ public abstract class SocketSide implements AutoCloseable, SocketReadWrite {
 	@Override
 	public byte readByte() throws IOException {
 		return reader.readByte();
+	}
+
+	@Override
+	public int available() throws IOException {
+		return reader.available();
 	}
 
 }

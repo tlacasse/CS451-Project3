@@ -11,19 +11,7 @@ public final class Program {
 
 	public static final int PORT = 6327;
 
-	private static void runMultiple(int num) throws IOException {
-		Config config;
-		try (Scanner scan = new Scanner(System.in)) {
-			config = Config.create(scan, KEYS_GAME);
-		}
-		for (int i = 0; i < num; i++) {
-			Game.start(PORT, config);
-		}
-		System.exit(0);
-	}
-
 	public static void main(String[] args) throws IOException {
-		runMultiple(500);
 		try (Scanner scan = new Scanner(System.in)) {
 			System.out.println("??? Train Neural Networks? (y/n)");
 			if (isYes(scan.nextLine())) {

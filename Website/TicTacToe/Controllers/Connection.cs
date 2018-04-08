@@ -8,67 +8,43 @@ using System.Web;
 
 namespace TicTacToe.Controllers {
 
-	public sealed class Connection {
-		//https://docs.microsoft.com/en-us/dotnet/framework/network-programming/synchronous-client-socket-example
+	public class Connection : IDisposable {
 
-		public static bool started { get; private set; }
+		public static readonly string LOCALHOST = "127.0.0.1";
+		public static readonly int PORT = 98;
 
-		private static readonly string LOCALHOST = "127.0.0.1";
-		private static readonly int PORT = 98;
-		private static readonly int BUFFER_SIZE = 1 + (2 * 4);
+		private readonly TcpClient socket;
+		private readonly NetworkStream stream;
 
-		private static Socket socket;
-		private static MemoryStream buffer;
-
-		private static byte[] read;
-		private static int readInc;
-
-		public static void start() {
-			socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
-			socket.Connect(new IPEndPoint(IPAddress.Parse(LOCALHOST), PORT));
-			buffer = new MemoryStream(BUFFER_SIZE);
-			read = new byte[BUFFER_SIZE];
-			started = true;
+		public Connection() {
+			socket = new TcpClient(LOCALHOST, PORT);
+			stream = socket.GetStream();
 		}
 
-		public static void end() {
-			if (started) {
-				socket.Close();
-				buffer.Close();
-				started = false;
-			}
+		public void Dispose() {
+			socket.Close();
 		}
 
-		public static void send() {
-			socket.Send(buffer.GetBuffer());
-			buffer.Seek(0, SeekOrigin.Begin);
+		public void writeByte(byte b) {
+			stream.WriteByte(b);
 		}
 
-		public static void writeByte(byte b) {
-			buffer.WriteByte(b);
-		}
-
-		public static void writeInt(int i) {
+		public void writeInt(int i) {
 			byte[] bytes = BitConverter.GetBytes(i);
 			if (BitConverter.IsLittleEndian) {
 				Array.Reverse(bytes);
 			}
-			buffer.WriteByte(bytes[0]);
-			buffer.WriteByte(bytes[1]);
-			buffer.WriteByte(bytes[2]);
-			buffer.WriteByte(bytes[3]);
+			writeByte(bytes[0]);
+			writeByte(bytes[1]);
+			writeByte(bytes[2]);
+			writeByte(bytes[3]);
 		}
 
-		public static void beginRead() {
-			socket.Receive(read);
-			readInc = 0;
+		public byte readByte() {
+			return (byte)stream.ReadByte();
 		}
 
-		public static byte readByte() {
-			return read[readInc++];
-		}
-
-		public static int readInt() {
+		public int readInt() {
 			byte[] bytes = new byte[] { readByte(), readByte(), readByte(), readByte() };
 			if (BitConverter.IsLittleEndian) {
 				Array.Reverse(bytes);
@@ -76,7 +52,7 @@ namespace TicTacToe.Controllers {
 			return BitConverter.ToInt32(bytes, 0);
 		}
 
-		public static bool hasData() {
+		public bool hasData() {
 			return socket.Available > 0;
 		}
 

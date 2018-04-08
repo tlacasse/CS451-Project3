@@ -31,11 +31,12 @@
                 var a = [];
                 for(var i = 0; i < dim; i++){
                     var b = [];
-                    for(var i = 0; i < dim; i++){
+                    for(var j = 0; j < dim; j++){
                         b.push(val);
                     }
                     a.push(b);
                 }
+                return a;
             }
 
             function showError(data) {
@@ -63,7 +64,7 @@
             vm.gameDone = false;
 
             vm.state = getArray2d(vm.size, 0);
-            vm.class = getArray2d(vm.size, "");
+            vm.class = getArray2d(vm.size, "empty");
 
             vm.log = "";
 
@@ -91,7 +92,7 @@
             }
 
             vm.startGame = function () {
-                $http.get('/api/start'
+                $http.post('/api/start'
                 ).then(function (data) {
                     vm.inGame = true;
                     vm.firstPlayerGo = false;
@@ -103,7 +104,7 @@
 
             vm.postMove = function (xx, yy) {
                 if (vm.isTurn && vm.lock) {
-                    if (vm.state[xx][yy] !== 0) {
+                    if (vm.state[xx][yy] === 0) {
                         vm.lock = false;
                         $http.post('/api/move', { x: xx, y: yy }
                         ).then(function (data) {
@@ -149,7 +150,7 @@
                             break;
                     }
                     if (!vm.gameDone) {
-                        $timeout(getStatus, 1000);
+                        $timeout(getStatus, 2000);
                     }
                 }, function (data) {
                     showError(data);

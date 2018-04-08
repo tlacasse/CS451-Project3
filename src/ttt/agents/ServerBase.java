@@ -1,6 +1,5 @@
 package ttt.agents;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.LinkedList;
@@ -10,7 +9,7 @@ import ttt.Board;
 import ttt.Code;
 import ttt.Game;
 
-public abstract class ServerBase implements Closeable {
+public abstract class ServerBase implements AutoCloseable {
 
 	protected final ServerSocket server;
 	protected final Game game;

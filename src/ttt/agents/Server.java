@@ -136,6 +136,11 @@ public class Server extends ServerBase implements AutoCloseable, Runnable {
 			return Code.MOVE;
 		}
 
+		@Override
+		public int available() throws IOException {
+			return 1;
+		}
+
 	}
 
 }

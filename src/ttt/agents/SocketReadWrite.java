@@ -16,4 +16,6 @@ public interface SocketReadWrite {
 
 	public byte readByte() throws IOException;
 
+	public int available() throws IOException;
+
 }

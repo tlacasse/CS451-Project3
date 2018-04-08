@@ -58,16 +58,19 @@ body {
                 height: 100%;
                 box-sizing: border-box;
                 border: 2px groove #abcdef;
-                background-color: #808080;
-
-                .selected {
-                    background-color: #12eb89;
-                }
-
-                .taken {
-                    background-color: #884b1b;
-                }
             }
         }
     }
+}
+
+.empty {
+    background-color: #808080;
+}
+
+.selected {
+    background-color: #12eb89;
+}
+
+.taken {
+    background-color: #884b1b;
 }
