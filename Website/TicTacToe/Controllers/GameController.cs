@@ -90,7 +90,7 @@ namespace TicTacToe.Controllers {
 			catch (SocketException se) {
 				TTTUtility.startJavaServer();
 			}
-			tryConnect(2);
+			tryConnect(5);
 		}
 
 		private void tryConnect(int tries) {
@@ -107,6 +107,13 @@ namespace TicTacToe.Controllers {
 				}
 				Thread.Sleep(2000);
 			}
+		}
+
+		[HttpPost]
+		[Route("kill")]
+		public HttpResponseMessage kill() {
+			TTTUtility.stopJavaServer();
+			return Request.CreateResponse(HttpStatusCode.Accepted);
 		}
 
 	}
