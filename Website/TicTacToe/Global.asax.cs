@@ -20,6 +20,7 @@ namespace TicTacToe {
 			foreach (KeyValuePair<string, Connection> item in GameController.connections) {
 				item.Value.Dispose();
 			}
+			TTTUtility.stopJavaServer();
 		}
 
 	}

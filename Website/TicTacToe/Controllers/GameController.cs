@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
+using System.Threading;
 using System.Web;
 using System.Web.Http;
 using Newtonsoft.Json;
@@ -15,15 +17,15 @@ namespace TicTacToe.Controllers {
 	[RoutePrefix("api")]
 	public class GameController : ApiController {
 
-		//private static readonly byte TURN = 0;
+		//		private static readonly byte TURN = 0;
 		private static readonly byte OTHER_PLAYER_MOVE = 1;
-		//private static readonly byte GAME_DONE = 2;
+		//		private static readonly byte GAME_DONE = 2;
 		private static readonly byte MOVE = 3;
-		//private static readonly byte FULL_BOARD = 4;
+		//		private static readonly byte FULL_BOARD = 4;
 
-		//private static readonly byte FIRST_PLAYER = 5;
+		//		private static readonly byte FIRST_PLAYER = 5;
 		private static readonly byte START_GAME = 6;
-		//private static readonly byte CONNECTED = 7;
+		//		private static readonly byte CONNECTED = 7;
 
 		[HttpGet]
 		[Route("connect")]
@@ -70,17 +72,40 @@ namespace TicTacToe.Controllers {
 			return HttpContext.Current.Request.UserHostAddress;
 		}
 
+		private Connection connection {
+			get {
+				return connections[key()];
+			}
+		}
+
 		private void startConnection() {
 			if (connections.ContainsKey(key())) {
 				connections[key()].Dispose();
 				connections.Remove(key());
 			}
-			connections.Add(key(), new Connection());
+			try {
+				tryConnect(2);
+				return;
+			}
+			catch (SocketException se) {
+				TTTUtility.startJavaServer();
+			}
+			tryConnect(2);
 		}
 
-		private Connection connection {
-			get {
-				return connections[key()];
+		private void tryConnect(int tries) {
+			for (int t = tries - 1; t >= 0; t--) {
+				try {
+					Connection c = new Connection();
+					connections.Add(key(), c);
+					return;
+				}
+				catch (SocketException se) {
+					if (t == 0) {
+						throw se;
+					}
+				}
+				Thread.Sleep(2000);
 			}
 		}
 
