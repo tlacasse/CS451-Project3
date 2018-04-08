@@ -66,6 +66,9 @@
             vm.state = getArray2d(vm.size, 0);
             vm.class = getArray2d(vm.size, "empty");
 
+            vm.lastX = -1;
+            vm.lastY = -1;
+
             vm.log = "";
 
             vm.isTurn = false;
@@ -137,7 +140,12 @@
                             var xx = status.x;
                             var yy = status.y;
                             vm.state[xx][yy] = -1;
-                            vm.class[xx][yy] = 'taken';
+                            if (vm.lastX >= 0) {
+                                vm.class[vm.lastX][vm.lastY] = 'taken';
+                            }
+                            vm.class[xx][yy] = 'latest';
+                            vm.lastX = xx;
+                            vm.lastY = yy;
                             addLog('Other player Move (' + String(xx) + ',' + String(yy) + ').');
                             break;
                         case GAME_DONE:
