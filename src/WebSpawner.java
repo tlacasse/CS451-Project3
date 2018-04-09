@@ -30,7 +30,7 @@ final class WebSpawner {
 		final Thread open = new Thread(new Wait(PORT_OPEN) {
 			@Override
 			public void process() throws IOException {
-				if (!serverIsRunning) {
+				if (!serverIsRunning || !process.isAlive()) {
 					process = (new ProcessBuilder("java", "-cp", "C:\\Users\\XYZ\\workspace\\CS451-Project3\\bin",
 							"ttt.web.WebServer")).start();
 					System.out.println(process);

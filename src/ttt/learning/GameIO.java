@@ -21,7 +21,6 @@ public final class GameIO {
 	public static final String DIRECTORY_NN = Paths.get("").toAbsolutePath().toString() + "\\data\\";
 	public static final String DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
 	public static final String DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
-	public static final String DIRECTORY_TRAINING = DIRECTORY_NN + "training\\";
 
 	public static File saveNetwork(NeuralNetwork nn) throws IOException {
 		final Matrix[] weights = nn.getWeights();
