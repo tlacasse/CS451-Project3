@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +17,7 @@ import ttt.agents.Player;
 
 public final class GameIO {
 
-	public static final String DIRECTORY_NN = Paths.get("").toAbsolutePath().toString() + "\\data\\";
+	public static final String DIRECTORY_NN = "C:\\Users\\XYZ\\workspace\\CS451-Project3\\data\\";
 	public static final String DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
 	public static final String DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
 

@@ -13,7 +13,7 @@ public class Spawn implements Runnable {
 		builder = new ProcessBuilder("java", "-cp", Paths.get("").toAbsolutePath().toString() + "\\bin",
 				"ttt.agents.Player", Integer.toString(port)); // separate by
 																// tokens
-		builder.redirectErrorStream(true);
+		builder.inheritIO();
 	}
 
 	@Override
