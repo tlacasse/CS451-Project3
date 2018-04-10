@@ -113,7 +113,7 @@ namespace TicTacToe.Controllers {
 		[Route("kill")]
 		public string kill() {
 			TTTUtility.stopJavaServer();
-			return "'pls dont kill me' - the server you just killed.";
+			return "'pls dont kill me' - the server you just killed."; // ha
 		}
 
 	}
