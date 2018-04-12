@@ -2,7 +2,6 @@ package ttt.learning;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Random;
 
 import javafx.util.Pair;
 import ttt.Board;
@@ -10,10 +9,11 @@ import ttt.Board;
 public class Training {
 
 	public static final int[][] NETWORKS;
+	public static final int NETWORK_COUNT;
 
 	static {
 		int i = 0;
-		NETWORKS = new int[8][];
+		NETWORKS = new int[NETWORK_COUNT = 8][];
 		NETWORKS[i++] = new int[] { Board.CELLS, 10, Board.CELLS };
 		NETWORKS[i++] = new int[] { Board.CELLS, 50, Board.CELLS };
 		NETWORKS[i++] = new int[] { Board.CELLS, 50, 10, Board.CELLS };
@@ -23,19 +23,13 @@ public class Training {
 		NETWORKS[i++] = new int[] { Board.CELLS, 15, 15, Board.CELLS };
 		NETWORKS[i++] = new int[] { Board.CELLS, 8, 8, Board.CELLS };
 
-		// not good
+		// these are not good
 		// NETWORKS[i++] = new int[] { Board.CELLS, 100, Board.CELLS };
 		// NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, Board.CELLS };
 		// NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, 25, Board.CELLS };
 		// NETWORKS[i++] = new int[] { Board.CELLS, 70, 70, 70, Board.CELLS };
 		// NETWORKS[i++] = new int[] { Board.CELLS, 10, 10, 10, 10, 10,
 		// Board.CELLS };
-	}
-
-	private static final Random RANDOM = new Random();
-
-	public static NeuralNetwork pickRandomNN() throws IOException {
-		return GameIO.loadNetwork(NETWORKS[RANDOM.nextInt(8)]);
 	}
 
 	public static void restartNeuralNetworks() throws IOException {

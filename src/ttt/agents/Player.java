@@ -2,54 +2,32 @@ package ttt.agents;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Random;
+import java.util.UUID;
 
 import ttt.Board;
 import ttt.Code;
+import ttt.learning.GameIO;
 import ttt.learning.Matrix;
 import ttt.learning.NeuralNetwork;
 import ttt.learning.Training;
 
-public class Player extends SocketSide {
+public class Player extends SocketSide implements AutoCloseable {
 
-	public static void main(String[] args) throws IOException, Exception {
+	public static void main(String[] args) throws IOException {
 		final int port = Integer.parseInt(args[0]);
+		boolean result = false; // true if game has winner else false is tie
 		try (Player player = new Player(port)) {
-			for (;;) {
-				final byte mode = player.readByte();
-				switch (mode) {
-				case Code.TURN:
-					final int[] move = player.choose();
-					player.writeByte(Code.MOVE);
-					player.writeInt(move[0]);
-					player.writeInt(move[1]);
-					player.flush();
-					System.out.println("Turn: " + move[0] + "," + move[1]);
-					break;
-				case Code.OTHER_PLAYER_MOVE:
-					final int x = player.readInt();
-					final int y = player.readInt();
-					player.setOtherPlayerMove(x, y);
-					System.out.println("Other Move: " + x + "," + y);
-					break;
-				case Code.GAME_DONE:
-					System.out.println("Game Done!");
-					System.exit(0);
-					return;
-				case Code.FULL_BOARD:
-					System.out.println("Full Board!");
-					System.exit(1);
-					return;
-				default:
-					throw new UnsupportedOperationException("Code: " + mode);
-				}
-			}
+			result = player.play();
 		}
+		System.exit(result ? 0 : 1);
 	}
 
 	public static final int SELF = 1;
 	public static final int OTHER = -1;
 
 	private static final String LOCALHOST = "127.0.0.1";
+	private static final Random RANDOM = new Random();
 
 	private final Board board;
 	private final NeuralNetwork nn;
@@ -57,13 +35,43 @@ public class Player extends SocketSide {
 	public Player(int port) throws IOException {
 		super(port);
 		board = new Board(false);
-		nn = Training.pickRandomNN();
+		nn = pickRandomNN();
 	}
 
 	@Override
 	protected void connect(int port) throws IOException {
 		if (socket == null || socket.isClosed()) {
 			socket = new Socket(LOCALHOST, port);
+		}
+	}
+
+	public boolean play() throws IOException {
+		for (;;) {
+			final byte mode = readByte();
+			switch (mode) {
+			case Code.TURN:
+				final int[] move = choose();
+				writeByte(Code.MOVE);
+				writeInt(move[0]);
+				writeInt(move[1]);
+				flush();
+				print("Take Turn: " + move[0] + ", " + move[1]);
+				break;
+			case Code.OTHER_PLAYER_MOVE:
+				final int x = readInt();
+				final int y = readInt();
+				setOtherPlayerMove(x, y);
+				print("Other Move: " + x + ", " + y);
+				break;
+			case Code.GAME_DONE:
+				print("Game Done!");
+				return true;
+			case Code.FULL_BOARD:
+				print("Full Board!");
+				return false;
+			default:
+				throw new UnsupportedOperationException("Code: " + mode);
+			}
 		}
 	}
 
@@ -90,6 +98,18 @@ public class Player extends SocketSide {
 
 	public void setOtherPlayerMove(int x, int y) {
 		board.set(x, y, OTHER);
+	}
+
+	private NeuralNetwork pickRandomNN() throws IOException {
+		return GameIO.loadNetwork(Training.NETWORKS[RANDOM.nextInt(Training.NETWORK_COUNT)]);
+	}
+
+	// hash code seems to be the same, so recreate output
+	// won't be able to tell "this is player x", but can tell players apart.
+	private final String strOut = "Player@" + UUID.randomUUID().toString().substring(0, 8) + ": ";
+
+	private void print(String s) {
+		System.out.println(strOut + s);
 	}
 
 }

@@ -3,6 +3,7 @@ package ttt.learning;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -21,7 +22,7 @@ public final class GameIO {
 	public static final String DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
 	public static final String DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
 
-	public static File saveNetwork(NeuralNetwork nn) throws IOException {
+	public static File saveNetwork(NeuralNetwork nn) throws FileNotFoundException, IOException {
 		final Matrix[] weights = nn.getWeights();
 		final int[] nodes = new int[weights.length + 1];
 		int bufferSize = Integer.BYTES;
@@ -55,7 +56,7 @@ public final class GameIO {
 		return new File(fileName);
 	}
 
-	public static NeuralNetwork loadNetwork(int... nameNodes) throws IOException {
+	public static NeuralNetwork loadNetwork(int... nameNodes) throws FileNotFoundException, IOException {
 		if (nameNodes.length < 3) {
 			throw new IllegalArgumentException("Must have at least 3 layers.");
 		}
@@ -85,7 +86,7 @@ public final class GameIO {
 		return nn;
 	}
 
-	public static File saveGame(Game game, boolean isUserGame) throws IOException {
+	public static File saveGame(Game game, boolean isUserGame) throws FileNotFoundException, IOException {
 		final String fileName = gameFileName(game.hasWinner() ? DIRECTORY_GAMES : DIRECTORY_TIES, isUserGame);
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(game.toByteBuffer().array());
@@ -94,7 +95,8 @@ public final class GameIO {
 		return new File(fileName);
 	}
 
-	public static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> readGamesForNetworkTraining() throws IOException {
+	public static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> readGamesForNetworkTraining()
+			throws FileNotFoundException, IOException {
 		final File directory = new File(DIRECTORY_GAMES);
 		final Pair<List<double[]>, List<double[]>> win = new Pair<>(new LinkedList<>(), new LinkedList<>());
 		final Pair<List<double[]>, List<double[]>> lose = new Pair<>(new LinkedList<>(), new LinkedList<>());
@@ -155,7 +157,7 @@ public final class GameIO {
 		public final int players, winner, count;
 		private final int[][] moves;
 
-		public Result(File file) throws IOException {
+		public Result(File file) throws FileNotFoundException, IOException {
 			try (FileInputStream fis = new FileInputStream(file); DataInputStream reader = new DataInputStream(fis)) {
 				players = reader.readInt();
 				winner = reader.readInt();
