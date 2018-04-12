@@ -16,12 +16,20 @@ public class Training {
 		NETWORKS = new int[8][];
 		NETWORKS[i++] = new int[] { Board.CELLS, 10, Board.CELLS };
 		NETWORKS[i++] = new int[] { Board.CELLS, 50, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 100, Board.CELLS };
 		NETWORKS[i++] = new int[] { Board.CELLS, 50, 10, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, 25, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 70, 70, 70, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 10, 10, 10, 10, 10, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 5, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 5, 5, 5, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 3, 5, 7, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 15, 15, Board.CELLS };
+		NETWORKS[i++] = new int[] { Board.CELLS, 8, 8, Board.CELLS };
+
+		// not good
+		// NETWORKS[i++] = new int[] { Board.CELLS, 100, Board.CELLS };
+		// NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, Board.CELLS };
+		// NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, 25, Board.CELLS };
+		// NETWORKS[i++] = new int[] { Board.CELLS, 70, 70, 70, Board.CELLS };
+		// NETWORKS[i++] = new int[] { Board.CELLS, 10, 10, 10, 10, 10,
+		// Board.CELLS };
 	}
 
 	private static final Random RANDOM = new Random();
@@ -50,6 +58,7 @@ public class Training {
 		}
 		final int displayInterval = interations / displayIntervals;
 		for (NeuralNetwork nn : networks) {
+			System.out.println(nn);
 			for (int t = 1; t <= interations; t++) {
 				if (t % displayInterval == 0 || t == interations) {
 					nn.calculate(winData().getKey());
