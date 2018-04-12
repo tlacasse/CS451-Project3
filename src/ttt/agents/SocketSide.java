@@ -64,7 +64,7 @@ public abstract class SocketSide implements Closeable, SocketReadWrite {
 		writer.writeByte(x);
 	}
 
-	// reading blocks until data exists
+	// reading, blocks until data exists
 
 	@Override
 	public int readInt() throws IOException {

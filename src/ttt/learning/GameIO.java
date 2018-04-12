@@ -103,13 +103,13 @@ public final class GameIO {
 		for (File file : directory.listFiles()) {
 			final Result game = new Result(file);
 			for (int player = 0; player < game.players; player++) {
-				final Board board = new Board(false);
+				final Board board = new Board(Board.Type.PLAYER);
 				final boolean playerIsWinner = (game.winner == player);
 				for (int move = 0; move < game.count; move++) {
 					final int moveX = game.getMoveX(move);
 					final int moveY = game.getMoveY(move);
 					if (game.getMovePlayer(move) == player) {
-						(playerIsWinner ? win : lose).getKey().add(board.getDoubleArray());
+						(playerIsWinner ? win : lose).getKey().add(board.asDoubleArray());
 						(playerIsWinner ? win : lose).getValue().add(createDesiredArray(moveX, moveY));
 						board.set(moveX, moveY, Player.SELF);
 					} else {

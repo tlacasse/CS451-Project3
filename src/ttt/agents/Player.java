@@ -34,7 +34,7 @@ public class Player extends SocketSide implements AutoCloseable {
 
 	public Player(int port) throws IOException {
 		super(port);
-		board = new Board(false);
+		board = new Board(Board.Type.PLAYER);
 		nn = pickRandomNN();
 	}
 
@@ -77,7 +77,7 @@ public class Player extends SocketSide implements AutoCloseable {
 
 	public int[] choose() {
 		// row matrix
-		final Matrix out = nn.calculate(new Matrix(false, board.getDoubleArray()));
+		final Matrix out = nn.calculate(new Matrix(false, board.asDoubleArray()));
 		final double min = (double) Integer.MIN_VALUE;
 
 		int[] pos = null;

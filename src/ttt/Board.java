@@ -2,6 +2,25 @@ package ttt;
 
 public class Board {
 
+	public static enum Type {
+		/**
+		 * <ul>
+		 * <li>0 = empty</li>
+		 * <li>1 = player 0</li>
+		 * <li>2 = player 1</li>
+		 * </ul>
+		 */
+		SERVER,
+		/**
+		 * <ul>
+		 * <li>0 = empty</li>
+		 * <li>1 = player move</li>
+		 * <li>-1 = other player move</li>
+		 * </ul>
+		 */
+		PLAYER;
+	}
+
 	public static final int EMPTY = 0;
 
 	public static final int SIZE = 13;
@@ -9,19 +28,14 @@ public class Board {
 
 	private final int[][] board;
 	private final double[] matrix;
-	private final boolean isServer;
+	private final Type type;
 	private int moves;
 
-	// server will add one to player, because 0 means empty;
-	public Board(boolean isServerImplementation) {
+	public Board(Type type) {
+		this.type = type;
 		board = new int[SIZE][SIZE];
 		matrix = new double[CELLS];
 		moves = 0;
-		isServer = isServerImplementation;
-	}
-
-	public double[] getDoubleArray() {
-		return matrix;
 	}
 
 	public boolean isFull() {
@@ -34,9 +48,9 @@ public class Board {
 
 	public void set(int x, int y, int val) {
 		if (!isSpaceEmpty(x, y)) {
-			throw new IllegalStateException(x + "," + y);
+			throw new IllegalStateException("(" + x + "," + y + ") is not empty.");
 		}
-		val = isServer ? val + 1 : val;
+		val = adaptValueForType(val);
 		board[x][y] = val;
 		matrix[coordToOrdinal(x, y)] = (double) val;
 		moves++;
@@ -51,7 +65,7 @@ public class Board {
 	}
 
 	public boolean isWin(int val, int addedX, int addedY) {
-		val = isServer ? val + 1 : val;
+		val = adaptValueForType(val);
 		boolean[] win = new boolean[] { true, true, true, true };
 		for (int i = 0; i < SIZE; i++) {
 			// orthogonal
@@ -64,6 +78,15 @@ public class Board {
 		return win[0] || win[1] || win[2] || win[3];
 	}
 
+	public double[] asDoubleArray() {
+		return matrix;
+	}
+
+	private int adaptValueForType(int n) {
+		return type == Type.SERVER ? n + 1 : n;
+	}
+
+	// copy from Matrix and adapt for ints
 	@Override
 	public String toString() {
 		String result = "";

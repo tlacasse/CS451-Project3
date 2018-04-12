@@ -19,7 +19,7 @@ public abstract class ServerBase implements AutoCloseable {
 
 	public ServerBase(Game game, int port) throws IOException {
 		this.game = game;
-		board = new Board(true);
+		board = new Board(Board.Type.SERVER);
 		clients = new LinkedList<>();
 
 		server = new ServerSocket(port);
