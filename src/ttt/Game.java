@@ -74,7 +74,7 @@ public class Game {
 			for (Thread thread : threads) {
 				thread.start();
 			}
-
+			// run game
 			for (Thread thread : threads) {
 				join(thread);
 			}

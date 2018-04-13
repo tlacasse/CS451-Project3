@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -18,9 +19,15 @@ import ttt.agents.Player;
 
 public final class GameIO {
 
-	public static final String DIRECTORY_NN = "C:\\Users\\XYZ\\workspace\\CS451-Project3\\data\\";
-	public static final String DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
-	public static final String DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
+	public static final String PROJECT_ROOT, DIRECTORY_NN, DIRECTORY_GAMES, DIRECTORY_TIES;
+
+	static {
+		PROJECT_ROOT = "CS451-Project3";
+		String path = Paths.get("").toAbsolutePath().toString();
+		DIRECTORY_NN = path.substring(0, path.indexOf(PROJECT_ROOT) + PROJECT_ROOT.length()) + "\\data\\";
+		DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
+		DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
+	}
 
 	public static File saveNetwork(NeuralNetwork nn) throws FileNotFoundException, IOException {
 		final Matrix[] weights = nn.getWeights();
