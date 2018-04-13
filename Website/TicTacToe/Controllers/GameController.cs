@@ -21,7 +21,7 @@ namespace TicTacToe.Controllers {
 		private static readonly byte OTHER_PLAYER_MOVE = 1;
 		//		private static readonly byte GAME_DONE = 2;
 		private static readonly byte MOVE = 3;
-		//		private static readonly byte FULL_BOARD = 4;
+		//		private static readonly byte GAME_TIE = 4;
 
 		//		private static readonly byte FIRST_PLAYER = 5;
 		private static readonly byte START_GAME = 6;
@@ -87,7 +87,7 @@ namespace TicTacToe.Controllers {
 				tryConnect(2);
 				return;
 			}
-			catch (SocketException se) {
+			catch (SocketException) {
 				TTTUtility.startJavaServer();
 			}
 			tryConnect(5);

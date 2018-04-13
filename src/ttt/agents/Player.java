@@ -66,8 +66,8 @@ public class Player extends SocketSide implements AutoCloseable {
 			case Code.GAME_DONE:
 				print("Game Done!");
 				return true;
-			case Code.FULL_BOARD:
-				print("Full Board!");
+			case Code.GAME_TIE:
+				print("Game is a Tie!");
 				return false;
 			default:
 				throw new UnsupportedOperationException("Code: " + mode);

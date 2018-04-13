@@ -13,7 +13,7 @@
             var OTHER_PLAYER_MOVE = 1;
             var GAME_DONE = 2;
             var MOVE = 3;
-            var FULL_BOARD = 4;
+            var GAME_TIE = 4;
 
             var FIRST_PLAYER = 5;
             var START_GAME = 6;
@@ -152,7 +152,7 @@
                             vm.gameDone = true;
                             addLog('Game is done.');
                             break;
-                        case FULL_BOARD:
+                        case GAME_TIE:
                             vm.gameDone = true;
                             addLog('Game is a tie.');
                             break;

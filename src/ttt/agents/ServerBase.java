@@ -48,8 +48,8 @@ public abstract class ServerBase implements AutoCloseable {
 				other.flush();
 			}
 			final boolean isWin = board.isWin(turn, x, y);
-			if (isWin || board.isFull()) {
-				final byte code = isWin ? Code.GAME_DONE : Code.FULL_BOARD;
+			if (isWin || board.isTie()) {
+				final byte code = isWin ? Code.GAME_DONE : Code.GAME_TIE;
 				clients.offer(active);
 				for (Client client : clients) {
 					client.writeByte(code);

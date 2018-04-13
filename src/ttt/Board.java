@@ -1,5 +1,7 @@
 package ttt;
 
+import java.util.Arrays;
+
 public class Board {
 
 	public static enum Type {
@@ -22,24 +24,24 @@ public class Board {
 	}
 
 	public static final int EMPTY = 0;
-
 	public static final int SIZE = 13;
 	public static final int CELLS = SIZE * SIZE;
 
 	private final int[][] board;
 	private final double[] matrix;
 	private final Type type;
-	private int moves;
+	private final TieTracker tt;
 
 	public Board(Type type) {
 		this.type = type;
 		board = new int[SIZE][SIZE];
-		matrix = new double[CELLS];
-		moves = 0;
-	}
-
-	public boolean isFull() {
-		return moves == CELLS;
+		if (type == Type.PLAYER) {
+			matrix = new double[CELLS];
+			tt = null;
+		} else {
+			tt = new TieTracker();
+			matrix = null;
+		}
 	}
 
 	public boolean isSpaceEmpty(int x, int y) {
@@ -52,8 +54,11 @@ public class Board {
 		}
 		val = adaptValueForType(val);
 		board[x][y] = val;
-		matrix[coordToOrdinal(x, y)] = (double) val;
-		moves++;
+		if (type == Type.PLAYER) {
+			matrix[coordToOrdinal(x, y)] = (double) val;
+		} else {
+			tt.check(x, y, val);
+		}
 	}
 
 	public static int coordToOrdinal(int x, int y) {
@@ -65,6 +70,9 @@ public class Board {
 	}
 
 	public boolean isWin(int val, int addedX, int addedY) {
+		if (type != Type.SERVER) {
+			throw new IllegalStateException("Must be Server Board!");
+		}
 		val = adaptValueForType(val);
 		boolean[] win = new boolean[] { true, true, true, true };
 		for (int i = 0; i < SIZE; i++) {
@@ -78,13 +86,76 @@ public class Board {
 		return win[0] || win[1] || win[2] || win[3];
 	}
 
+	public boolean isTie() {
+		if (type != Type.SERVER) {
+			throw new IllegalStateException("Must be Server Board!");
+		}
+		return tt.free == 0;
+	}
+
 	public double[] asDoubleArray() {
+		if (type != Type.PLAYER) {
+			throw new IllegalStateException("Must be Player Board!");
+		}
 		return matrix;
 	}
 
 	private int adaptValueForType(int n) {
 		return type == Type.SERVER ? n + 1 : n;
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+
+	private boolean isTopLeftToBottomRight(int x, int y) {
+		return x == y;
+	}
+
+	private boolean isBottomLeftToTopRight(int x, int y) {
+		return x == (SIZE - y - 1);
+	}
+
+	private static final int WIN_COUNTS = (SIZE * 2) + 2;
+	private static final int TT_EMPTY = -1;
+	private static final int TT_TIE = -2;
+
+	private class TieTracker {
+
+		int[] check;
+		int free;
+
+		TieTracker() {
+			check = new int[WIN_COUNTS];
+			Arrays.fill(check, TT_EMPTY);
+			free = WIN_COUNTS;
+		}
+
+		void check(int x, int y, int val) {
+			if (isTopLeftToBottomRight(x, y))
+				checkIndex(WIN_COUNTS - 1, val);
+			if (isBottomLeftToTopRight(x, y))
+				checkIndex(WIN_COUNTS - 2, val);
+			checkIndex(x, val);
+			checkIndex(SIZE + y, val);
+		}
+
+		void checkIndex(int i, int val) {
+			switch (check[i]) {
+			case TT_EMPTY:
+				check[i] = val;
+				break;
+			case TT_TIE:
+				break;
+			default:
+				if (check[i] != val) {
+					check[i] = TT_TIE;
+					free--;
+				}
+			}
+		}
+
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 	// copy from Matrix and adapt for ints
 	@Override
