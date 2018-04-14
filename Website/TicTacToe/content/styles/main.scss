@@ -2,6 +2,8 @@
 $outside: 5vw;
 $board-pixels: 100vw - ($outside * 2);
 
+$connect-ratio: 75%;
+
 body {
     background-color: #123456;
     margin: 0px;
@@ -22,7 +24,7 @@ body {
     width: $board-pixels;
 }
 
-#start-button, #connect-button {
+#start-button, #connect-button, #connect-button-ai {
     width: 100%;
     height: 100%;
     text-align: center;
@@ -30,11 +32,23 @@ body {
 }
 
 #connect-button {
+    height: $connect-ratio;
     background-color: #127d92;
 }
 
 #connect-button:active {
     background-color: #016c81;
+}
+
+#connect-button-ai {
+    position: absolute;
+    height: 100% - $connect-ratio;
+    top: $connect-ratio;
+    background-color: #085386;
+}
+
+#connect-button-ai:active {
+    background-color: #063275;
 }
 
 #start-button {

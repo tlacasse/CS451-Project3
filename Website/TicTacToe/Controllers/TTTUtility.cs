@@ -23,9 +23,10 @@ namespace TicTacToe.Controllers {
 
 		public static readonly int PORT_OPEN = 97;
 		public static readonly int PORT_CLOSE = 96;
+		public static readonly int PORT_OPEN_AI = 95;
 
-		public static void startJavaServer() {
-			doJavaServer(PORT_OPEN);
+		public static void startJavaServer(bool withAI) {
+			doJavaServer(withAI ? PORT_OPEN_AI : PORT_OPEN);
 		}
 
 		public static void stopJavaServer() {

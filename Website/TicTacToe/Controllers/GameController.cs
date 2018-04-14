@@ -30,7 +30,14 @@ namespace TicTacToe.Controllers {
 		[HttpGet]
 		[Route("connect")]
 		public int connect() {
-			startConnection();
+			startConnection(false);
+			return connection.readByte();
+		}
+
+		[HttpGet]
+		[Route("connectAI")]
+		public int connectAI() {
+			startConnection(true);
 			return connection.readByte();
 		}
 
@@ -78,7 +85,7 @@ namespace TicTacToe.Controllers {
 			}
 		}
 
-		private void startConnection() {
+		private void startConnection(bool withAI) {
 			if (connections.ContainsKey(key())) {
 				connections[key()].Dispose();
 				connections.Remove(key());
@@ -88,7 +95,7 @@ namespace TicTacToe.Controllers {
 				return;
 			}
 			catch (SocketException) {
-				TTTUtility.startJavaServer();
+				TTTUtility.startJavaServer(withAI);
 			}
 			tryConnect(5);
 		}

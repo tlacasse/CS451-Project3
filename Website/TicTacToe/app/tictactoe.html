@@ -1,6 +1,9 @@
 ﻿<div id="board">
-    <div ng-hide="vm.inGame || vm.firstPlayerGo" id="connect-button" ng-click="vm.connect();">
+    <div ng-hide="vm.inGame || vm.firstPlayerGo" id="connect-button" ng-click="vm.connect(false);">
         --- Connect ---
+    </div>
+    <div ng-hide="vm.inGame || vm.firstPlayerGo" id="connect-button-ai" ng-click="vm.connect(true);">
+        --- Connect With AI ---
     </div>
     <div ng-show="vm.firstPlayerGo" id="start-button" ng-click="vm.startGame();">
         --- Start ---

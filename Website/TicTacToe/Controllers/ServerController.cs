@@ -5,11 +5,10 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 
-namespace TicTacToe.Controllers
-{
+namespace TicTacToe.Controllers {
+
 	[RoutePrefix("server")]
-	public class ServerController : ApiController
-    {
+	public class ServerController : ApiController {
 
 		[HttpGet]
 		[Route("kill")]
@@ -21,9 +20,17 @@ namespace TicTacToe.Controllers
 		[HttpGet]
 		[Route("start")]
 		public string start() {
-			TTTUtility.startJavaServer();
+			TTTUtility.startJavaServer(false);
 			return "started server";
 		}
 
+		[HttpGet]
+		[Route("startAI")]
+		public string startAI() {
+			TTTUtility.startJavaServer(true);
+			return "started server - with AI";
+		}
+
 	}
+
 }

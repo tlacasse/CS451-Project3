@@ -74,8 +74,8 @@
             vm.isTurn = false;
             vm.lock = true;
 
-            vm.connect = function () {
-                $http.get('/api/connect'
+            vm.connect = function (withAI) {
+                $http.get(withAI ? '/api/connectAI' : '/api/connect'
                 ).then(function (data) {
                     addLog('Connected To Game.');
                     var mode = parseInt(angular.fromJson(data).data);
