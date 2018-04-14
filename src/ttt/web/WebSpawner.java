@@ -4,19 +4,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
+import ttt.learning.GameIO;
+
 final class WebSpawner {
 
-	public static final String PROJECT_ROOT, WEB_SERVER_DIRECTORY;
-
-	static {
-		PROJECT_ROOT = "CS451-Project3";
-		String path = Paths.get("").toAbsolutePath().toString();
-		WEB_SERVER_DIRECTORY = path.substring(0, path.indexOf(PROJECT_ROOT) + PROJECT_ROOT.length()) + "\\bin";
-	}
+	public static final String WEB_SERVER_DIRECTORY = GameIO.PROJECT_ROOT + "bin";
 
 	public static final int PORT_OPEN = 97;
 	public static final int PORT_CLOSE = 96;

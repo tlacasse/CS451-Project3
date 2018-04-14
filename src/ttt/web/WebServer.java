@@ -9,6 +9,7 @@ import ttt.Game;
 import ttt.agents.ServerBase;
 import ttt.agents.SocketSide;
 import ttt.learning.GameIO;
+import ttt.learning.GamePostfix;
 
 //Server deals with the C# web server, not the actual webpage client
 final class WebServer extends ServerBase {
@@ -75,7 +76,7 @@ final class WebServer extends ServerBase {
 			}
 		} catch (EndGameException ege) {
 		}
-		GameIO.saveGame(game, true);
+		GameIO.saveGame(game, GamePostfix.PVP);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////

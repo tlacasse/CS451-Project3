@@ -9,6 +9,7 @@ import java.util.Random;
 import ttt.Board;
 import ttt.Game;
 import ttt.learning.GameIO;
+import ttt.learning.GamePostfix;
 import ttt.learning.Matrix;
 import ttt.learning.NeuralNetwork;
 
@@ -62,7 +63,7 @@ final class Testing {
 		}
 
 		try {
-			File file = GameIO.saveGame(game, false);
+			File file = GameIO.saveGame(game, GamePostfix.NONE);
 			try (FileInputStream fis = new FileInputStream(file); DataInputStream reader = new DataInputStream(fis)) {
 				int readCount;
 				testEquals(reader.readInt(), players, "Game Players");

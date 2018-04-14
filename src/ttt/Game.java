@@ -12,6 +12,7 @@ import java.util.List;
 import ttt.agents.Server;
 import ttt.agents.Spawn;
 import ttt.learning.GameIO;
+import ttt.learning.GamePostfix;
 
 public class Game {
 
@@ -80,7 +81,7 @@ public class Game {
 			}
 			join(serverThread);
 		}
-		GameIO.saveGame(game, config.get(HAVE_USER) > 0);
+		GameIO.saveGame(game, config.get(HAVE_USER) > 0 ? GamePostfix.USER_VS_AI : GamePostfix.NONE);
 	}
 
 	private static void join(Thread thread) {

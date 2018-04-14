@@ -19,12 +19,13 @@ import ttt.agents.Player;
 
 public final class GameIO {
 
-	public static final String PROJECT_ROOT, DIRECTORY_NN, DIRECTORY_GAMES, DIRECTORY_TIES;
+	public static final String PROJECT_NAME, PROJECT_ROOT, DIRECTORY_NN, DIRECTORY_GAMES, DIRECTORY_TIES;
 
 	static {
-		PROJECT_ROOT = "CS451-Project3";
+		PROJECT_NAME = "CS451-Project3";
 		String path = Paths.get("").toAbsolutePath().toString();
-		DIRECTORY_NN = path.substring(0, path.indexOf(PROJECT_ROOT) + PROJECT_ROOT.length()) + "\\data\\";
+		PROJECT_ROOT = path.substring(0, path.indexOf(PROJECT_NAME) + PROJECT_NAME.length()) + "\\";
+		DIRECTORY_NN = PROJECT_ROOT + "data\\";
 		DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
 		DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
 	}
@@ -93,8 +94,8 @@ public final class GameIO {
 		return nn;
 	}
 
-	public static File saveGame(Game game, boolean isUserGame) throws FileNotFoundException, IOException {
-		final String fileName = gameFileName(game.hasWinner() ? DIRECTORY_GAMES : DIRECTORY_TIES, isUserGame);
+	public static File saveGame(Game game, GamePostfix postfix) throws FileNotFoundException, IOException {
+		final String fileName = gameFileName(game.hasWinner() ? DIRECTORY_GAMES : DIRECTORY_TIES, postfix);
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(game.toByteBuffer().array());
 		}
@@ -149,11 +150,11 @@ public final class GameIO {
 		return sb.toString();
 	}
 
-	private static String gameFileName(String directory, boolean isUserGame) {
+	private static String gameFileName(String directory, GamePostfix postfix) {
 		final StringBuilder sb = new StringBuilder(directory);
 		sb.append(UUID.randomUUID().toString());
-		if (isUserGame) {
-			sb.append("_user");
+		if (postfix != GamePostfix.NONE) {
+			sb.append("_").append(postfix.value);
 		}
 		sb.append(".game");
 		return sb.toString();
