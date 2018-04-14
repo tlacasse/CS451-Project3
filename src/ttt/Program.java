@@ -57,7 +57,7 @@ public final class Program {
 		KEYS_TRAINING = defineList(TRAINING_ITERATIONS, TRAINING_DISPLAY_INTERVALS, TRAINING_USE_LOSS);
 	}
 
-	private static boolean isYes(String line) {
+	public static boolean isYes(String line) {
 		if (line == null) {
 			return false;
 		}

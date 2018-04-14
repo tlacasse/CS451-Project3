@@ -104,13 +104,21 @@ public final class GameIO {
 		return new File(fileName);
 	}
 
+	public static List<Pair<File, Result>> loadGames() throws FileNotFoundException, IOException {
+		final File directory = new File(DIRECTORY_GAMES);
+		final List<Pair<File, Result>> list = new LinkedList<>();
+		for (File file : directory.listFiles()) {
+			list.add(new Pair<>(file, new Result(file)));
+		}
+		return list;
+	}
+
 	public static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> readGamesForNetworkTraining()
 			throws FileNotFoundException, IOException {
-		final File directory = new File(DIRECTORY_GAMES);
 		final Pair<List<double[]>, List<double[]>> win = new Pair<>(new LinkedList<>(), new LinkedList<>());
 		final Pair<List<double[]>, List<double[]>> lose = new Pair<>(new LinkedList<>(), new LinkedList<>());
-		for (File file : directory.listFiles()) {
-			final Result game = new Result(file);
+		for (Pair<File, Result> g : loadGames()) {
+			Result game = g.getValue();
 			for (int player = 0; player < game.players; player++) {
 				final Board board = new Board(Board.Type.PLAYER);
 				final boolean playerIsWinner = (game.winner == player);
@@ -124,7 +132,6 @@ public final class GameIO {
 					} else {
 						board.set(moveX, moveY, Player.OTHER);
 					}
-
 				}
 			}
 		}
@@ -159,38 +166,6 @@ public final class GameIO {
 		}
 		sb.append(".game");
 		return sb.toString();
-	}
-
-	private static class Result {
-
-		public final int players, winner, count;
-		private final int[][] moves;
-
-		public Result(File file) throws FileNotFoundException, IOException {
-			try (FileInputStream fis = new FileInputStream(file); DataInputStream reader = new DataInputStream(fis)) {
-				players = reader.readInt();
-				winner = reader.readInt();
-				count = reader.readInt();
-				moves = new int[count][3];
-				for (int i = 0; i < count; i++) {
-					moves[i][0] = reader.readInt();
-					moves[i][1] = reader.readInt();
-					moves[i][2] = reader.readInt();
-				}
-			}
-		}
-
-		public int getMovePlayer(int move) {
-			return moves[move][0];
-		}
-
-		public int getMoveX(int move) {
-			return moves[move][1];
-		}
-
-		public int getMoveY(int move) {
-			return moves[move][2];
-		}
 	}
 
 	private GameIO() {
