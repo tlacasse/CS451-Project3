@@ -19,12 +19,13 @@ import ttt.agents.Player;
 
 public final class GameIO {
 
-	public static final String PROJECT_NAME, PROJECT_ROOT, DIRECTORY_NN, DIRECTORY_GAMES, DIRECTORY_TIES;
+	public static final String PROJECT_NAME, PROJECT_ROOT, BIN, DIRECTORY_NN, DIRECTORY_GAMES, DIRECTORY_TIES;
 
 	static {
 		PROJECT_NAME = "CS451-Project3";
 		String path = Paths.get("").toAbsolutePath().toString();
 		PROJECT_ROOT = path.substring(0, path.indexOf(PROJECT_NAME) + PROJECT_NAME.length()) + "\\";
+		BIN = PROJECT_ROOT + "bin";
 		DIRECTORY_NN = PROJECT_ROOT + "data\\";
 		DIRECTORY_GAMES = DIRECTORY_NN + "games\\";
 		DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
