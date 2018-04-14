@@ -6,7 +6,9 @@ import ttt.agents.Spawn;
 final class SpawnPlayer {
 
 	public static void main(String[] args) {
-		Program.join(Spawn.newPlayer(WebServer.PORT));
+		final Thread t = Spawn.newPlayer(WebServer.PORT);
+		t.start();
+		Program.join(t);
 	}
 
 }
