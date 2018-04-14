@@ -130,6 +130,7 @@
             function getStatus() {
                 $http.get('/api/status'
                 ).then(function (data) {
+                    var timeOut = 2000;
                     var status = angular.fromJson(data).data;
                     switch (status.code) {
                         case TURN:
@@ -147,6 +148,7 @@
                             vm.lastX = xx;
                             vm.lastY = yy;
                             addLog('Other player Move (' + String(xx) + ',' + String(yy) + ').');
+                            timeOut = 1000;
                             break;
                         case GAME_DONE:
                             vm.gameDone = true;
@@ -158,7 +160,7 @@
                             break;
                     }
                     if (!vm.gameDone) {
-                        $timeout(getStatus, 2000);
+                        $timeout(getStatus, timeOut);
                     }
                 }, function (data) {
                     showError(data);

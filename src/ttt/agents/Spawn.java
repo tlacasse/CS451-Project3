@@ -1,9 +1,28 @@
 package ttt.agents;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
 import ttt.learning.GameIO;
 
 public class Spawn implements Runnable {
+
+	public static Thread newPlayer(int port) {
+		return new Thread(new Spawn(port));
+	}
+
+	private static final List<Process> PROCESSES = new LinkedList<>();
+
+	// added for WebServer to be able to kill players
+	// needed if, for example, couldn't finish web game so stop game server
+	public static void killPlayers() {
+		for (Process p : PROCESSES) {
+			p.destroy();
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	private final ProcessBuilder builder;
 

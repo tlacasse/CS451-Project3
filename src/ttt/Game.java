@@ -68,7 +68,7 @@ public class Game {
 			final int spawnCount = config.get(PLAYERS) - (config.get(HAVE_USER));
 
 			for (int i = 0; i < spawnCount; i++) {
-				threads.add(new Thread(new Spawn(port)));
+				threads.add(Spawn.newPlayer(port));
 			}
 
 			serverThread.start();
@@ -77,19 +77,11 @@ public class Game {
 			}
 			// run game
 			for (Thread thread : threads) {
-				join(thread);
+				Program.join(thread);
 			}
-			join(serverThread);
+			Program.join(serverThread);
 		}
 		GameIO.saveGame(game, config.get(HAVE_USER) > 0 ? GamePostfix.USER_VS_AI : GamePostfix.NONE);
-	}
-
-	private static void join(Thread thread) {
-		try {
-			thread.join();
-		} catch (InterruptedException ie) {
-			ie.printStackTrace();
-		}
 	}
 
 }

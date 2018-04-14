@@ -69,6 +69,9 @@ public class Player extends SocketSide implements AutoCloseable {
 			case Code.GAME_TIE:
 				print("Game is a Tie!");
 				return false;
+			case Code.CONNECTED:
+				// code only used on website client
+				break;
 			default:
 				throw new UnsupportedOperationException("Code: " + mode);
 			}

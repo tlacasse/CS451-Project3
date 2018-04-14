@@ -83,6 +83,14 @@ public final class Program {
 		return list;
 	}
 
+	public static void join(Thread thread) {
+		try {
+			thread.join();
+		} catch (InterruptedException ie) {
+			ie.printStackTrace();
+		}
+	}
+
 	private Program() {
 	}
 

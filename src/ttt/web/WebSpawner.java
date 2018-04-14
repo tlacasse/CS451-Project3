@@ -11,10 +11,9 @@ import ttt.learning.GameIO;
 
 final class WebSpawner {
 
-	public static final String WEB_SERVER_DIRECTORY = GameIO.PROJECT_ROOT + "bin";
-
 	public static final int PORT_OPEN = 97;
 	public static final int PORT_CLOSE = 96;
+	public static final int PORT_OPEN_AI = 95;
 
 	private static Process process = null;
 	private static boolean serverIsRunning = false;
@@ -27,7 +26,7 @@ final class WebSpawner {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				System.out.println("SHUTDOWN");
+				System.out.println("WebSpawner SHUTDOWN");
 				done = true;
 				if (process != null) {
 					process.destroy();
@@ -52,12 +51,13 @@ final class WebSpawner {
 		start(new Wait(PORT_OPEN) {
 			@Override
 			public void process() throws IOException {
-				if (!serverIsRunning || !process.isAlive()) {
-					process = (new ProcessBuilder("java", "-cp", WEB_SERVER_DIRECTORY, "ttt.web.WebServer")).inheritIO()
-							.start();
-					print(process);
-					serverIsRunning = true;
-				}
+				startProcess("java", "-cp", GameIO.BIN, "ttt.web.WebServer");
+			}
+		});
+		start(new Wait(PORT_OPEN_AI) {
+			@Override
+			public void process() throws IOException {
+				startProcess("java", "-cp", GameIO.BIN, "ttt.web.WebServer", "1");
 			}
 		});
 		start(new Wait(PORT_CLOSE) {
@@ -72,6 +72,14 @@ final class WebSpawner {
 		});
 	}
 
+	private static void startProcess(String... cmdArgs) throws IOException {
+		if (!serverIsRunning || !process.isAlive()) {
+			process = (new ProcessBuilder(cmdArgs)).inheritIO().start();
+			print(process);
+			serverIsRunning = true;
+		}
+	}
+
 	private static void print(Object obj) {
 		System.out.println("WebSpawner\t" + String.valueOf(obj));
 	}
@@ -81,6 +89,8 @@ final class WebSpawner {
 		threads.add(t);
 		t.start();
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	private static abstract class Wait implements Runnable {
 
@@ -110,7 +120,7 @@ final class WebSpawner {
 			}
 		}
 
-		public abstract void process() throws IOException;
+		abstract void process() throws IOException;
 
 	}
 
