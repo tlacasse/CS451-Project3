@@ -113,12 +113,22 @@ public final class GameIO {
 		return list;
 	}
 
-	public static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> readGamesForNetworkTraining()
-			throws FileNotFoundException, IOException {
+	public static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> readGamesForNetworkTraining(
+			List<GamePostfix> gamesToExclude) throws FileNotFoundException, IOException {
 		final Pair<List<double[]>, List<double[]>> win = new Pair<>(new LinkedList<>(), new LinkedList<>());
 		final Pair<List<double[]>, List<double[]>> lose = new Pair<>(new LinkedList<>(), new LinkedList<>());
-		for (Pair<File, Result> g : loadGames()) {
-			Result game = g.getValue();
+		for (Pair<File, Result> pair : loadGames()) {
+			final String filename = pair.getKey().toString();
+			boolean skip = false;
+			for (GamePostfix postfix : gamesToExclude) {
+				if (filename.indexOf(postfix.value) >= 0) {
+					skip = true;
+					break;
+				}
+			}
+			if (skip)
+				continue;
+			final Result game = pair.getValue();
 			for (int player = 0; player < game.players; player++) {
 				final Board board = new Board(Board.Type.PLAYER);
 				final boolean playerIsWinner = (game.winner == player);

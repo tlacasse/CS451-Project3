@@ -2,6 +2,7 @@ package ttt.learning;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 import javafx.util.Pair;
 import ttt.Board;
@@ -40,8 +41,9 @@ public class Training {
 
 	private static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> DATA;
 
-	public static void train(int interations, int displayIntervals, boolean useLosses) throws IOException {
-		DATA = GameIO.readGamesForNetworkTraining();
+	public static void train(int interations, int displayIntervals, boolean useLosses, List<GamePostfix> gamesToExclude)
+			throws IOException {
+		DATA = GameIO.readGamesForNetworkTraining(gamesToExclude);
 		System.out.println("Win Training Data Points: " + winData().getKey().rows());
 		System.out.println("Loss Training Data Points: " + lossData().getKey().rows());
 		System.out.println();

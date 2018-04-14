@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import ttt.learning.GamePostfix;
 import ttt.learning.Training;
 
 public final class Program {
@@ -20,8 +21,17 @@ public final class Program {
 					Training.restartNeuralNetworks();
 				}
 				final Config config = Config.create(scan, KEYS_TRAINING);
+
+				final List<GamePostfix> gamesToExclude = new LinkedList<>();
+				if (config.get(TRAINING_USE_AvA) < 1)
+					gamesToExclude.add(GamePostfix.NONE);
+				if (config.get(TRAINING_USE_PvA) < 1)
+					gamesToExclude.add(GamePostfix.USER_VS_AI);
+				if (config.get(TRAINING_USE_PvP) < 1)
+					gamesToExclude.add(GamePostfix.PVP);
+
 				Training.train(config.get(TRAINING_ITERATIONS), config.get(TRAINING_DISPLAY_INTERVALS),
-						config.get(TRAINING_USE_LOSS) > 0);
+						config.get(TRAINING_USE_LOSS) > 0,gamesToExclude);
 			}
 			System.out.println("??? Run Tic Tac Toe? (y/n)");
 			if (isYes(scan.nextLine())) {
@@ -45,16 +55,21 @@ public final class Program {
 
 	public static final Config.Key PLAYERS = new Config.Key("Players", 2);
 	public static final Config.Key HAVE_USER = new Config.Key("Have a User Input player", 0, true);
+
 	public static final Config.Key TRAINING_ITERATIONS = new Config.Key("Training Iterations", 500);
 	public static final Config.Key TRAINING_DISPLAY_INTERVALS = new Config.Key(
 			"Number of Display Intervals while Training", 10);
 	public static final Config.Key TRAINING_USE_LOSS = new Config.Key("Use Losses to 'unlearn'", 1, true);
+	public static final Config.Key TRAINING_USE_AvA = new Config.Key("Use AI vs AI games", 1, true);
+	public static final Config.Key TRAINING_USE_PvA = new Config.Key("Use Player vs AI games", 1, true);
+	public static final Config.Key TRAINING_USE_PvP = new Config.Key("Use Player vs Player games", 1, true);
 
 	private static final List<Config.Key> KEYS_GAME, KEYS_TRAINING;
 
 	static {
 		KEYS_GAME = defineList(PLAYERS, HAVE_USER);
-		KEYS_TRAINING = defineList(TRAINING_ITERATIONS, TRAINING_DISPLAY_INTERVALS, TRAINING_USE_LOSS);
+		KEYS_TRAINING = defineList(TRAINING_ITERATIONS, TRAINING_DISPLAY_INTERVALS, TRAINING_USE_LOSS, TRAINING_USE_AvA,
+				TRAINING_USE_PvA, TRAINING_USE_PvP);
 	}
 
 	public static boolean isYes(String line) {
