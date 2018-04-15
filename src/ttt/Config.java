@@ -9,12 +9,12 @@ public final class Config {
 	public static final class Key {
 
 		public final String desc;
-		public final short base;
+		public final int base;
 		public final boolean isBoolean;
 
 		public Key(String desc, int base, boolean isBoolean) {
 			this.desc = desc;
-			this.base = (short) base;
+			this.base = base;
 			this.isBoolean = isBoolean;
 		}
 
@@ -47,13 +47,13 @@ public final class Config {
 		return config;
 	}
 
-	public Scanner getScanner() {
-		return scan;
-	}
-
 	public int get(Key key) {
 		final int result = values.get(key).intValue();
 		return key.isBoolean ? (result > 0 ? 1 : 0) : result;
+	}
+
+	public Scanner getScanner() {
+		return scan;
 	}
 
 }

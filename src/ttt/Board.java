@@ -11,6 +11,7 @@ public class Board {
 		 * <li>1 = player 0</li>
 		 * <li>2 = player 1</li>
 		 * </ul>
+		 * Also keeps track of ties.
 		 */
 		SERVER,
 		/**
@@ -19,6 +20,7 @@ public class Board {
 		 * <li>1 = player move</li>
 		 * <li>-1 = other player move</li>
 		 * </ul>
+		 * Also stores a double array of board.
 		 */
 		PLAYER;
 	}
@@ -28,8 +30,8 @@ public class Board {
 	public static final int CELLS = SIZE * SIZE;
 
 	private final int[][] board;
-	private final double[] matrix;
 	private final Type type;
+	private final double[] matrix;
 	private final TieTracker tt;
 
 	public Board(Type type) {

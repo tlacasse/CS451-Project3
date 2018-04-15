@@ -101,6 +101,8 @@ public class Server extends ServerBase implements AutoCloseable, Runnable {
 		@Override
 		public int readInt() throws IOException {
 			// switch x & y
+			// board has first coord as row and second as column,
+			// want to match normal graph order
 			if (askSecond) {
 				askSecond = !askSecond;
 				return save;

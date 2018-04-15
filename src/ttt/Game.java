@@ -30,6 +30,10 @@ public class Game {
 		winner = -1;
 	}
 
+	public Game() {
+		this(-1);
+	}
+
 	public void setPlayerCount(int players) {
 		this.players = players;
 	}
@@ -49,7 +53,24 @@ public class Game {
 		return winner != -1;
 	}
 
+	/**
+	 * <ul>
+	 * <li>Player Count</li>
+	 * <li>Winner</li>
+	 * <li>Move Count</li>
+	 * <li>Moves:
+	 * <ul>
+	 * <li>Player</li>
+	 * <li>X</li>
+	 * <li>Y</li>
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 */
 	public ByteBuffer toByteBuffer() {
+		if (players == -1) {
+			throw new IllegalStateException("Player Count Not Set.");
+		}
 		ByteBuffer buffer = ByteBuffer.allocate((Integer.BYTES * 3) + (MOVE_SIZE * count));
 		buffer.putInt(players);
 		buffer.putInt(winner);
@@ -59,6 +80,8 @@ public class Game {
 		}
 		return buffer;
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 	public static void start(int port, Config config) throws IOException {
 		final Game game = new Game(config.get(PLAYERS));

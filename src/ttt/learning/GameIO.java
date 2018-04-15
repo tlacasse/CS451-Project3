@@ -45,20 +45,20 @@ public final class GameIO {
 
 		// #layers (int), sizeOfEachLayer (ints), weights (doubles)
 		final ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
-		final String fileName = nnFileName(nodes);
-		try (FileOutputStream fos = new FileOutputStream(fileName)) {
-			buffer.putInt(nodes.length);
-			for (Matrix m : weights) {
-				buffer.putInt(m.rows());
-			}
-			buffer.putInt(weights[weights.length - 1].columns());
-			for (Matrix m : weights) {
-				for (int i = 0; i < m.rows(); i++) {
-					for (int j = 0; j < m.columns(); j++) {
-						buffer.putDouble(m.get(i, j));
-					}
+		buffer.putInt(nodes.length);
+		for (Matrix m : weights) {
+			buffer.putInt(m.rows());
+		}
+		buffer.putInt(weights[weights.length - 1].columns());
+		for (Matrix m : weights) {
+			for (int i = 0; i < m.rows(); i++) {
+				for (int j = 0; j < m.columns(); j++) {
+					buffer.putDouble(m.get(i, j));
 				}
 			}
+		}
+		final String fileName = nnFileName(nodes);
+		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(buffer.array());
 		}
 		System.out.println("Neural Network Saved: \"" + fileName + "\"");

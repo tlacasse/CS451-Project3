@@ -16,22 +16,7 @@ public final class Program {
 		try (Scanner scan = new Scanner(System.in)) {
 			System.out.println("??? Train Neural Networks? (y/n)");
 			if (isYes(scan.nextLine())) {
-				System.out.println("??? Start from Random Weights? (y/n)");
-				if (isYes(scan.nextLine())) {
-					Training.restartNeuralNetworks();
-				}
-				final Config config = Config.create(scan, KEYS_TRAINING);
-
-				final List<GamePostfix> gamesToExclude = new LinkedList<>();
-				if (config.get(TRAINING_USE_AvA) < 1)
-					gamesToExclude.add(GamePostfix.NONE);
-				if (config.get(TRAINING_USE_PvA) < 1)
-					gamesToExclude.add(GamePostfix.USER_VS_AI);
-				if (config.get(TRAINING_USE_PvP) < 1)
-					gamesToExclude.add(GamePostfix.PVP);
-
-				Training.train(config.get(TRAINING_ITERATIONS), config.get(TRAINING_DISPLAY_INTERVALS),
-						config.get(TRAINING_USE_LOSS) > 0,gamesToExclude);
+				train(scan);
 			}
 			System.out.println("??? Run Tic Tac Toe? (y/n)");
 			if (isYes(scan.nextLine())) {
@@ -53,6 +38,27 @@ public final class Program {
 		}
 	}
 
+	private static void train(Scanner scan) throws IOException {
+		System.out.println("??? Start from Random Weights? (y/n)");
+		if (isYes(scan.nextLine())) {
+			Training.restartNeuralNetworks();
+		}
+		Config config = Config.create(scan, KEYS_TRAINING);
+
+		List<GamePostfix> gamesToExclude = new LinkedList<>();
+		if (config.get(TRAINING_USE_AvA) < 1)
+			gamesToExclude.add(GamePostfix.NONE);
+		if (config.get(TRAINING_USE_PvA) < 1)
+			gamesToExclude.add(GamePostfix.USER_VS_AI);
+		if (config.get(TRAINING_USE_PvP) < 1)
+			gamesToExclude.add(GamePostfix.PVP);
+
+		Training.train(config.get(TRAINING_ITERATIONS), config.get(TRAINING_DISPLAY_INTERVALS),
+				config.get(TRAINING_USE_LOSS) > 0, gamesToExclude);
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+
 	public static final Config.Key PLAYERS = new Config.Key("Players", 2);
 	public static final Config.Key HAVE_USER = new Config.Key("Have a User Input player", 0, true);
 
@@ -71,6 +77,8 @@ public final class Program {
 		KEYS_TRAINING = defineList(TRAINING_ITERATIONS, TRAINING_DISPLAY_INTERVALS, TRAINING_USE_LOSS, TRAINING_USE_AvA,
 				TRAINING_USE_PvA, TRAINING_USE_PvP);
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 	public static boolean isYes(String line) {
 		if (line == null) {
@@ -91,7 +99,7 @@ public final class Program {
 		if (ts.length == 0) {
 			throw new IllegalArgumentException("Need at least one element.");
 		}
-		final LinkedList<T> list = new LinkedList<>();
+		LinkedList<T> list = new LinkedList<>();
 		for (int i = 0; i < ts.length; i++) {
 			list.add(ts[i]);
 		}
@@ -102,6 +110,7 @@ public final class Program {
 		try {
 			thread.join();
 		} catch (InterruptedException ie) {
+			System.out.println("!!!!! Failed to join: " + thread);
 			ie.printStackTrace();
 		}
 	}
