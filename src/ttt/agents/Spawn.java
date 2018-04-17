@@ -36,6 +36,7 @@ public class Spawn implements Runnable {
 	public void run() {
 		try {
 			Process process = builder.start();
+			PROCESSES.add(process);
 			System.out.println("Exit code: " + process.waitFor());
 		} catch (IOException | InterruptedException ioeie) {
 			System.out.println("Thread Failed: " + this);

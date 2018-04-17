@@ -36,6 +36,7 @@ public class Player extends SocketSide implements AutoCloseable {
 		super(port);
 		board = new Board(Board.Type.PLAYER);
 		nn = pickRandomNN();
+		System.out.println("Neural Network Chosen: " + nn);
 	}
 
 	@Override
@@ -78,13 +79,12 @@ public class Player extends SocketSide implements AutoCloseable {
 		}
 	}
 
-	public int[] choose() {
+	private int[] choose() {
 		// row matrix
 		final Matrix out = nn.calculate(new Matrix(false, board.asDoubleArray()));
-		final double min = (double) Integer.MIN_VALUE;
 
 		int[] pos = null;
-		double max = min;
+		double max = (double) Integer.MIN_VALUE;
 		for (int i = 0; i < Board.CELLS; i++) {
 			final int[] coord = Board.ordinalToCoord(i);
 			final double get = out.get(0, i);
@@ -99,7 +99,7 @@ public class Player extends SocketSide implements AutoCloseable {
 		return pos;
 	}
 
-	public void setOtherPlayerMove(int x, int y) {
+	private void setOtherPlayerMove(int x, int y) {
 		board.set(x, y, OTHER);
 	}
 

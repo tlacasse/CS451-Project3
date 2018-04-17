@@ -61,10 +61,10 @@ public class Server extends ServerBase implements AutoCloseable, Runnable {
 	// Client with User Input
 	private class ClientUser implements Client {
 
-		private final Scanner scan;
-		private boolean askSecond;
-		private boolean display;
-		private int save;
+		final Scanner scan;
+		boolean askSecond;
+		boolean display;
+		int save;
 
 		public ClientUser() {
 			this.scan = config.getScanner();
@@ -110,7 +110,7 @@ public class Server extends ServerBase implements AutoCloseable, Runnable {
 			for (boolean useX : new boolean[] { true, false }) {
 				System.out.println("??? Input your move:");
 				int value = -1;
-				while (value == -1) {
+				while (value < 0) {
 					try {
 						System.out.println(useX ? "?? Input x:" : "?? Input y:");
 						// not scan.nextInt()
