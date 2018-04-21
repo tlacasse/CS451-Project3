@@ -18,7 +18,9 @@ final class WebServer extends ServerBase {
 
 	public static final int PORT = 98;
 
+	// for closing on shutdown
 	private static WebServer webServer = null;
+	private Thread listener, playerSpawn;
 
 	public static void main(String[] args) throws IOException {
 		// https://stackoverflow.com/questions/5747803/running-code-on-program-exit-in-java
@@ -34,10 +36,9 @@ final class WebServer extends ServerBase {
 	private final boolean isPvP;
 	private boolean havePlayers;
 	private int totalPlayers;
-	private Thread listener, playerSpawn;
 
 	private WebServer(boolean isPvP) throws IOException {
-		super(new Game(-1), PORT); // set game player count later
+		super(new Game(), PORT);
 		this.isPvP = isPvP;
 		server.setSoTimeout(1000);
 
@@ -86,7 +87,9 @@ final class WebServer extends ServerBase {
 		} catch (EndGameException ege) {
 		}
 		GameIO.saveGame(game, isPvP ? GamePostfix.PVP : GamePostfix.USER_VS_AI);
-		playerSpawn = null;
+		if (playerSpawn != null) {
+			Program.join(playerSpawn);
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,8 +160,8 @@ final class WebServer extends ServerBase {
 		@Override
 		public void run() {
 			System.out.println("SHUTDOWN");
-			webServer.havePlayers = true;
 			if (webServer != null) {
+				webServer.havePlayers = true;
 				try {
 					webServer.close();
 				} catch (IOException ioe) {

@@ -1,7 +1,6 @@
 package ttt.learning;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 import javafx.util.Pair;
@@ -48,12 +47,10 @@ public class Training {
 		System.out.println("Loss Training Data Points: " + lossData().getKey().rows());
 		System.out.println();
 
-		final LinkedList<NeuralNetwork> networks = new LinkedList<>();
-		for (int i = 0; i < NETWORKS.length; i++) {
-			networks.add(GameIO.loadNetwork(NETWORKS[i]));
-		}
 		final int displayInterval = interations / displayIntervals;
-		for (NeuralNetwork nn : networks) {
+
+		for (int i = 0; i < NETWORKS.length; i++) {
+			NeuralNetwork nn = GameIO.loadNetwork(NETWORKS[i]);
 			System.out.println(nn);
 			for (int t = 1; t <= interations; t++) {
 				if (t % displayInterval == 0 || t == interations) {
@@ -81,10 +78,8 @@ public class Training {
 					}
 				}
 			}
-			System.out.println();
-		}
-		for (NeuralNetwork nn : networks) {
 			GameIO.saveNetwork(nn);
+			System.out.println();
 		}
 	}
 
