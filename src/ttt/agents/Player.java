@@ -32,11 +32,15 @@ public class Player extends SocketSide implements AutoCloseable {
 	private final Board board;
 	private final NeuralNetwork nn;
 
+	//add a random first movie to vary games
+	private boolean first;
+
 	public Player(int port) throws IOException {
 		super(port);
 		board = new Board(Board.Type.PLAYER);
 		nn = pickRandomNN();
 		System.out.println("Neural Network Chosen: " + nn);
+		first = true;
 	}
 
 	@Override
@@ -80,6 +84,10 @@ public class Player extends SocketSide implements AutoCloseable {
 	}
 
 	private int[] choose() {
+		if (first) {
+			first = false;
+			return new int[] { RANDOM.nextInt(Board.SIZE), RANDOM.nextInt(Board.SIZE) };
+		}
 		// row matrix
 		final Matrix out = nn.calculate(new Matrix(false, board.asDoubleArray()));
 
@@ -100,6 +108,7 @@ public class Player extends SocketSide implements AutoCloseable {
 	}
 
 	private void setOtherPlayerMove(int x, int y) {
+		first = false;
 		board.set(x, y, OTHER);
 	}
 

@@ -56,11 +56,10 @@ public class Board {
 		}
 		val = adaptValueForType(val);
 		board[x][y] = val;
-		if (type == Type.PLAYER) {
+		if (type == Type.PLAYER)
 			matrix[coordToOrdinal(x, y)] = (double) val;
-		} else {
+		if (type == Type.SERVER)
 			tt.check(x, y, val);
-		}
 	}
 
 	public static int coordToOrdinal(int x, int y) {
@@ -120,6 +119,10 @@ public class Board {
 	private static final int TT_EMPTY = -1;
 	private static final int TT_TIE = -2;
 
+	// to keep track of ties. Instead of checking every single time, just keep
+	// track of how many open rows, cols, diagonals. If two different people go
+	// in a same winning position, that one is marked as a tie, and the number
+	// of possible winning positions is decremented.
 	private class TieTracker {
 
 		int[] check;

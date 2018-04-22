@@ -10,6 +10,10 @@ import java.util.List;
 
 import ttt.learning.GameIO;
 
+/**
+ * Starts and stops the website game server. Uses multiple server sockets to not
+ * have to deal with sending data.
+ */
 final class WebSpawner {
 
 	public static final int PORT_OPEN = 97;

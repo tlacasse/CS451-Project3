@@ -38,15 +38,15 @@ public class Game {
 		this.players = players;
 	}
 
+	public void setWinner(int winner) {
+		this.winner = winner;
+	}
+
 	public void recordMove(int player, int x, int y) {
 		moves.add(player);
 		moves.add(x);
 		moves.add(y);
 		count++;
-	}
-
-	public void setWinner(int winner) {
-		this.winner = winner;
 	}
 
 	public boolean hasWinner() {
@@ -83,6 +83,7 @@ public class Game {
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 
+	// create the game for the assignment, (not for the website games)
 	public static void start(int port, Config config) throws IOException {
 		final Game game = new Game(config.get(PLAYERS));
 		try (Server server = new Server(game, port, config)) {
