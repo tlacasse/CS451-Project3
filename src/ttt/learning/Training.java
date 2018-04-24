@@ -16,17 +16,18 @@ public class Training {
 
 	static {
 		int i = 0;
-		NETWORKS = new int[NETWORK_COUNT = 8][];
-		NETWORKS[i++] = new int[] { Board.CELLS, 10, Board.CELLS };
+		NETWORKS = new int[NETWORK_COUNT = 4][];
+
 		NETWORKS[i++] = new int[] { Board.CELLS, 50, Board.CELLS };
 		NETWORKS[i++] = new int[] { Board.CELLS, 50, 10, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 5, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 5, 5, 5, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 3, 5, 7, Board.CELLS };
 		NETWORKS[i++] = new int[] { Board.CELLS, 15, 15, Board.CELLS };
 		NETWORKS[i++] = new int[] { Board.CELLS, 8, 8, Board.CELLS };
 
 		// these are not good
+		// NETWORKS[i++] = new int[] { Board.CELLS, 5, Board.CELLS };
+		// NETWORKS[i++] = new int[] { Board.CELLS, 5, 5, 5, Board.CELLS };
+		// NETWORKS[i++] = new int[] { Board.CELLS, 3, 5, 7, Board.CELLS };
+		// NETWORKS[i++] = new int[] { Board.CELLS, 10, Board.CELLS };
 		// NETWORKS[i++] = new int[] { Board.CELLS, 100, Board.CELLS };
 		// NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, Board.CELLS };
 		// NETWORKS[i++] = new int[] { Board.CELLS, 25, 25, 25, Board.CELLS };
