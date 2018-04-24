@@ -13,7 +13,9 @@ import ttt.agents.Spawn;
 import ttt.learning.GameIO;
 import ttt.learning.GamePostfix;
 
-//Server deals with the C# web server, not the actual webpage client
+/**
+ * Website game server, connects with the actual website backend.
+ */
 final class WebServer extends ServerBase {
 
 	public static final int PORT = 98;

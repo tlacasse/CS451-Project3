@@ -12,6 +12,9 @@ import ttt.learning.Matrix;
 import ttt.learning.NeuralNetwork;
 import ttt.learning.Training;
 
+/**
+ * Player process that plays Tic Tac Toe through sockets.
+ */
 public class Player extends SocketSide implements AutoCloseable {
 
 	public static void main(String[] args) throws IOException {
@@ -32,7 +35,7 @@ public class Player extends SocketSide implements AutoCloseable {
 	private final Board board;
 	private final NeuralNetwork nn;
 
-	//add a random first movie to vary games
+	// add a random first movie to vary games
 	private boolean first;
 
 	public Player(int port) throws IOException {

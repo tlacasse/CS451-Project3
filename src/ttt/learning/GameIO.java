@@ -17,6 +17,9 @@ import ttt.Board;
 import ttt.Game;
 import ttt.agents.Player;
 
+/**
+ * Deals with saving and loading of Neural Network and Game files.
+ */
 public final class GameIO {
 
 	public static final String PROJECT_NAME, PROJECT_ROOT, BIN, DIRECTORY_NN, DIRECTORY_GAMES, DIRECTORY_TIES;
@@ -136,7 +139,7 @@ public final class GameIO {
 					final int moveX = game.getMoveX(move);
 					final int moveY = game.getMoveY(move);
 					if (game.getMovePlayer(move) == player) {
-						(playerIsWinner ? win : lose).getKey().add(board.asDoubleArray());
+						(playerIsWinner ? win : lose).getKey().add(board.asDoubleArray().clone());
 						(playerIsWinner ? win : lose).getValue().add(createDesiredArray(moveX, moveY));
 						board.set(moveX, moveY, Player.SELF);
 					} else {

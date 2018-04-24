@@ -6,6 +6,9 @@ import java.util.List;
 
 import ttt.learning.GameIO;
 
+/**
+ * Thread that starts Player process.
+ */
 public class Spawn implements Runnable {
 
 	public static Thread newPlayer(int port) {

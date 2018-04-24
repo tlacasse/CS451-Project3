@@ -9,6 +9,10 @@ import ttt.Board;
 import ttt.Code;
 import ttt.Game;
 
+/**
+ * The basic structure of a server for Tic Tac Toe, most importantly including
+ * the server loop.
+ */
 public abstract class ServerBase implements AutoCloseable {
 
 	protected final ServerSocket server;

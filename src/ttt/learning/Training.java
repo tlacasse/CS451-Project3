@@ -6,6 +6,9 @@ import java.util.List;
 import javafx.util.Pair;
 import ttt.Board;
 
+/**
+ * Static method to train the networks, along with storing the networks to use.
+ */
 public class Training {
 
 	public static final int[][] NETWORKS;

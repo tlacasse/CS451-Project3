@@ -14,6 +14,10 @@ import ttt.agents.Spawn;
 import ttt.learning.GameIO;
 import ttt.learning.GamePostfix;
 
+/**
+ * Represents a Tic Tac Toe game in progress, by storing each move along with
+ * player count and winner.
+ */
 public class Game {
 
 	private static final int MOVE_SIZE = (Integer.BYTES * 3);

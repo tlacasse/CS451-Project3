@@ -3,6 +3,10 @@ package ttt.learning;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * A NeuralNetwork implementation, with cost function and gradient descent for
+ * learning. (Hopefully works!)
+ */
 public class NeuralNetwork {
 
 	private final int size;
@@ -124,7 +128,7 @@ public class NeuralNetwork {
 	/////////////////////////////////////////////////////////////
 
 	public static void main(String[] args) throws IOException {
-		// test ANN, housing prices based of #bedrooms, #bathroom, sq ft
+		// test NN, housing prices based of #bedrooms, #bathroom, sq ft
 		// not much data, is overfitting, just an example though.
 
 		double[][] xda = new double[9][3];

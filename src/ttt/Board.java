@@ -2,6 +2,9 @@ package ttt;
 
 import java.util.Arrays;
 
+/**
+ * Tic Tac Toe Board representation. Two different kinds: Server and Player.
+ */
 public class Board {
 
 	public static enum Type {
@@ -165,31 +168,31 @@ public class Board {
 	// copy from Matrix and adapt for ints
 	@Override
 	public String toString() {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		int maxSize = 0;
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
-				maxSize = Math.max(maxSize, ("" + board[i][j]).length());
+				maxSize = Math.max(maxSize, String.valueOf(board[i][j]).length());
 			}
 		}
 		maxSize += 2;
 		for (int i = 0; i < SIZE; i++) {
-			result += "[ ";
+			result.append("[ ");
 			for (int j = 0; j < SIZE; j++) {
-				int thisSize = ("" + board[i][j]).length();
+				int thisSize = String.valueOf(board[i][j]).length();
 				int sb = (int) Math.floor((maxSize - thisSize) / 2);
 				int sa = maxSize - thisSize - sb;
 				for (int k = 0; k < sb; k++) {
-					result += " ";
+					result.append(' ');
 				}
-				result += board[i][j];
+				result.append(board[i][j]);
 				for (int k = 0; k < sa; k++) {
-					result += " ";
+					result.append(' ');
 				}
 			}
-			result += " ]\n";
+			result.append(" ]\n");
 		}
-		return result;
+		return result.toString();
 	}
 
 }

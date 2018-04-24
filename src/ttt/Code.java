@@ -1,5 +1,8 @@
 package ttt;
 
+/**
+ * Code describing what each socket packet is.
+ */
 public final class Code {
 
 	// complains about enums, 'switch statements must be constant expressions'

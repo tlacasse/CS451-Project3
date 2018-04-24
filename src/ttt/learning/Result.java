@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * Represents a complete game, created from a saved file.
+ */
 public class Result {
 
 	public final int players, winner, count;

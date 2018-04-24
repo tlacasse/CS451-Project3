@@ -8,11 +8,24 @@ import java.util.Scanner;
 import ttt.learning.GamePostfix;
 import ttt.learning.Training;
 
+/**
+ * Main method, can run Tic Tac Toe games and train the Neural Networks.
+ */
 public final class Program {
 
 	public static final int PORT = 6327;
 
 	public static void main(String[] args) throws IOException {
+		/*
+		 * try (PrintWriter writer = new PrintWriter("Output.txt", "UTF-8")) {
+		 * System.out.println("1"); Pair<Pair<Matrix, Matrix>, Pair<Matrix,
+		 * Matrix>> s = GameIO
+		 * .readGamesForNetworkTraining(Collections.emptyList());
+		 * System.out.println("2"); s.getKey().getKey().toFile(writer); //
+		 * s.getKey().getValue().toFile(writer); //
+		 * s.getValue().getKey().toFile(writer); //
+		 * s.getValue().getValue().toFile(writer); } System.exit(0);
+		 */
 		try (Scanner scan = new Scanner(System.in)) {
 			System.out.println("??? Train Neural Networks? (y/n)");
 			if (isYes(scan.nextLine())) {

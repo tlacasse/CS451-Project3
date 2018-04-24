@@ -10,6 +10,9 @@ import ttt.Program;
 import ttt.learning.GameIO;
 import ttt.learning.Result;
 
+/**
+ * Display games in console.
+ */
 final class GameReader {
 
 	private GameReader() {

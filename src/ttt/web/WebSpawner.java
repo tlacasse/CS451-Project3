@@ -12,7 +12,7 @@ import ttt.learning.GameIO;
 
 /**
  * Starts and stops the website game server. Uses multiple server sockets to not
- * have to deal with sending data.
+ * have to deal with sending data. Client sockets join and then are closed.
  */
 final class WebSpawner {
 

@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Enables setting parameters.
+ */
 public final class Config {
 
 	public static final class Key {

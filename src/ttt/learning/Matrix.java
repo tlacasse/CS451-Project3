@@ -1,8 +1,12 @@
 package ttt.learning;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * A math matrix implementation.
+ */
 public class Matrix {
 
 	public static Matrix identity(int size) {
@@ -319,35 +323,48 @@ public class Matrix {
 
 	@Override
 	public String toString() {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		int maxSize = 0;
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
-				maxSize = Math.max(maxSize, ("" + data[i][j]).length());
+				maxSize = Math.max(maxSize, String.valueOf(data[i][j]).length());
 			}
 		}
 		maxSize += 2;
 		for (int i = 0; i < rows; i++) {
-			result += "[ ";
+			result.append("[ ");
 			for (int j = 0; j < cols; j++) {
-				int thisSize = ("" + data[i][j]).length();
+				int thisSize = String.valueOf(data[i][j]).length();
 				int sb = (int) Math.floor((maxSize - thisSize) / 2);
 				int sa = maxSize - thisSize - sb;
 				for (int k = 0; k < sb; k++) {
-					result += " ";
+					result.append(' ');
 				}
-				result += data[i][j];
+				result.append(data[i][j]);
 				for (int k = 0; k < sa; k++) {
-					result += " ";
+					result.append(' ');
 				}
 			}
-			result += " ]\n";
+			result.append(" ]\n");
 		}
-		return result;
+		return result.toString();
 	}
 
 	public void display() {
 		System.out.println(toString());
+	}
+
+	public void toFile(PrintWriter writer) {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				writer.print(data[i][j]);
+				if (j != cols - 1) {
+					writer.print(' ');
+				}
+			}
+			writer.println();
+		}
+		writer.println();
 	}
 
 	/////////////////////////////////////////////////////////////

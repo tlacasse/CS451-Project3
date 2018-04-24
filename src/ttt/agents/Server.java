@@ -11,6 +11,9 @@ import ttt.Code;
 import ttt.Config;
 import ttt.Game;
 
+/**
+ * The Tic Tac Toe game server.
+ */
 public class Server extends ServerBase implements AutoCloseable, Runnable {
 
 	private final Config config;

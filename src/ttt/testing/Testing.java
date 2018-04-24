@@ -13,6 +13,9 @@ import ttt.learning.GamePostfix;
 import ttt.learning.Matrix;
 import ttt.learning.NeuralNetwork;
 
+/**
+ * Testing to make sure saving and loading is correct.
+ */
 final class Testing {
 
 	private Testing() {

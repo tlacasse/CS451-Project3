@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+/**
+ * Abstract implementation of SocketReadWrite for sockets.
+ */
 public abstract class SocketSide implements AutoCloseable, SocketReadWrite {
 
 	protected Socket socket;
