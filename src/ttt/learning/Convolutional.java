@@ -43,7 +43,15 @@ public class Convolutional {
 
 	public Matrix calculate(Matrix x) {
 		layers[0] = x;
+		for (int i = 0; i < sizes[0].length; i++) {
+
+		}
 		return null;
+	}
+
+	private Matrix adaptedImage(Matrix x) {
+		// double[][] m = new double[][];
+		return x;
 	}
 
 }
