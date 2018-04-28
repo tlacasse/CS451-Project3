@@ -4,14 +4,25 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * An array of Matrices, can easily call the same method on all matrices in the
+ * array.
+ */
 public class ParallelMatrix {
 
-	public static final Method SCALAR, ADD, ELEMENTSQUARE;
+	public static final Method SCALAR, ADD, ELEMENTSQUARE, PRODUCT, MULTIPLY, NEGATIVE, TRANSPOSE, SIGMOID,
+			SIGMOIDPRIME;
 
 	static {
 		SCALAR = get("scalar", double.class);
 		ADD = get("add", Matrix.class);
 		ELEMENTSQUARE = get("elementSquare");
+		PRODUCT = get("product", Matrix.class);
+		MULTIPLY = get("multiply", Matrix.class);
+		NEGATIVE = get("negative");
+		TRANSPOSE = get("transpose");
+		SIGMOID = get("sigmoid");
+		SIGMOIDPRIME = get("sigmoidPrime");
 	}
 
 	private static Method get(String name, Class<?>... parameterTypes) {
@@ -38,7 +49,7 @@ public class ParallelMatrix {
 	public void invoke(Method method, Object... args)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (!method.getReturnType().equals(Matrix.class)) {
-			throw new IllegalArgumentException("Can call on methods that return matrices.");
+			throw new IllegalArgumentException("Can only call on methods that return matrices.");
 		}
 		for (int i = 0; i < array.length; i++) {
 			array[i] = (Matrix) method.invoke(array[i], args);
@@ -48,7 +59,7 @@ public class ParallelMatrix {
 	// not used, keeping to save code
 	@Deprecated
 	@SuppressWarnings("unchecked")
-	public <R> R[] aaa(Method method, Object... args)
+	public <R> R[] invokeAndReturn(Method method, Object... args)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		R[] result = (R[]) Array.newInstance(method.getReturnType(), array.length);
 		for (int i = 0; i < array.length; i++) {
