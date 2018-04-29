@@ -16,9 +16,9 @@ import ttt.learning.NeuralNetwork;
 /**
  * Testing to make sure saving and loading is correct.
  */
-final class Testing {
+final class GameIOTest {
 
-	private Testing() {
+	private GameIOTest() {
 	}
 
 	private static class TestingException extends RuntimeException {
