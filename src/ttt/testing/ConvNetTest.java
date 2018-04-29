@@ -29,7 +29,7 @@ final class ConvNetTest {
 		}
 		Matrix x = new Matrix(cases);
 
-		Convolutional cnn = new Convolutional(Board.SIZE, new int[] { 5, 5 }, new int[] { 15, 20, Board.CELLS });
+		Convolutional cnn = new Convolutional(Board.SIZE, new int[] { 5, 5 }, new int[] { 50, Board.CELLS });
 		cnn.calculate(x).display();
 	}
 

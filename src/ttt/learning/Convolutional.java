@@ -25,12 +25,12 @@ public class Convolutional {
 
 		weights = new Matrix[size - 1];
 		for (int i = 0; i < convLayers.length; i++) {
-			weights[convIndex(i)] = Matrix.random(sqr(convLayers[i]), 1);
+			weights[i] = Matrix.random(sqr(convLayers[i]), 1);
 			imageWidth[i + 1] = postConvWidth(imageWidth[i], convLayers[i]);
 		}
-		weights[bridgeIndex()] = Matrix.random(sqr(imageWidth[convLayers.length]), fullLayers[0]);
-		for (int i = 0; i < fullLayers.length; i++) {
-			weights[fullIndex(i)] = Matrix.random(fullLayers[i], fullLayers[i + 1]);
+		weights[convLayers.length] = Matrix.random(sqr(imageWidth[convLayers.length]), fullLayers[0]);
+		for (int i = 0; i < fullLayers.length - 1; i++) {
+			weights[convLayers.length + 1 + i] = Matrix.random(fullLayers[i], fullLayers[i + 1]);
 		}
 	}
 
@@ -50,7 +50,7 @@ public class Convolutional {
 			transition[i] = after[0];
 			layer[i + 1] = after[1];
 		}
-		for (; i < size; i++) {
+		for (; i < size - 1; i++) {
 			transition[i] = layer[i].multiply(weights[i]);
 			layer[i + 1] = transition[i].sigmoid();
 		}
@@ -59,7 +59,7 @@ public class Convolutional {
 
 	private Matrix[] convolution(Matrix layer, Matrix filter) {
 		final int imgWidth = sqrt(layer.columns());
-		final int filterSize = filter.rows();
+		final int filterSize = sqrt(filter.rows());
 		final int testCases = layer.rows();
 		final int iterations = postConvWidth(imgWidth, filterSize);
 		final double[][] transition = new double[testCases][sqr(iterations)];
@@ -72,27 +72,16 @@ public class Convolutional {
 						for (int fy = 0; fy < filterSize; fy++) {
 							final int oldIndex = coordToOrdinal(x + fx, y + fy, imgWidth);
 							final int filterIndex = coordToOrdinal(fx, fy, filterSize);
-							value += layer.get(t, oldIndex) * filter.get(filterIndex, 1);
+							value += layer.get(t, oldIndex) * filter.get(filterIndex, 0);
 						}
 					}
-					final int newIndex = coordToOrdinal(x, y, imgWidth);
-					activation[t][newIndex] = sigmoid(transition[t][newIndex] = value);
+					final int newIndex = coordToOrdinal(x, y, iterations);
+					transition[t][newIndex] = value;
+					activation[t][newIndex] = sigmoid(value);
 				}
 			}
 		}
 		return new Matrix[] { new Matrix(transition), new Matrix(activation) };
-	}
-
-	private int convIndex(int i) {
-		return i;
-	}
-
-	private int bridgeIndex() {
-		return convLayers.length;
-	}
-
-	private int fullIndex(int i) {
-		return convLayers.length + 1 + i;
 	}
 
 	private int postConvWidth(int imgSize, int filterSize) {

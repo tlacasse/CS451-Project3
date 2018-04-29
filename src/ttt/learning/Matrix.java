@@ -20,10 +20,14 @@ public class Matrix {
 	private static final Random RANDOM = new Random();
 
 	public static Matrix random(int rows, int cols) {
+		return random(rows, cols, 1.0);
+	}
+
+	public static Matrix random(int rows, int cols, double limit) {
 		final double[][] data = new double[rows][cols];
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
-				data[i][j] = 1 - RANDOM.nextDouble();
+				data[i][j] = limit - RANDOM.nextDouble();
 			}
 		}
 		return new Matrix(data);
@@ -192,7 +196,7 @@ public class Matrix {
 	public Matrix multiply(Matrix other) {
 		if (this.cols != other.rows) {
 			throw new IllegalArgumentException(
-					"Unable to matrix multiply: " + this.cols + " do not match " + other.rows + " rows");
+					"Unable to matrix multiply: " + this.cols + " columns does not match " + other.rows + " rows");
 		}
 		Matrix m = new Matrix(this.rows, other.cols);
 		for (int j = 0; j < other.cols; j++) {
