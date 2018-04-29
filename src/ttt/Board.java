@@ -66,11 +66,11 @@ public class Board {
 	}
 
 	public static int coordToOrdinal(int x, int y) {
-		return x + (y * SIZE);
+		return Program.coordToOrdinal(x, y, SIZE);
 	}
 
 	public static int[] ordinalToCoord(int n) {
-		return new int[] { n % SIZE, Math.floorDiv(n, SIZE) };
+		return Program.ordinalToCoord(n, SIZE);
 	}
 
 	public boolean isWin(int val, int addedX, int addedY) {

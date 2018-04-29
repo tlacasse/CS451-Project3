@@ -1,6 +1,5 @@
 package ttt.learning;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +13,14 @@ public final class Parallel<P> {
 	private final P[] array;
 
 	public Parallel(P[] array) {
-		if (array.length < 2) {
-			throw new IllegalArgumentException("Array should have at least 2 elements.");
+		if (array.length < 1) {
+			throw new IllegalArgumentException("Illegal Size: " + array.length);
 		}
 		this.array = array;
+	}
+
+	public int count() {
+		return array.length;
 	}
 
 	public P[] getArray() {
@@ -25,8 +28,7 @@ public final class Parallel<P> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void invoke(Method method, Object... args)
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void invoke(Method method, Object... args) throws IllegalArgumentException, ReflectiveOperationException {
 		if (!method.getReturnType().equals(array[0].getClass())) {
 			throw new IllegalArgumentException("Can only call on methods that return this Parallel type.");
 		}
@@ -37,7 +39,7 @@ public final class Parallel<P> {
 
 	@SuppressWarnings("unchecked")
 	public <R> List<R> invokeAndReturn(Method method, Object... args)
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			throws IllegalArgumentException, ReflectiveOperationException {
 		List<R> result = new ArrayList<>(array.length);
 		for (int i = 0; i < array.length; i++) {
 			result.add((R) method.invoke(array[i], args));

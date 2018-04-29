@@ -1,7 +1,7 @@
 package ttt.testing;
 
-import static ttt.learning.Parallel.ADD;
-import static ttt.learning.Parallel.ROWS;
+import static ttt.learning.MatrixMethod.ADD;
+import static ttt.learning.MatrixMethod.ROWS;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ final class ParallelInvokeTest {
 		Matrix b = new Matrix(bda);
 
 		Matrix[] arr = new Matrix[] { a, b };
-		Parallel pm = new Parallel(arr);
+		Parallel<Matrix> pm = new Parallel<>(arr);
 		pm.invoke(ADD, a);
 		arr = pm.getArray();
 		arr[0].display();

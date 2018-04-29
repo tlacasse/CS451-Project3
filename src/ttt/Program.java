@@ -132,6 +132,14 @@ public final class Program {
 		return is;
 	}
 
+	public static int coordToOrdinal(int x, int y, int size) {
+		return x + (y * size);
+	}
+
+	public static int[] ordinalToCoord(int n, int size) {
+		return new int[] { n % size, Math.floorDiv(n, size) };
+	}
+
 	private Program() {
 	}
 
