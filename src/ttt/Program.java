@@ -128,10 +128,6 @@ public final class Program {
 		}
 	}
 
-	public static int[][] array2d(int[]... is) {
-		return is;
-	}
-
 	public static int coordToOrdinal(int x, int y, int size) {
 		return x + (y * size);
 	}
