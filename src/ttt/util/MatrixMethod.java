@@ -1,6 +1,8 @@
-package ttt.learning;
+package ttt.util;
 
 import java.lang.reflect.Method;
+
+import ttt.learning.Matrix;
 
 public final class MatrixMethod {
 

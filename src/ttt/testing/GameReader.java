@@ -6,9 +6,9 @@ import java.util.Scanner;
 
 import javafx.util.Pair;
 import ttt.Board;
-import ttt.Program;
-import ttt.learning.GameIO;
-import ttt.learning.Result;
+import ttt.util.GameIO;
+import ttt.util.Result;
+import ttt.util.TTTUtil;
 
 /**
  * Display games in console.
@@ -30,7 +30,7 @@ final class GameReader {
 				}
 				System.out.println(board);
 				System.out.println("??? Stop?");
-				if (Program.isYes(scan.nextLine())) {
+				if (TTTUtil.isYes(scan.nextLine())) {
 					break;
 				}
 			}

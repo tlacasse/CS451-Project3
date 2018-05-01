@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import ttt.Board;
 import ttt.learning.Convolutional;
-import ttt.learning.GameIO;
 import ttt.learning.Matrix;
-import ttt.learning.Result;
+import ttt.util.GameIO;
+import ttt.util.Result;
 
 final class ConvNetTest {
 

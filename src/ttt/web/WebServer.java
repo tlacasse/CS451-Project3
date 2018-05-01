@@ -6,12 +6,12 @@ import java.util.concurrent.Semaphore;
 
 import ttt.Code;
 import ttt.Game;
-import ttt.Program;
 import ttt.agents.ServerBase;
 import ttt.agents.SocketSide;
 import ttt.agents.Spawn;
-import ttt.learning.GameIO;
-import ttt.learning.GamePostfix;
+import ttt.util.GameIO;
+import ttt.util.GamePostfix;
+import ttt.util.TTTUtil;
 
 /**
  * Website game server, connects with the actual website backend.
@@ -90,7 +90,7 @@ final class WebServer extends ServerBase {
 		}
 		GameIO.saveGame(game, isPvP ? GamePostfix.PVP : GamePostfix.USER_VS_AI);
 		if (playerSpawn != null) {
-			Program.join(playerSpawn);
+			TTTUtil.join(playerSpawn);
 		}
 	}
 
@@ -170,11 +170,11 @@ final class WebServer extends ServerBase {
 					ioe.printStackTrace();
 				}
 				if (webServer.listener != null) {
-					Program.join(webServer.listener);
+					TTTUtil.join(webServer.listener);
 				}
 				if (webServer.playerSpawn != null) {
 					Spawn.killPlayers();
-					Program.join(webServer.playerSpawn);
+					TTTUtil.join(webServer.playerSpawn);
 				}
 			}
 		}

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import ttt.learning.GameIO;
+import ttt.util.GameIO;
 
 /**
  * Starts and stops the website game server. Uses multiple server sockets to not

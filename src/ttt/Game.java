@@ -11,8 +11,9 @@ import java.util.List;
 
 import ttt.agents.Server;
 import ttt.agents.Spawn;
-import ttt.learning.GameIO;
-import ttt.learning.GamePostfix;
+import ttt.util.GameIO;
+import ttt.util.GamePostfix;
+import ttt.util.TTTUtil;
 
 /**
  * Represents a Tic Tac Toe game in progress, by storing each move along with
@@ -105,9 +106,9 @@ public class Game {
 			}
 			// run game
 			for (Thread thread : threads) {
-				Program.join(thread);
+				TTTUtil.join(thread);
 			}
-			Program.join(serverThread);
+			TTTUtil.join(serverThread);
 		}
 		GameIO.saveGame(game, config.get(HAVE_USER) > 0 ? GamePostfix.USER_VS_AI : GamePostfix.NONE);
 	}

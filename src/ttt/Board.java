@@ -2,6 +2,8 @@ package ttt;
 
 import java.util.Arrays;
 
+import ttt.util.TTTUtil;
+
 /**
  * Tic Tac Toe Board representation. Two different kinds: Server and Player.
  */
@@ -66,11 +68,11 @@ public class Board {
 	}
 
 	public static int coordToOrdinal(int x, int y) {
-		return Program.coordToOrdinal(x, y, SIZE);
+		return TTTUtil.coordToOrdinal(x, y, SIZE);
 	}
 
 	public static int[] ordinalToCoord(int n) {
-		return Program.ordinalToCoord(n, SIZE);
+		return TTTUtil.ordinalToCoord(n, SIZE);
 	}
 
 	public boolean isWin(int val, int addedX, int addedY) {

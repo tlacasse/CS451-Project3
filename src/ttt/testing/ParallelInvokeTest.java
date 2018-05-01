@@ -1,12 +1,12 @@
 package ttt.testing;
 
-import static ttt.learning.MatrixMethod.ADD;
-import static ttt.learning.MatrixMethod.ROWS;
+import static ttt.util.MatrixMethod.ADD;
+import static ttt.util.MatrixMethod.ROWS;
 
 import java.util.List;
 
 import ttt.learning.Matrix;
-import ttt.learning.Parallel;
+import ttt.util.Parallel;
 
 final class ParallelInvokeTest {
 

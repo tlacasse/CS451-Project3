@@ -1,6 +1,6 @@
 package ttt.learning;
 
-import static ttt.Program.coordToOrdinal;
+import static ttt.util.TTTUtil.coordToOrdinal;
 
 import java.util.Arrays;
 

@@ -1,4 +1,4 @@
-package ttt.learning;
+package ttt.util;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -15,8 +15,11 @@ import java.util.UUID;
 import javafx.util.Pair;
 import ttt.Board;
 import ttt.Game;
-import ttt.Program;
 import ttt.agents.Player;
+import ttt.learning.AI;
+import ttt.learning.Convolutional;
+import ttt.learning.Matrix;
+import ttt.learning.NeuralNetwork;
 
 /**
  * Deals with saving and loading of Neural Network and Game files.
@@ -97,8 +100,8 @@ public final class GameIO {
 			// cnn_imgSize_convLayers_conv.nn
 			String[] parts = name.split(".")[0].split("_");
 			int imgSize = Integer.parseInt(parts[1]);
-			int[] conv = Program.strArrayToIntArray(parts[2].split("-"));
-			int[] full = Program.strArrayToIntArray(parts[3].split("-"));
+			int[] conv = TTTUtil.strArrayToIntArray(parts[2].split("-"));
+			int[] full = TTTUtil.strArrayToIntArray(parts[3].split("-"));
 			nn = new Convolutional(imgSize, conv, full);
 		} else {
 			nn = new NeuralNetwork(nodes);

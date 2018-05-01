@@ -1,4 +1,4 @@
-package ttt.learning;
+package ttt.util;
 
 /**
  * Type dealing with the player-ness of the game, with relevant text to be

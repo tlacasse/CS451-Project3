@@ -7,6 +7,8 @@ import java.util.List;
 
 import javafx.util.Pair;
 import ttt.Board;
+import ttt.util.GameIO;
+import ttt.util.GamePostfix;
 
 /**
  * Static method to train the networks, along with storing the networks to use.

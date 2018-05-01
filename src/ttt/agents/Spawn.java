@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import ttt.learning.GameIO;
+import ttt.util.GameIO;
 
 /**
  * Thread that starts Player process.

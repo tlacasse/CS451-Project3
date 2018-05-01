@@ -9,10 +9,10 @@ import ttt.Board;
 import ttt.Code;
 import ttt.learning.AI;
 import ttt.learning.Convolutional;
-import ttt.learning.GameIO;
 import ttt.learning.Matrix;
 import ttt.learning.NeuralNetwork;
 import ttt.learning.Training;
+import ttt.util.GameIO;
 
 /**
  * Player process that plays Tic Tac Toe through sockets.

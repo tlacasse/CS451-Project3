@@ -9,10 +9,10 @@ import java.util.Random;
 import ttt.Board;
 import ttt.Game;
 import ttt.learning.AI;
-import ttt.learning.GameIO;
-import ttt.learning.GamePostfix;
 import ttt.learning.Matrix;
 import ttt.learning.NeuralNetwork;
+import ttt.util.GameIO;
+import ttt.util.GamePostfix;
 
 /**
  * Testing to make sure saving and loading is correct.
