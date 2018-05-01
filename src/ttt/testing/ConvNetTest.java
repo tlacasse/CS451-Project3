@@ -29,8 +29,24 @@ final class ConvNetTest {
 		}
 		Matrix x = new Matrix(cases);
 
+		double[][] yda = new double[3][169];
+		yda[0][5] = 1.0;
+		yda[0][50] = 1.0;
+		yda[0][127] = 1.0;
+		Matrix y = new Matrix(yda);
+
 		Convolutional cnn = new Convolutional(Board.SIZE, new int[] { 5, 5 }, new int[] { 50, Board.CELLS });
 		cnn.calculate(x).display();
+		Matrix[] dCdW = cnn.costPrime(y);
+		for (Matrix m : dCdW) {
+			if (m != null)
+				System.out.println(m.rows() + " x " + m.columns());
+			else
+				System.out.println("null");
+		}
+		dCdW[0].display();
+		dCdW[1].display();
+		dCdW[2].display();
 	}
 
 }

@@ -81,13 +81,7 @@ public class NeuralNetwork {
 	private static final double TUNING = 0.000001;
 
 	public double cost(Matrix y) {
-		final double cost = 0.5 * y.add(output().negative()).elementSquare().sum();
-		double change = 0.0;
-		for (int i = 0; i < size - 1; i++) {
-			change += weights[i].elementSquare().sum();
-		}
-		change *= TUNING * 0.5;
-		return (cost / layer[0].rows()) + change;
+		return (0.5 * y.add(output().negative()).elementSquare().sum()) / layer[0].rows();
 	}
 
 	public Matrix[] costPrime(Matrix y) {

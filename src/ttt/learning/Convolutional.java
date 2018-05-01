@@ -9,82 +9,189 @@ import static ttt.Program.coordToOrdinal;
  */
 public class Convolutional {
 
-	private final int size;
 	private final int[] imageWidth, convLayers, fullLayers;
-	private Matrix[] layer, weights, transition;
+	private Matrix input, output;
+	private Matrix[] fullLayer, fullTrans, weight;
+	private Matrix[][] convLayer, convTrans, convEditLayer;
 
 	public Convolutional(int initialImageWidth, int[] convLayers, int[] fullLayers) {
 		checkConstructorArgs(convLayers, fullLayers);
 		this.convLayers = convLayers;
 		this.fullLayers = fullLayers;
-		size = 1 + convLayers.length + fullLayers.length;
-		imageWidth = new int[convLayers.length + 1];
+		imageWidth = new int[convLayers() + 1];
 		imageWidth[0] = initialImageWidth;
-		layer = new Matrix[size];
-		transition = new Matrix[size - 1];
+		fullLayer = new Matrix[1 + fullLayers()];
+		fullTrans = new Matrix[fullLayers()];
+		convLayer = new Matrix[1 + convLayers()][];
+		convTrans = new Matrix[convLayers()][];
+		convEditLayer = new Matrix[convLayers()][];
 
-		weights = new Matrix[size - 1];
-		for (int i = 0; i < convLayers.length; i++) {
-			weights[i] = Matrix.random(sqr(convLayers[i]), 1);
+		weight = new Matrix[layers()];
+		for (int i = 0; i < convLayers(); i++) {
+			weight[convIndex(i)] = Matrix.random(1, sqr(convLayers[i]));
 			imageWidth[i + 1] = postConvWidth(imageWidth[i], convLayers[i]);
 		}
-		weights[convLayers.length] = Matrix.random(sqr(imageWidth[convLayers.length]), fullLayers[0]);
-		for (int i = 0; i < fullLayers.length - 1; i++) {
-			weights[convLayers.length + 1 + i] = Matrix.random(fullLayers[i], fullLayers[i + 1]);
+		weight[convLayers.length] = Matrix.random(sqr(imageWidth[convLayers()]), fullLayers[0], 0.35);
+		for (int i = 0; i < fullLayers() - 1; i++) {
+			weight[fullIndex(i) + 1] = Matrix.random(fullLayers[i], fullLayers[i + 1], 0.35);
 		}
 	}
 
+	/////////////////////////////////////////////////////////////
+
 	public Matrix input() {
-		return layer[0];
+		return input;
 	}
 
 	public Matrix output() {
-		return layer[size - 1];
+		return output;
 	}
+
+	/////////////////////////////////////////////////////////////
 
 	public Matrix calculate(Matrix x) {
-		layer[0] = x;
-		int i = 0;
-		for (; i < convLayers.length; i++) {
-			final Matrix[] after = convolution(layer[i], weights[i]);
-			transition[i] = after[0];
-			layer[i + 1] = after[1];
+		if (x.columns() != sqr(imageWidth[0])) {
+			throw new IllegalArgumentException("Wrong image size.");
 		}
-		for (; i < size - 1; i++) {
-			transition[i] = layer[i].multiply(weights[i]);
-			layer[i + 1] = transition[i].sigmoid();
+		input = x;
+		convLayer[0] = rowsToArray(x);
+		for (int i = 0; i < convLayers(); i++) {
+			convLayer[i + 1] = convolution(convLayer[i], weight[convIndex(i)], i);
 		}
-		return layer[size - 1];
+		fullLayer[0] = joinRows(convLayer[convLayer.length - 1]);
+		for (int i = 0; i < fullLayers(); i++) {
+			fullTrans[i] = fullLayer[i].multiply(weight[fullIndex(i)]);
+			fullLayer[i + 1] = fullTrans[i].sigmoid();
+		}
+		output = fullLayer[fullLayer.length - 1];
+		return output;
 	}
 
-	private Matrix[] convolution(Matrix layer, Matrix filter) {
-		final int imgWidth = sqrt(layer.columns());
-		final int filterSize = sqrt(filter.rows());
-		final int testCases = layer.rows();
+	private Matrix[] convolution(Matrix[] layer, Matrix filter, int transIndex) {
+		final int imgWidth = sqrt(layer[0].columns());
+		final int filterSize = sqrt(filter.columns());
 		final int iterations = postConvWidth(imgWidth, filterSize);
-		final double[][] transition = new double[testCases][sqr(iterations)];
-		final double[][] activation = new double[testCases][sqr(iterations)];
-		for (int t = 0; t < testCases; t++) {
+		final Matrix[] result = new Matrix[layer.length];
+		convTrans[transIndex] = new Matrix[layer.length];
+		convEditLayer[transIndex] = new Matrix[layer.length];
+		for (int m = 0; m < layer.length; m++) {
+			final double[][] data = new double[filter.columns()][sqr(iterations)];
 			for (int x = 0; x < iterations; x++) {
 				for (int y = 0; y < iterations; y++) {
-					double value = 0;
 					for (int fx = 0; fx < filterSize; fx++) {
 						for (int fy = 0; fy < filterSize; fy++) {
-							final int oldIndex = coordToOrdinal(x + fx, y + fy, imgWidth);
 							final int filterIndex = coordToOrdinal(fx, fy, filterSize);
-							value += layer.get(t, oldIndex) * filter.get(filterIndex, 0);
+							final int newIndex = coordToOrdinal(x, y, iterations);
+							final int oldIndex = coordToOrdinal(x + fx, y + fy, imgWidth);
+							data[filterIndex][newIndex] = layer[m].get(0, oldIndex);
 						}
 					}
-					final int newIndex = coordToOrdinal(x, y, iterations);
-					transition[t][newIndex] = value;
-					activation[t][newIndex] = sigmoid(value);
 				}
 			}
+			convEditLayer[transIndex][m] = new Matrix(data);
+			convTrans[transIndex][m] = filter.multiply(convEditLayer[transIndex][m]);
+			result[m] = convTrans[transIndex][m].sigmoid();
 		}
-		return new Matrix[] { new Matrix(transition), new Matrix(activation) };
+		return result;
 	}
 
-	private int postConvWidth(int imgSize, int filterSize) {
+	/////////////////////////////////////////////////////////////
+
+	public double cost(Matrix y) {
+		return (0.5 * y.add(output().negative()).elementSquare().sum()) / input.rows();
+	}
+
+	public Matrix[] costPrime(Matrix y) {
+		final Matrix[] derivative = new Matrix[layers()];
+		final int cases = input().rows();
+
+		final Matrix[] delta = new Matrix[fullLayers()];
+		// delta_(n-1) = (out - y) prod f'(trans_(n-1))
+		delta[fullLayers() - 1] = output().add(y.negative()).product(fullTrans[fullLayers() - 1].sigmoidPrime());
+		for (int i = fullTrans.length - 2; i >= 0; i--) {
+			// delta_i = [ delta_(i+1) mult weight_(i+1)] prod f'(rans_i)
+			delta[i] = delta[i + 1].multiply(weight[fullIndex(i + 1)].transpose()).product(fullTrans[i].sigmoidPrime());
+		}
+		for (int i = 0; i < fullTrans.length; i++) {
+			// dC/cWi = layer_i^T mult delta_i
+			derivative[fullIndex(i)] = fullLayer[i].transpose().multiply(delta[i]);
+		}
+
+		final Matrix[] minFullDelta = rowsToArray(delta[0]);
+		final Matrix[][] cDelta = new Matrix[convLayers()][cases];
+		final Matrix[][] cDeriv = new Matrix[convLayers()][cases];
+		for (int c = 0; c < cases; c++) {
+			// delta_(n-1)
+			// = [ delta_full0 mult weight_full0^T ] prod f'(trans_(n-1))
+			cDelta[convLayers() - 1][c] = minFullDelta[c].multiply(weight[convLayers()].transpose())
+					.product(convTrans[convLayers() - 1][c].sigmoidPrime());
+			for (int i = convLayers() - 2; i >= 0; i--) {
+				// delta_i
+				// = delta_(i+1) mult [ weight_(i+1)^T mult f'(trans_(i)) ]
+				cDelta[convIndex(i)][c] = cDelta[convIndex(i) + 1][c].multiply(
+						weight[convIndex(i) + 1].transpose().multiply(convTrans[convIndex(i)][c].sigmoidPrime()));
+			}
+			for (int i = 0; i < convLayers(); i++) {
+				// dC/cWi = delta_i mult layer_i^T
+				cDeriv[convIndex(i)][c] = cDelta[i][c].multiply(convEditLayer[i][c].transpose());
+			}
+		}
+		for (int i = 0; i < convLayers(); i++) {
+			// add cases together
+			Matrix sum = cDeriv[convIndex(i)][0];
+			for (int c = 1; c < cases; c++) {
+				sum = sum.add(cDeriv[convIndex(i)][c]);
+			}
+			derivative[convIndex(i)] = sum;
+		}
+		return derivative;
+	}
+
+	/////////////////////////////////////////////////////////////
+
+	private int convLayers() {
+		return convLayers.length;
+	}
+
+	private int fullLayers() {
+		return fullLayers.length;
+	}
+
+	private int layers() {
+		return convLayers() + fullLayers();
+	}
+
+	private int convIndex(int i) {
+		return i;
+	}
+
+	private int fullIndex(int i) {
+		return convLayers() + i;
+	}
+
+	private static Matrix[] rowsToArray(Matrix m) {
+		final Matrix[] result = new Matrix[m.rows()];
+		for (int i = 0; i < m.rows(); i++) {
+			final double[] data = new double[m.columns()];
+			for (int j = 0; j < m.columns(); j++) {
+				data[j] = m.get(i, j);
+			}
+			result[i] = new Matrix(false, data);
+		}
+		return result;
+	}
+
+	private static Matrix joinRows(Matrix[] m) {
+		final double[][] data = new double[m.length][m[0].columns()];
+		for (int i = 0; i < m.length; i++) {
+			for (int j = 0; j < m[i].columns(); j++) {
+				data[i][j] = m[i].get(0, j);
+			}
+		}
+		return new Matrix(data);
+	}
+
+	private static int postConvWidth(int imgSize, int filterSize) {
 		return imgSize - filterSize + 1;
 	}
 
@@ -94,15 +201,6 @@ public class Convolutional {
 
 	private static final int sqrt(int n) {
 		return (int) Math.sqrt(n);
-	}
-
-	private static final double sigmoid(double x) {
-		return 1.0 / (1.0 + Math.exp(-x));
-	}
-
-	private static final double sigmoidPrime(double x) {
-		double s = sigmoid(x);
-		return s * (1 - s);
 	}
 
 	private static final void checkConstructorArgs(int[] convLayers, int[] fullLayers) {
