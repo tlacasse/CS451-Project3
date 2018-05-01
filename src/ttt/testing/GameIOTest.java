@@ -121,7 +121,7 @@ final class GameIOTest {
 		AI read = null;
 		try {
 			file = GameIO.saveNetwork(nn);
-			read = GameIO.loadNetwork(NeuralNetwork.fileName(3, 3, 2, 1), false);
+			read = GameIO.loadNetwork(NeuralNetwork.fileName(3, 3, 2, 1));
 		} catch (IOException ioe) {
 			throw new TestingException(ioe);
 		}
@@ -141,7 +141,7 @@ final class GameIOTest {
 
 		try {
 			file = GameIO.saveNetwork(nn);
-			read = GameIO.loadNetwork(NeuralNetwork.fileName(3, 3, 2, 1), false);
+			read = GameIO.loadNetwork(NeuralNetwork.fileName(3, 3, 2, 1));
 		} catch (IOException ioe) {
 			throw new TestingException(ioe);
 		}

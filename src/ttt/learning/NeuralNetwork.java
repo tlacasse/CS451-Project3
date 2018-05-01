@@ -104,6 +104,12 @@ public class NeuralNetwork implements AI {
 		return derivative;
 	}
 
+	/////////////////////////////////////////////////////////////
+
+	public int getNodeCount(int layer) {
+		return nodes[layer];
+	}
+
 	@Override
 	public String toString() {
 		return Arrays.toString(nodes);

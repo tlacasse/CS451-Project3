@@ -38,25 +38,75 @@ public final class GameIO {
 		DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
 	}
 
+	/////////////////////////////////////////////////////////////
+
+	// "magic numbers"
+	private static byte CODE_NN = 'N';
+	private static byte CODE_CNN = 'C';
+
 	public static File saveNetwork(AI nn) throws FileNotFoundException, IOException {
-		final Matrix[] weights = nn.getWeights();
-		final int[] nodes = new int[weights.length + 1];
-		int bufferSize = Integer.BYTES;
-
-		for (int i = 0; i < weights.length; i++) {
-			nodes[i] = weights[i].rows();
-			bufferSize += Integer.BYTES + (weights[i].rows() * weights[i].columns() * Double.BYTES);
+		if (nn instanceof NeuralNetwork) {
+			return saveNetwork0((NeuralNetwork) nn);
 		}
-		nodes[nodes.length - 1] = weights[weights.length - 1].columns();
-		bufferSize += Integer.BYTES;
+		if (nn instanceof Convolutional) {
+			return saveNetwork0((Convolutional) nn);
+		}
+		throw new IllegalArgumentException();
+	}
 
-		// #layers (int), sizeOfEachLayer (ints), weights (doubles)
+	private static File saveNetwork0(NeuralNetwork nn) throws FileNotFoundException, IOException {
+		final Matrix[] weights = nn.getWeights();
+		int bufferSize = 1 + Integer.BYTES; // code + #layers
+		bufferSize += ((weights.length + 1) * Integer.BYTES); // layerSizes
+		bufferSize += getWeightsBufferSize(weights);
 		final ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
-		buffer.putInt(nodes.length);
+		buffer.put(CODE_NN);
+		buffer.putInt(weights.length + 1);
+		for (int i = 0; i <= weights.length; i++) {
+			buffer.putInt(nn.getNodeCount(i));
+		}
+		writeWeightsToBuffer(buffer, weights);
+		return saveNetwork1(nn, buffer);
+	}
+
+	private static File saveNetwork0(Convolutional nn) throws FileNotFoundException, IOException {
+		final Matrix[] weights = nn.getWeights();
+		int bufferSize = 1 + (3 * Integer.BYTES); // 1 + imageWidth +
+													// #convLayers +
+		// #fullLayers
+		bufferSize += nn.convLayers() * Integer.BYTES;
+		bufferSize += nn.fullLayers() * Integer.BYTES;
+		bufferSize = bufferSize += getWeightsBufferSize(weights);
+		final ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+		buffer.put(CODE_CNN);
+		buffer.putInt(nn.imageSize());
+		buffer.putInt(nn.convLayers());
+		buffer.putInt(nn.fullLayers());
+		for (int i = 0; i < nn.convLayers(); i++) {
+			buffer.putInt(nn.getConvLayerSize(i));
+		}
+		for (int i = 0; i < nn.fullLayers(); i++) {
+			buffer.putInt(nn.getFullLayerSize(i));
+		}
+		writeWeightsToBuffer(buffer, weights);
+		return saveNetwork1(nn, buffer);
+	}
+
+	private static File saveNetwork1(AI nn, ByteBuffer buffer) throws FileNotFoundException, IOException {
+		final String fileName = DIRECTORY_NN + nn.fileName();
+		try (FileOutputStream fos = new FileOutputStream(fileName)) {
+			fos.write(buffer.array());
+		}
+		System.out.println(nn.getClass().getSimpleName() + " Saved: \"" + fileName + "\"");
+		return new File(fileName);
+	}
+
+	private static void writeWeightsToBuffer(ByteBuffer buffer, Matrix[] weights) {
+		buffer.putInt(weights.length);
 		for (Matrix m : weights) {
 			buffer.putInt(m.rows());
+			buffer.putInt(m.columns());
 		}
-		buffer.putInt(weights[weights.length - 1].columns());
 		for (Matrix m : weights) {
 			for (int i = 0; i < m.rows(); i++) {
 				for (int j = 0; j < m.columns(); j++) {
@@ -64,51 +114,93 @@ public final class GameIO {
 				}
 			}
 		}
-		final String fileName = DIRECTORY_NN + nn.fileName();
-		try (FileOutputStream fos = new FileOutputStream(fileName)) {
-			fos.write(buffer.array());
-		}
-		System.out.println("Neural Network Saved: \"" + fileName + "\"");
-		return new File(fileName);
 	}
 
-	public static AI loadNetwork(String name, boolean isCNN) throws FileNotFoundException, IOException {
-		final Matrix[] weights;
-		final int[] nodes;
+	private static int getWeightsBufferSize(Matrix[] weights) {
+		int size = Integer.BYTES; // number of weights
+		size += weights.length * 2 * Integer.BYTES; // dimensions of each
+		for (Matrix m : weights) {
+			size += m.rows() * m.columns() * Double.BYTES; // data in each
+		}
+		return size;
+	}
+
+	/////////////////////////////////////////////////////////////
+
+	public static AI loadNetwork(String name) throws FileNotFoundException, IOException {
+		AI nn = null;
 		try (FileInputStream fis = new FileInputStream(DIRECTORY_NN + name);
 				DataInputStream reader = new DataInputStream(fis)) {
-			// recreate structure just to be sure things are correct
-			final int layers = reader.readInt();
-			nodes = new int[layers];
-			for (int i = 0; i < layers; i++) {
-				nodes[i] = reader.readInt();
+			final byte code = reader.readByte();
+			if (code == CODE_NN) {
+				nn = loadNetworkNN(reader);
 			}
-			weights = new Matrix[layers - 1];
-			for (int k = 0; k < layers - 1; k++) {
-				final double[][] ds = new double[nodes[k]][nodes[k + 1]];
-				for (int i = 0; i < nodes[k]; i++) {
-					for (int j = 0; j < nodes[k + 1]; j++) {
-						ds[i][j] = reader.readDouble();
-					}
-				}
-				weights[k] = new Matrix(ds);
+			if (code == CODE_CNN) {
+				nn = loadNetworkCNN(reader);
 			}
 		}
-		final AI nn;
-		// this ends up being a little less general when adding the CNN
-		if (isCNN) {
-			// cnn_imgSize_convLayers_conv.nn
-			String[] parts = name.split(".")[0].split("_");
-			int imgSize = Integer.parseInt(parts[1]);
-			int[] conv = TTTUtil.strArrayToIntArray(parts[2].split("-"));
-			int[] full = TTTUtil.strArrayToIntArray(parts[3].split("-"));
-			nn = new Convolutional(imgSize, conv, full);
-		} else {
-			nn = new NeuralNetwork(nodes);
+		return nn;
+	}
+
+	public static AI loadNetworkNN(DataInputStream reader) throws FileNotFoundException, IOException {
+		final Matrix[] weights;
+		final int[] nodes;
+
+		final int layers = reader.readInt();
+		nodes = new int[layers];
+		for (int i = 0; i < layers; i++) {
+			nodes[i] = reader.readInt();
 		}
+		weights = readWeights(reader);
+
+		AI nn = new NeuralNetwork(nodes);
 		nn.setWeights(weights);
 		return nn;
 	}
+
+	public static AI loadNetworkCNN(DataInputStream reader) throws FileNotFoundException, IOException {
+		final Matrix[] weights;
+		final int imageSize, conv, full;
+		final int[] convLayers, fullLayers;
+
+		imageSize = reader.readInt();
+		conv = reader.readInt();
+		full = reader.readInt();
+		convLayers = new int[conv];
+		for (int i = 0; i < conv; i++) {
+			convLayers[i] = reader.readInt();
+		}
+		fullLayers = new int[full];
+		for (int i = 0; i < full; i++) {
+			fullLayers[i] = reader.readInt();
+		}
+		weights = readWeights(reader);
+
+		AI cnn = new Convolutional(imageSize, convLayers, fullLayers);
+		cnn.setWeights(weights);
+		return cnn;
+	}
+
+	private static Matrix[] readWeights(DataInputStream reader) throws FileNotFoundException, IOException {
+		final Matrix[] weights = new Matrix[reader.readInt()];
+		final int[][] dims = new int[weights.length][2];
+		for (int k = 0; k < weights.length; k++) {
+			dims[k][0] = reader.readInt();
+			dims[k][1] = reader.readInt();
+		}
+		for (int k = 0; k < weights.length; k++) {
+			final double[][] ds = new double[dims[k][0]][dims[k][1]];
+			for (int i = 0; i < dims[k][0]; i++) {
+				for (int j = 0; j < dims[k][1]; j++) {
+					ds[i][j] = reader.readDouble();
+				}
+			}
+			weights[k] = new Matrix(ds);
+		}
+		return weights;
+	}
+
+	/////////////////////////////////////////////////////////////
 
 	public static File saveGame(Game game, GamePostfix postfix) throws FileNotFoundException, IOException {
 		final String fileName = gameFileName(game.hasWinner() ? DIRECTORY_GAMES : DIRECTORY_TIES, postfix);
@@ -172,6 +264,8 @@ public final class GameIO {
 		result[Board.coordToOrdinal(x, y)] = 1.0;
 		return result;
 	}
+
+	/////////////////////////////////////////////////////////////
 
 	public static String gameFileName(String directory, GamePostfix postfix) {
 		final StringBuilder sb = new StringBuilder(directory);

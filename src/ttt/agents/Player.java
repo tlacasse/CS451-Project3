@@ -120,10 +120,10 @@ public class Player extends SocketSide implements AutoCloseable {
 	private AI pickRandomNN() throws IOException {
 		if (RANDOM.nextBoolean()) {
 			return GameIO.loadNetwork(
-					NeuralNetwork.fileName(Training.NN_NETWORKS[RANDOM.nextInt(Training.NN_NETWORK_COUNT)]), false);
+					NeuralNetwork.fileName(Training.NN_NETWORKS[RANDOM.nextInt(Training.NN_NETWORK_COUNT)]));
 		} else {
 			int[][] get = Training.CNN_NETWORKS[RANDOM.nextInt(Training.CNN_NETWORK_COUNT)];
-			return GameIO.loadNetwork(Convolutional.fileName(Board.SIZE, get[0], get[1]), true);
+			return GameIO.loadNetwork(Convolutional.fileName(Board.SIZE, get[0], get[1]));
 		}
 	}
 

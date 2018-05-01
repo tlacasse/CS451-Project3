@@ -180,17 +180,31 @@ public class Convolutional implements AI {
 
 	/////////////////////////////////////////////////////////////
 
-	private int convLayers() {
+	public int getConvLayerSize(int i) {
+		return convLayers[i];
+	}
+
+	public int getFullLayerSize(int i) {
+		return fullLayers[i];
+	}
+
+	public int imageSize() {
+		return imageWidth[0];
+	}
+
+	public int convLayers() {
 		return convLayers.length;
 	}
 
-	private int fullLayers() {
+	public int fullLayers() {
 		return fullLayers.length;
 	}
 
-	private int layers() {
+	public int layers() {
 		return convLayers() + fullLayers();
 	}
+
+	/////////////////////////////////////////////////////////////
 
 	private int convIndex(int i) {
 		return i;
@@ -276,7 +290,7 @@ public class Convolutional implements AI {
 		for (int i = 0; i < fullLayers.length - 1; i++) {
 			sb.append(fullLayers[i]).append("-");
 		}
-		sb.append(fullLayers[fullLayers.length - 1]).append(".nn");
+		sb.append(fullLayers[fullLayers.length - 1]).append(".cnn");
 		return sb.toString();
 	}
 

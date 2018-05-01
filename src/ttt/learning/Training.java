@@ -46,30 +46,22 @@ public class Training {
 	}
 
 	public static void restartNeuralNetworks() throws IOException {
-		for (AI nn : createNetworks()) {
-			GameIO.saveNetwork(nn);
-		}
-	}
-
-	private static List<AI> createNetworks() {
-		final List<AI> list = new LinkedList<>();
 		for (int i = 0; i < NN_NETWORKS.length; i++) {
-			list.add(new NeuralNetwork(NN_NETWORKS[i]));
+			GameIO.saveNetwork(new NeuralNetwork(NN_NETWORKS[i]));
 		}
 		for (int i = 0; i < CNN_NETWORKS.length; i++) {
-			list.add(new Convolutional(Board.SIZE, CNN_NETWORKS[i][0], CNN_NETWORKS[i][1]));
+			GameIO.saveNetwork(new Convolutional(Board.SIZE, CNN_NETWORKS[i][0], CNN_NETWORKS[i][1]));
 		}
-		return list;
 	}
 
 	private static List<AI> loadNetworks() throws FileNotFoundException, IOException {
 		final List<AI> list = new LinkedList<>();
 		for (int i = 0; i < NN_NETWORKS.length; i++) {
-			list.add(GameIO.loadNetwork(NeuralNetwork.fileName(NN_NETWORKS[i]), false));
+			// list.add(GameIO.loadNetwork(NeuralNetwork.fileName(NN_NETWORKS[i]),
+			// false));
 		}
 		for (int i = 0; i < CNN_NETWORKS.length; i++) {
-			list.add(GameIO.loadNetwork(Convolutional.fileName(Board.SIZE, CNN_NETWORKS[i][0], CNN_NETWORKS[i][1]),
-					true));
+			list.add(GameIO.loadNetwork(Convolutional.fileName(Board.SIZE, CNN_NETWORKS[i][0], CNN_NETWORKS[i][1])));
 		}
 		return list;
 	}
