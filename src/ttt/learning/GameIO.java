@@ -15,6 +15,7 @@ import java.util.UUID;
 import javafx.util.Pair;
 import ttt.Board;
 import ttt.Game;
+import ttt.Program;
 import ttt.agents.Player;
 
 /**
@@ -34,7 +35,7 @@ public final class GameIO {
 		DIRECTORY_TIES = DIRECTORY_NN + "ties\\";
 	}
 
-	public static File saveNetwork(NeuralNetwork nn) throws FileNotFoundException, IOException {
+	public static File saveNetwork(AI nn) throws FileNotFoundException, IOException {
 		final Matrix[] weights = nn.getWeights();
 		final int[] nodes = new int[weights.length + 1];
 		int bufferSize = Integer.BYTES;
@@ -60,7 +61,7 @@ public final class GameIO {
 				}
 			}
 		}
-		final String fileName = nnFileName(nodes);
+		final String fileName = DIRECTORY_NN + nn.fileName();
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			fos.write(buffer.array());
 		}
@@ -68,13 +69,10 @@ public final class GameIO {
 		return new File(fileName);
 	}
 
-	public static NeuralNetwork loadNetwork(int... nameNodes) throws FileNotFoundException, IOException {
-		if (nameNodes.length < 3) {
-			throw new IllegalArgumentException("Must have at least 3 layers.");
-		}
+	public static AI loadNetwork(String name, boolean isCNN) throws FileNotFoundException, IOException {
 		final Matrix[] weights;
 		final int[] nodes;
-		try (FileInputStream fis = new FileInputStream(nnFileName(nameNodes));
+		try (FileInputStream fis = new FileInputStream(DIRECTORY_NN + name);
 				DataInputStream reader = new DataInputStream(fis)) {
 			// recreate structure just to be sure things are correct
 			final int layers = reader.readInt();
@@ -93,7 +91,18 @@ public final class GameIO {
 				weights[k] = new Matrix(ds);
 			}
 		}
-		final NeuralNetwork nn = new NeuralNetwork(nodes);
+		final AI nn;
+		// this ends up being a little less general when adding the CNN
+		if (isCNN) {
+			// cnn_imgSize_convLayers_conv.nn
+			String[] parts = name.split(".")[0].split("_");
+			int imgSize = Integer.parseInt(parts[1]);
+			int[] conv = Program.strArrayToIntArray(parts[2].split("-"));
+			int[] full = Program.strArrayToIntArray(parts[3].split("-"));
+			nn = new Convolutional(imgSize, conv, full);
+		} else {
+			nn = new NeuralNetwork(nodes);
+		}
 		nn.setWeights(weights);
 		return nn;
 	}
@@ -161,17 +170,7 @@ public final class GameIO {
 		return result;
 	}
 
-	private static String nnFileName(int... nodes) {
-		final StringBuilder sb = new StringBuilder(DIRECTORY_NN);
-		sb.append("nn_");
-		for (int i = 0; i < nodes.length - 1; i++) {
-			sb.append(nodes[i]).append("-");
-		}
-		sb.append(nodes[nodes.length - 1]).append(".nn");
-		return sb.toString();
-	}
-
-	private static String gameFileName(String directory, GamePostfix postfix) {
+	public static String gameFileName(String directory, GamePostfix postfix) {
 		final StringBuilder sb = new StringBuilder(directory);
 		sb.append(UUID.randomUUID().toString());
 		if (postfix != GamePostfix.NONE) {

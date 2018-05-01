@@ -8,6 +8,7 @@ import java.util.Random;
 
 import ttt.Board;
 import ttt.Game;
+import ttt.learning.AI;
 import ttt.learning.GameIO;
 import ttt.learning.GamePostfix;
 import ttt.learning.Matrix;
@@ -117,10 +118,10 @@ final class GameIOTest {
 		Matrix out = nn.calculate(x);
 
 		File file = null;
-		NeuralNetwork read = null;
+		AI read = null;
 		try {
 			file = GameIO.saveNetwork(nn);
-			read = GameIO.loadNetwork(3, 3, 2, 1);
+			read = GameIO.loadNetwork(NeuralNetwork.fileName(3, 3, 2, 1), false);
 		} catch (IOException ioe) {
 			throw new TestingException(ioe);
 		}
@@ -140,7 +141,7 @@ final class GameIOTest {
 
 		try {
 			file = GameIO.saveNetwork(nn);
-			read = GameIO.loadNetwork(3, 3, 2, 1);
+			read = GameIO.loadNetwork(NeuralNetwork.fileName(3, 3, 2, 1), false);
 		} catch (IOException ioe) {
 			throw new TestingException(ioe);
 		}

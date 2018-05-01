@@ -8,6 +8,7 @@ final class NNTest {
 	private NNTest() {
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		// test NN, housing prices based of #bedrooms, #bathroom, sq ft
 		// not much data, is overfitting, just an example though.

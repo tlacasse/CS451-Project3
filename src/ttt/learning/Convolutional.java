@@ -2,12 +2,14 @@ package ttt.learning;
 
 import static ttt.Program.coordToOrdinal;
 
+import java.util.Arrays;
+
 /**
  * NOT really a convolutional neural network, because I can't figure those out.
  * It is somewhere in between. This may be better due to a game board being more
  * image like.
  */
-public class Convolutional {
+public class Convolutional implements AI {
 
 	private final int[] imageWidth, convLayers, fullLayers;
 	private Matrix input, output;
@@ -39,16 +41,43 @@ public class Convolutional {
 
 	/////////////////////////////////////////////////////////////
 
+	@Override
 	public Matrix input() {
 		return input;
 	}
 
+	@Override
 	public Matrix output() {
 		return output;
 	}
 
 	/////////////////////////////////////////////////////////////
 
+	@Override
+	public Matrix[] getWeights() {
+		return weight;
+	}
+
+	@Override
+	public void setWeights(Matrix[] ws) {
+		// no exception messages, just look in stack trace to get to which line
+		if (ws.length != weight.length) {
+			throw new IllegalArgumentException();
+		}
+		for (int i = 0; i < weight.length; i++) {
+			if (ws[i].rows() != weight[i].rows()) {
+				throw new IllegalArgumentException();
+			}
+			if (ws[i].columns() != weight[i].columns()) {
+				throw new IllegalArgumentException();
+			}
+		}
+		weight = ws;
+	}
+
+	/////////////////////////////////////////////////////////////
+
+	@Override
 	public Matrix calculate(Matrix x) {
 		if (x.columns() != sqr(imageWidth[0])) {
 			throw new IllegalArgumentException("Wrong image size.");
@@ -97,10 +126,12 @@ public class Convolutional {
 
 	/////////////////////////////////////////////////////////////
 
+	@Override
 	public double cost(Matrix y) {
 		return (0.5 * y.add(output().negative()).elementSquare().sum()) / input.rows();
 	}
 
+	@Override
 	public Matrix[] costPrime(Matrix y) {
 		final Matrix[] derivative = new Matrix[layers()];
 		final int cases = input().rows();
@@ -220,6 +251,33 @@ public class Convolutional {
 				throw new IllegalArgumentException("Layer must have at least 1 node.");
 			}
 		}
+	}
+
+	/////////////////////////////////////////////////////////////
+
+	@Override
+	public String toString() {
+		return (new StringBuilder()).append(imageWidth[0]).append("_").append(Arrays.toString(convLayers)).append("_")
+				.append(Arrays.toString(fullLayers)).toString();
+	}
+
+	@Override
+	public String fileName() {
+		return fileName(imageWidth[0], convLayers, fullLayers);
+	}
+
+	public static String fileName(int initialImageWidth, int[] convLayers, int[] fullLayers) {
+		final StringBuilder sb = new StringBuilder("cnn_");
+		sb.append(initialImageWidth).append("_");
+		for (int i = 0; i < convLayers.length - 1; i++) {
+			sb.append(convLayers[i]).append("-");
+		}
+		sb.append(convLayers[convLayers.length - 1]).append("_");
+		for (int i = 0; i < fullLayers.length - 1; i++) {
+			sb.append(fullLayers[i]).append("-");
+		}
+		sb.append(fullLayers[fullLayers.length - 1]).append(".nn");
+		return sb.toString();
 	}
 
 }

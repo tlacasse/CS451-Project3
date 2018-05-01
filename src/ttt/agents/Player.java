@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import ttt.Board;
 import ttt.Code;
+import ttt.learning.AI;
+import ttt.learning.Convolutional;
 import ttt.learning.GameIO;
 import ttt.learning.Matrix;
 import ttt.learning.NeuralNetwork;
@@ -33,7 +35,7 @@ public class Player extends SocketSide implements AutoCloseable {
 	private static final Random RANDOM = new Random();
 
 	private final Board board;
-	private final NeuralNetwork nn;
+	private final AI nn;
 
 	// add a random first movie to vary games
 	private boolean first;
@@ -115,8 +117,14 @@ public class Player extends SocketSide implements AutoCloseable {
 		board.set(x, y, OTHER);
 	}
 
-	private NeuralNetwork pickRandomNN() throws IOException {
-		return GameIO.loadNetwork(Training.NETWORKS[RANDOM.nextInt(Training.NETWORK_COUNT)]);
+	private AI pickRandomNN() throws IOException {
+		if (RANDOM.nextBoolean()) {
+			return GameIO.loadNetwork(
+					NeuralNetwork.fileName(Training.NN_NETWORKS[RANDOM.nextInt(Training.NN_NETWORK_COUNT)]), false);
+		} else {
+			int[][] get = Training.CNN_NETWORKS[RANDOM.nextInt(Training.CNN_NETWORK_COUNT)];
+			return GameIO.loadNetwork(Convolutional.fileName(Board.SIZE, get[0], get[1]), true);
+		}
 	}
 
 	// hash code seems to be the same, so recreate output

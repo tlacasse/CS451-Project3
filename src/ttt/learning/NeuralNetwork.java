@@ -6,7 +6,7 @@ import java.util.Arrays;
  * A NeuralNetwork implementation, with cost function and gradient descent for
  * learning. (Hopefully works!)
  */
-public class NeuralNetwork {
+public class NeuralNetwork implements AI {
 
 	private final int size;
 	private final int[] nodes;
@@ -35,10 +35,12 @@ public class NeuralNetwork {
 
 	/////////////////////////////////////////////////////////////
 
+	@Override
 	public Matrix input() {
 		return layer[0];
 	}
 
+	@Override
 	public Matrix output() {
 		return layer[size - 1];
 	}
@@ -47,10 +49,12 @@ public class NeuralNetwork {
 
 	// these do not copy the matrix array
 
+	@Override
 	public Matrix[] getWeights() {
 		return weights;
 	}
 
+	@Override
 	public void setWeights(Matrix[] ws) {
 		// no exception messages, just look in stack trace to get to which line
 		if (ws.length != weights.length) {
@@ -69,6 +73,7 @@ public class NeuralNetwork {
 
 	/////////////////////////////////////////////////////////////
 
+	@Override
 	public Matrix calculate(Matrix x) {
 		layer[0] = x;
 		for (int i = 0; i < size - 1; i++) {
@@ -80,10 +85,12 @@ public class NeuralNetwork {
 
 	private static final double TUNING = 0.000001;
 
+	@Override
 	public double cost(Matrix y) {
 		return (0.5 * y.add(output().negative()).elementSquare().sum()) / layer[0].rows();
 	}
 
+	@Override
 	public Matrix[] costPrime(Matrix y) {
 		final Matrix[] derivative = new Matrix[size - 1];
 		final Matrix[] delta = new Matrix[size - 1];
@@ -102,8 +109,23 @@ public class NeuralNetwork {
 		return Arrays.toString(nodes);
 	}
 
+	@Override
+	public String fileName() {
+		return fileName(nodes);
+	}
+
+	public static String fileName(int... nodes) {
+		final StringBuilder sb = new StringBuilder("nn_");
+		for (int i = 0; i < nodes.length - 1; i++) {
+			sb.append(nodes[i]).append("-");
+		}
+		sb.append(nodes[nodes.length - 1]).append(".nn");
+		return sb.toString();
+	}
+
 	/////////////////////////////////////////////////////////////
 
+	@Deprecated
 	public void train(Matrix x, Matrix y) {
 		for (int t = 0; t < 100000; t++) {
 			calculate(x);

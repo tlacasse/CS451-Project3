@@ -1,6 +1,8 @@
 package ttt.learning;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javafx.util.Pair;
@@ -11,17 +13,22 @@ import ttt.Board;
  */
 public class Training {
 
-	public static final int[][] NETWORKS;
-	public static final int NETWORK_COUNT;
+	public static final int[][] NN_NETWORKS;
+	public static final int[][][] CNN_NETWORKS;
+	public static final int NN_NETWORK_COUNT, CNN_NETWORK_COUNT;
 
 	static {
 		int i = 0;
-		NETWORKS = new int[NETWORK_COUNT = 4][];
+		NN_NETWORKS = new int[NN_NETWORK_COUNT = 4][];
 
-		NETWORKS[i++] = new int[] { Board.CELLS, 50, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 50, 10, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 15, 15, Board.CELLS };
-		NETWORKS[i++] = new int[] { Board.CELLS, 8, 8, Board.CELLS };
+		NN_NETWORKS[i++] = new int[] { Board.CELLS, 50, Board.CELLS };
+		NN_NETWORKS[i++] = new int[] { Board.CELLS, 50, 10, Board.CELLS };
+		NN_NETWORKS[i++] = new int[] { Board.CELLS, 15, 15, Board.CELLS };
+		NN_NETWORKS[i++] = new int[] { Board.CELLS, 8, 8, Board.CELLS };
+
+		i = 0;
+		CNN_NETWORKS = new int[CNN_NETWORK_COUNT = 1][][];
+		CNN_NETWORKS[i++] = new int[][] { new int[] { 5, 5 }, new int[] { 50, Board.CELLS } };
 
 		// these are not good
 		// NETWORKS[i++] = new int[] { Board.CELLS, 5, Board.CELLS };
@@ -37,9 +44,32 @@ public class Training {
 	}
 
 	public static void restartNeuralNetworks() throws IOException {
-		for (int i = 0; i < NETWORKS.length; i++) {
-			GameIO.saveNetwork(new NeuralNetwork(NETWORKS[i]));
+		for (AI nn : createNetworks()) {
+			GameIO.saveNetwork(nn);
 		}
+	}
+
+	private static List<AI> createNetworks() {
+		final List<AI> list = new LinkedList<>();
+		for (int i = 0; i < NN_NETWORKS.length; i++) {
+			list.add(new NeuralNetwork(NN_NETWORKS[i]));
+		}
+		for (int i = 0; i < CNN_NETWORKS.length; i++) {
+			list.add(new Convolutional(Board.SIZE, CNN_NETWORKS[i][0], CNN_NETWORKS[i][1]));
+		}
+		return list;
+	}
+
+	private static List<AI> loadNetworks() throws FileNotFoundException, IOException {
+		final List<AI> list = new LinkedList<>();
+		for (int i = 0; i < NN_NETWORKS.length; i++) {
+			list.add(GameIO.loadNetwork(NeuralNetwork.fileName(NN_NETWORKS[i]), false));
+		}
+		for (int i = 0; i < CNN_NETWORKS.length; i++) {
+			list.add(GameIO.loadNetwork(Convolutional.fileName(Board.SIZE, CNN_NETWORKS[i][0], CNN_NETWORKS[i][1]),
+					true));
+		}
+		return list;
 	}
 
 	private static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> DATA;
@@ -53,8 +83,7 @@ public class Training {
 
 		final int displayInterval = interations / displayIntervals;
 
-		for (int i = 0; i < NETWORKS.length; i++) {
-			NeuralNetwork nn = GameIO.loadNetwork(NETWORKS[i]);
+		for (AI nn : loadNetworks()) {
 			System.out.println(nn);
 			for (int t = 1; t <= interations; t++) {
 				if (t % displayInterval == 0 || t == interations) {

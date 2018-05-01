@@ -136,6 +136,14 @@ public final class Program {
 		return new int[] { n % size, Math.floorDiv(n, size) };
 	}
 
+	public static int[] strArrayToIntArray(String... strs) {
+		final int[] result = new int[strs.length];
+		for (int i = 0; i < strs.length; i++) {
+			result[i] = Integer.parseInt(strs[i]);
+		}
+		return result;
+	}
+
 	private Program() {
 	}
 
