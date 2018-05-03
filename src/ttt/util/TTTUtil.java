@@ -59,4 +59,11 @@ public final class TTTUtil {
 		return result;
 	}
 
+	public static byte checkRange(int i) {
+		if (i < 0 || i > Byte.MAX_VALUE) {
+			throw new IllegalArgumentException(i + " out of byte range");
+		}
+		return (byte) i;
+	}
+
 }

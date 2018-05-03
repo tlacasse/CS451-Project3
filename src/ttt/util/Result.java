@@ -11,19 +11,20 @@ import java.io.IOException;
  */
 public class Result {
 
-	public final int players, winner, count;
+	public final int players, winner;
+	public final int count;
 	private final int[][] moves;
 
 	public Result(File file) throws FileNotFoundException, IOException {
 		try (FileInputStream fis = new FileInputStream(file); DataInputStream reader = new DataInputStream(fis)) {
-			players = reader.readInt();
-			winner = reader.readInt();
-			count = reader.readInt();
+			players = reader.readByte();
+			winner = reader.readByte();
+			count = reader.readShort();
 			moves = new int[count][3];
 			for (int i = 0; i < count; i++) {
-				moves[i][0] = reader.readInt();
-				moves[i][1] = reader.readInt();
-				moves[i][2] = reader.readInt();
+				moves[i][0] = reader.readByte();
+				moves[i][1] = reader.readByte();
+				moves[i][2] = reader.readByte();
 			}
 		}
 	}

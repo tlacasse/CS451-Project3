@@ -2,6 +2,7 @@ package ttt;
 
 import static ttt.Program.HAVE_USER;
 import static ttt.Program.PLAYERS;
+import static ttt.util.TTTUtil.checkRange;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -21,15 +22,15 @@ import ttt.util.TTTUtil;
  */
 public class Game {
 
-	private static final int MOVE_SIZE = (Integer.BYTES * 3);
+	private static final int MOVE_SIZE = 3;
 
-	private List<Integer> moves;
-	private int winner;
-	private int count;
-	private int players;
+	private List<Byte> moves;
+	private byte winner;
+	private byte players;
+	private short count;
 
 	public Game(int players) {
-		this.players = players;
+		this.players = checkRange(players);
 		moves = new LinkedList<>();
 		count = 0;
 		winner = -1;
@@ -40,17 +41,17 @@ public class Game {
 	}
 
 	public void setPlayerCount(int players) {
-		this.players = players;
+		this.players = checkRange(players);
 	}
 
 	public void setWinner(int winner) {
-		this.winner = winner;
+		this.winner = checkRange(winner);
 	}
 
 	public void recordMove(int player, int x, int y) {
-		moves.add(player);
-		moves.add(x);
-		moves.add(y);
+		moves.add(checkRange(player));
+		moves.add(checkRange(x));
+		moves.add(checkRange(y));
 		count++;
 	}
 
@@ -76,12 +77,12 @@ public class Game {
 		if (players == -1) {
 			throw new IllegalStateException("Player Count Not Set.");
 		}
-		ByteBuffer buffer = ByteBuffer.allocate((Integer.BYTES * 3) + (MOVE_SIZE * count));
-		buffer.putInt(players);
-		buffer.putInt(winner);
-		buffer.putInt(count);
-		for (Integer i : moves) {
-			buffer.putInt(i.intValue());
+		final ByteBuffer buffer = ByteBuffer.allocate(3 + (MOVE_SIZE * count));
+		buffer.put(players);
+		buffer.put(winner);
+		buffer.putShort(count); // short because 13^2 > 127
+		for (Byte b : moves) {
+			buffer.put(b);
 		}
 		return buffer;
 	}

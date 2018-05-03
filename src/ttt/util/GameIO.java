@@ -72,11 +72,10 @@ public final class GameIO {
 	private static File saveNetwork0(Convolutional nn) throws FileNotFoundException, IOException {
 		final Matrix[] weights = nn.getWeights();
 		int bufferSize = 1 + (3 * Integer.BYTES); // 1 + imageWidth +
-													// #convLayers +
-		// #fullLayers
+													// #convLayers + #fullLayers
 		bufferSize += nn.convLayers() * Integer.BYTES;
 		bufferSize += nn.fullLayers() * Integer.BYTES;
-		bufferSize = bufferSize += getWeightsBufferSize(weights);
+		bufferSize += getWeightsBufferSize(weights);
 		final ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
 		buffer.put(CODE_CNN);
 		buffer.putInt(nn.imageSize());
