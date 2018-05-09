@@ -248,6 +248,3 @@ ModelManifest.xml
 
 packages/
 _Build/
-libtensorflow_jni-cpu-windows-x86_64-1.8.0/
-TensorFlowTest.class
-TensorFlowTest.java
