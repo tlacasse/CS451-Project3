@@ -89,4 +89,10 @@ public abstract class ServerBase implements AutoCloseable {
 		private static final long serialVersionUID = 3082137597765604600L;
 	}
 
+	// make sure board is empty there
+	/*
+	 * if (!board.isSpaceEmpty(x, y)) { ((LinkedList<Client>)
+	 * clients).addFirst(active); System.out.println("RESET"); turn--; return; }
+	 */
+
 }

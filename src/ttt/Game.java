@@ -77,7 +77,7 @@ public class Game {
 		if (players == -1) {
 			throw new IllegalStateException("Player Count Not Set.");
 		}
-		final ByteBuffer buffer = ByteBuffer.allocate(3 + (MOVE_SIZE * count));
+		final ByteBuffer buffer = ByteBuffer.allocate(4 + (MOVE_SIZE * count));
 		buffer.put(players);
 		buffer.put(winner);
 		buffer.putShort(count); // short because 13^2 > 127

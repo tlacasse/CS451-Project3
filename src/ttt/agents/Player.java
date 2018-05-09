@@ -107,7 +107,6 @@ public class Player extends SocketSide implements AutoCloseable {
 				pos = coord;
 			}
 		}
-
 		board.set(pos[0], pos[1], SELF);
 		return pos;
 	}
