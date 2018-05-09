@@ -4,16 +4,57 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 
 import javafx.util.Pair;
 import ttt.Board;
+import ttt.Config;
 import ttt.util.GameIO;
 import ttt.util.GamePostfix;
+import ttt.util.TTTUtil;
 
 /**
  * Static method to train the networks, along with storing the networks to use.
  */
 public class Training {
+
+	public static void main(String[] args) throws IOException {
+		try (Scanner scan = new Scanner(System.in)) {
+			System.out.println("??? Start from Random Weights? (y/n)");
+			if (TTTUtil.isYes(scan.nextLine())) {
+				Training.restartNeuralNetworks();
+			}
+			final Config config = Config.create(scan, KEYS_TRAINING);
+
+			List<GamePostfix> gamesToExclude = new LinkedList<>();
+			if (config.get(TRAINING_USE_AvA) < 1)
+				gamesToExclude.add(GamePostfix.NONE);
+			if (config.get(TRAINING_USE_PvA) < 1)
+				gamesToExclude.add(GamePostfix.USER_VS_AI);
+			if (config.get(TRAINING_USE_PvP) < 1)
+				gamesToExclude.add(GamePostfix.PVP);
+
+			train(config.get(TRAINING_ITERATIONS), config.get(TRAINING_DISPLAY_INTERVALS),
+					config.get(TRAINING_USE_LOSS) > 0, gamesToExclude);
+		}
+	}
+
+	public static final Config.Key TRAINING_ITERATIONS = new Config.Key("Training Iterations", 500);
+	public static final Config.Key TRAINING_DISPLAY_INTERVALS = new Config.Key(
+			"Number of Display Intervals while Training", 10);
+	public static final Config.Key TRAINING_USE_LOSS = new Config.Key("Use Losses to 'unlearn'", 1, true);
+	public static final Config.Key TRAINING_USE_AvA = new Config.Key("Use AI vs AI games", 1, true);
+	public static final Config.Key TRAINING_USE_PvA = new Config.Key("Use Player vs AI games", 1, true);
+	public static final Config.Key TRAINING_USE_PvP = new Config.Key("Use Player vs Player games", 1, true);
+
+	private static final List<Config.Key> KEYS_TRAINING;
+
+	static {
+		KEYS_TRAINING = TTTUtil.defineList(TRAINING_ITERATIONS, TRAINING_DISPLAY_INTERVALS, TRAINING_USE_LOSS,
+				TRAINING_USE_AvA, TRAINING_USE_PvA, TRAINING_USE_PvP);
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
 
 	public static final int[][] NN_NETWORKS;
 	public static final int[][][] CNN_NETWORKS;
@@ -51,7 +92,7 @@ public class Training {
 		// Board.CELLS };
 	}
 
-	public static void restartNeuralNetworks() throws IOException {
+	private static void restartNeuralNetworks() throws IOException {
 		for (int i = 0; i < NN_NETWORKS.length; i++) {
 			GameIO.saveNetwork(new NeuralNetwork(NN_NETWORKS[i]));
 		}
@@ -74,8 +115,8 @@ public class Training {
 
 	private static Pair<Pair<Matrix, Matrix>, Pair<Matrix, Matrix>> DATA;
 
-	public static void train(int interations, int displayIntervals, boolean useLosses, List<GamePostfix> gamesToExclude)
-			throws IOException {
+	private static void train(int interations, int displayIntervals, boolean useLosses,
+			List<GamePostfix> gamesToExclude) throws IOException {
 		DATA = GameIO.readGamesForNetworkTraining(gamesToExclude);
 		System.out.println("Win Training Data Points: " + winData().getKey().rows());
 		System.out.println("Loss Training Data Points: " + lossData().getKey().rows());

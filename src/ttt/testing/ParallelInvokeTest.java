@@ -8,6 +8,7 @@ import java.util.List;
 import ttt.learning.Matrix;
 import ttt.util.Parallel;
 
+@Deprecated
 final class ParallelInvokeTest {
 
 	private ParallelInvokeTest() {

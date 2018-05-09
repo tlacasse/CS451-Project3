@@ -8,6 +8,7 @@ import java.util.List;
  * An array of objects, can easily call the same method on all objects in the
  * array.
  */
+@Deprecated // Not used, but cool idea
 public final class Parallel<P> {
 
 	private final P[] array;

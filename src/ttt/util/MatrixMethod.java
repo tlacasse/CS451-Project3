@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import ttt.learning.Matrix;
 
+@Deprecated // Not Used
 public final class MatrixMethod {
 
 	private MatrixMethod() {
