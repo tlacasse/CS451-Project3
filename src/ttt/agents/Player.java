@@ -118,7 +118,7 @@ public class Player extends SocketSide implements AutoCloseable {
 	}
 
 	private AI pickRandomNN() throws IOException {
-		if (RANDOM.nextBoolean()) {
+		if (RANDOM.nextBoolean() && false) {
 			return GameIO.loadNetwork(
 					NeuralNetwork.fileName(Training.NN_NETWORKS[RANDOM.nextInt(Training.NN_NETWORK_COUNT)]));
 		} else {

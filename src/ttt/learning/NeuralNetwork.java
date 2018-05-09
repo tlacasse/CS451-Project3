@@ -6,7 +6,7 @@ import java.util.Arrays;
  * A NeuralNetwork implementation, with cost function and gradient descent for
  * learning. (Hopefully works!)
  */
-public class NeuralNetwork implements AI {
+public final class NeuralNetwork implements AI {
 
 	private final int size;
 	private final int[] nodes;
@@ -56,16 +56,15 @@ public class NeuralNetwork implements AI {
 
 	@Override
 	public void setWeights(Matrix[] ws) {
-		// no exception messages, just look in stack trace to get to which line
 		if (ws.length != weights.length) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("ws.length != weights.length");
 		}
 		for (int i = 0; i < weights.length; i++) {
 			if (ws[i].rows() != weights[i].rows()) {
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("ws[i].rows() != weights[i].rows()");
 			}
 			if (ws[i].columns() != weights[i].columns()) {
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("ws[i].columns() != weights[i].columns()");
 			}
 		}
 		weights = ws;

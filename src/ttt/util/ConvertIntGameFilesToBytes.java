@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+@Deprecated // it has been used
 final class ConvertIntGameFilesToBytes {
 
 	private ConvertIntGameFilesToBytes() {

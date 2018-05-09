@@ -31,6 +31,12 @@ public class Training {
 		i = 0;
 		CNN_NETWORKS = new int[CNN_NETWORK_COUNT = 1][][];
 		CNN_NETWORKS[i++] = new int[][] { new int[] { 5, 5 }, new int[] { 50, Board.CELLS } };
+		// CNN_NETWORKS[i++] = new int[][] { new int[] { 3, 3 }, new int[] { 50,
+		// Board.CELLS } };
+		// CNN_NETWORKS[i++] = new int[][] { new int[] { 3, 3, 3 }, new int[] {
+		// 13, Board.CELLS } };
+		// CNN_NETWORKS[i++] = new int[][] { new int[] { 5, 5 }, new int[] { 13,
+		// 26, Board.CELLS } };
 
 		// these are not good
 		// NETWORKS[i++] = new int[] { Board.CELLS, 5, Board.CELLS };

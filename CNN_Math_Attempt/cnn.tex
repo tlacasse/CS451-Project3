@@ -1,0 +1,115 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{amsthm}
+\geometry{
+ a4paper,
+ %total={170mm,257mm},
+ left=1in,
+ right=1in,
+ top=1in,
+ %bottom=1in,
+ textheight=9.5in,
+ footskip=1in,
+}
+
+\newcommand{\tab}{\null\qquad}
+\newcommand{\inz}{\in\mathbb{Z}}
+\newcommand{\inr}{\in\mathbb{R}}
+\newcommand{\inq}{\in\mathbb{Q}}
+\newcommand{\st}{\ | \ }
+\newcommand{\true}{\text{true}}
+\newcommand{\false}{\text{false}}
+\newcommand{\deriv}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\imgsize}[1]{\lambda_{#1} - n_{#1} + 1}
+\newcommand{\yhat}{\hat{y}}
+\newcommand{\m}{\text{m}}
+
+\begin{document}
+
+The equations of a Convolutional Neural Network of 4 layers:
+\begin{align*}
+	L_0 &= \chi \\
+	T_0[x][y] &= \sum_{i=0}^{\imgsize{0}} \sum_{j=0}^{\imgsize{0}} L_0[x+i][y+i] \cdot w_0[i][j] \\
+	L_1[x][y] &= \Delta(T_0[x][y]) \\
+	T_1[x][y] &= \sum_{i=0}^{\imgsize{1}} \sum_{j=0}^{\imgsize{1}} L_1[x+i][y+i] \cdot w_1[i][j] \\
+	L_2[x][y] &= \Delta(T_1[x][y]) \\
+	L_2[x][y] &\rightarrow L_2[i] \\
+	T_2[i] &= \sum_{j=0}^{\lambda_2} L_2[j] \cdot w_2[j][i] \\
+	L_3[i] &= \Delta(T_2[i]) \\
+	T_3[i] &= \sum_{j=0}^{h_3} L_3[j] \cdot w_3[j][i] \\
+	L_4[i] &= \Delta(T_3[i]) \\
+	\hat{y} &= L_4
+\end{align*}
+The derivatives would be:
+\begin{align*}
+	\deriv{T_0[x][y]}{w_0[i][j]} &= L_0[x+i][y+j], \\
+	\deriv{L_1[x][y]}{T_0[x][y]} &= \Delta '(T_0[x][y]), \\
+	\deriv{T_1[x][y]}{L_1[x+i][y+j]} &= w_1[i][j], \\
+	\deriv{L_2[x][y]}{T_1[x][y]} &= \Delta '(T_1[x][y]), \\
+	\deriv{T_2[i]}{L_2[x][y]} &= w_2[\m (x,y)][i], \\
+	\deriv{L_3[i]}{T_2[i]} &= \Delta '(T_2[i]), \\
+	\deriv{T_3[i]}{L_3[j]} &= w_3[j][i], \\
+	\deriv{L_4[i]}{T_3[i]} &= \Delta '(T_3[i]), \\
+	\deriv{C}{L_4[i]} &= L_4[i] - y[i].
+\end{align*}
+\begin{align*}
+	\deriv{C}{w_0[w_x][w_y]} &= \deriv{C}{L_4[i]} \deriv{L_4[i]}{T_3[i]} \deriv{T_3[i]}{w_0[w_x][w_y]}, \\
+	\deriv{T_3[i]}{w_0[w_x][w_y]} &= \sum_{j} \deriv{T_3[i]}{L_3[j]} \deriv{L_3[j]}{T_2[j]} \deriv{T_2[j]}{w_0[w_x][w_y]}, \\
+	\deriv{T_2[i]}{w_0[w_x][w_y]} &= \sum_{x,y} \deriv{T_2[i]}{L_2[x][y]} \deriv{L_2[x][y]}{T_1[x][y]} \deriv{T_1[x][y]}{w_0[w_x][w_y]}, \\
+	\deriv{T_1[x][y]}{w_0[w_x][w_y]} &= \sum_{q,z} \deriv{T_1[x][y]}{L_1[x + q][y + z]} \deriv{L_1[x + q][y + z]}{T_0[x + q][y + z]} \deriv{T_0[x + q][y + z]}{w_0[w_x][w_y]}.
+\end{align*}
+\begin{align*}
+	\deriv{C}{w_0[w_x][w_y]} &= \sum_{i} (L_4[i] - y[i]) \cdot \Delta '(T_3[i]) \cdot \deriv{T_3[i]}{w_0[w_x][w_y]}, \\
+	\deriv{T_3[i]}{w_0[w_x][w_y]} &= \sum_{j} w_3[j][i] \cdot \Delta '(T_2[j]) \cdot \deriv{T_2[j]}{w_0[w_x][w_y]}, \\
+	\deriv{T_2[i]}{w_0[w_x][w_y]} &= \sum_{x,y} w_2[\m (x,y)][i] \cdot \Delta '(T_1[x][y]) \cdot \deriv{T_1[x][y]}{w_0[w_x][w_y]}, \\
+	\deriv{T_1[x][y]}{w_0[w_x][w_y]} &= \sum_{q,z} w_1[q][z] \cdot \Delta '(T_0[x+q][y+z]) \cdot L_0[x+q+w_x][y+z+w_y]. 
+\end{align*}
+\begin{align*}
+	\deriv{C}{w_1[w_x][w_y]} &= \deriv{C}{L_4[i]} \deriv{L_4[i]}{T_3[i]} \deriv{T_3[i]}{w_1[w_x][w_y]}, \\
+	\deriv{T_3[i]}{w_1[w_x][w_y]} &= \sum_{j} \deriv{T_3[i]}{L_3[j]} \deriv{L_3[j]}{T_2[j]} \deriv{T_2[j]}{w_1[w_x][w_y]}, \\
+	\deriv{T_2[i]}{w_1[w_x][w_y]} &= \sum_{x,y} \deriv{T_2[i]}{L_2[x][y]} \deriv{L_2[x][y]}{T_1[x][y]} \deriv{T_1[x][y]}{w_1[w_x][w_y]}, \\
+	\deriv{T_1[x][y]}{w_1[w_x][w_y]} &= \sum_{q,z}
+\end{align*}
+\begin{align*}
+	\deriv{T_1[x][y]}{w_1[i][j]} &= L_1[x+i][y+1], \\
+	\deriv{L_2[x][y]}{T_1[x][y]} &= \Delta '(T_1[x][y]), \\
+	\deriv{T_2[i]}{L_2[x][y]} &= w_2[\m (x,y)][i], \\
+	\deriv{L_3[i]}{T_2[i]} &= \Delta '(T_2[i]), \\
+	\deriv{T_3[i]}{L_3[j]} &= w_3[j][i], \\
+	\deriv{L_4[i]}{T_3[i]} &= \Delta '(T_3[i]), \\
+	\deriv{C}{L_4[i]} &= L_4[i] - y[i].
+\end{align*}
+
+%\deriv{C}{w_1[x][y]} &= \deriv{C}{\yhat}\deriv{C}{\yhat}
+\newpage
+Or, in general:
+\begin{align*}
+	L_0 &= \chi \\
+	T_k[x][y] &= \sum_{i=k}^{\imgsize{k}} \sum_{j=0}^{\imgsize{k}} L_k[x+i][y+j] \cdot w_k[i][j] \\
+	L_k[x][y] &= \Delta(T_{k-1}[x][y]) \\
+	L_{c-1}[x][y] &\rightarrow L_{c-1}[i] \\
+	T_k[i] &= \sum_{j=0}^{h_k} L_k[j] \cdot w_k[j][i] \\
+	L_k[i] &= \Delta(T_{k-1}[i]) \\
+	\hat{y} &= L_{s-1}
+\end{align*}
+\begin{align*}
+	\deriv{C}{w_\psi[w_x][w_y]} [i] &= \deriv{C}{L_s[i]} \deriv{L_s[i]}{T_{s-1}[i]} \sum_j \deriv{T_{s-1}[j]}{w_\psi[w_x][w_y]} [j], \\
+	\deriv{T_k[i]}{w_\psi[w_x][w_y]} [j] &= \deriv{T_k[i]}{L_k[j]} \deriv{L_k[j]}{T_{k-1}[j]} \cdot \sum_r \deriv{T_{k-1}[j]}{w_\psi[w_x][w_y]} [r], \\
+	\deriv{T_{c-1}[i]}{w_\psi[w_x][w_y]} [\m(x,y)] &= \deriv{T_{c-1}[i]}{L_{c-1}[x][y]} \deriv{L_{c-1}[x][y]}{T_{c-2}[x][y]} \cdot \sum_{n,m} \deriv{T_{c-2}[x][y]}{w_\psi[w_x][w_y]} [n][m], \\
+	\deriv{T_k[x][y]}{w_\psi[w_x][w_y]} [i][j] &= \deriv{T_k[x][y]}{L_k[x+i][y+j]} \deriv{L_k[x+i][y+j]}{T_{k-1}[x+i][y+j]} \cdot \sum_{n,m} \deriv{T_{k-1}[x+i][y+j]}{w_\psi[w_x][w_y]} [n][m], \\
+	\deriv{T_{\psi+1}[x][y]}{w_\psi[w_x][w_y]} [i][j] &= \deriv{T_{\psi+1}[x][y]}{L_{\psi+1}[x+i][y+j]} \deriv{L_{\psi+1}[x+i][y+j]}{T_\psi[x+i][y+j]} \deriv{T_\psi[x+i][y+j]}{w_\psi[w_x][w_y]}, \\
+\end{align*}
+\begin{align*}
+	\delta_{s}[i] &= (L_s[i] - y[i]) \cdot \Delta '(T_{s-1}[i]) , \\
+	\delta_k[i][j] &= w_k[j][i]  \cdot \Delta '(T_{k-1}[j]) , \\
+	\xi_k[i] &= \sum_j \delta_{k-1} [i][j] , \\
+	\delta_k[x][y][i][j] &= w_k[i][j]  \cdot \Delta '(T_{k-1}[x+i][y+j]), \\
+	\xi_k[x][y] &= \sum_j \delta_{k-1}[x][y][i][j] , \\
+	\delta_{\psi+1}[x][y][i][j] &= w_{\psi+1}[i][j]  \cdot \Delta '(T_\psi[x+i][y+j]) \cdot L_\psi[x+i][y+j], \\
+\end{align*}
+
+
+
+\end{document}

@@ -85,6 +85,13 @@ public final class Convolutional implements AI {
 
 	@Override
 	public Matrix calculate(Matrix x) {
+		Matrix q;
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++");
+		for (int i = 0; i < weights.length; i++) {
+			q = weights[i];
+			System.out.println(q.rows() + " x " + q.columns());
+		}
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++");
 		input = x;
 		output = layers[0].forward(x);
 		return output;
@@ -97,8 +104,21 @@ public final class Convolutional implements AI {
 
 	@Override
 	public Matrix[] costPrime(Matrix y) {
+		Matrix q;
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		for (int i = 0; i < imgSize.length; i++) {
+			System.out.println("i: " + imgSize[i]);
+		}
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		for (int i = 0; i < layers.length; i++) {
+			q = layers[i].weight;
+			System.out.println(q.rows() + " x " + q.columns());
+		}
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
 		final Matrix[] derivative = new Matrix[layers()];
 		for (int i = 0; i < layers(); i++) {
+			System.out.println("===================================================== " + i);
 			derivative[i] = layers[layers.length - 1].backward(y, i);
 		}
 		on++;
@@ -111,7 +131,7 @@ public final class Convolutional implements AI {
 
 		final int index;
 		Layer prev, next;
-		Matrix weight, layer, transition, delta;
+		Matrix weight, layer, transition, cache, out;
 		int prevOn;
 
 		Layer(int index, Matrix weight, Layer prev) {
@@ -119,7 +139,7 @@ public final class Convolutional implements AI {
 			this.weight = weight;
 			this.prev = prev;
 			next = null;
-			layer = transition = delta = null;
+			layer = transition = cache = out = null;
 			prevOn = -1;
 		}
 
@@ -140,19 +160,63 @@ public final class Convolutional implements AI {
 		}
 
 		@Override
-		Matrix forward(Matrix x) {
-			layer = x;
-			transition = x.multiply(weight);
-			final Matrix out = transition.sigmoid();
-			return next == null ? out : next.forward(out);
+		Matrix forward(Matrix layer) {
+			// T_0 = L_0 x W_0
+			// L_1 = f( T_0)
+			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			Matrix q;
+			q = layer;
+			System.out.println("layer\t\t" + q.rows() + " x " + q.columns());
+			q = weight;
+			System.out.println("weight\t\t" + q.rows() + " x " + q.columns());
+
+			this.layer = layer;
+			transition = layer.multiply(weight);
+
+			q = transition;
+			System.out.println("trans\t\t" + q.rows() + " x " + q.columns());
+
+			out = transition.sigmoid();
+			if (next != null)
+				out = next.forward(out);
+			return out;
 		}
 
 		@Override
 		Matrix backward(Matrix y, int wi, int back) {
-			delta = prevOn == on ? delta
+			Matrix q;
+			System.out.println("#######################################");
+			if (index == wi) {
+				System.out.println("Desired Weight: " + weight.rows() + " x " + weight.columns());
+			}
+
+			System.out.println("back == 0\t\t" + (back == 0));
+			q = y;
+			System.out.println("y\t\t" + q.rows() + " x " + q.columns());
+
+			if (back == 0) {
+				int ip1 = index + 1;
+				System.out.println("***\t\t dC/dL_" + ip1 + " dL_" + ip1 + "/dT_" + index);
+			} else {
+				int ip1 = index + 1;
+				System.out.println("***\t\t dT_" + ip1 + "/dL_" + ip1 + " dL_" + ip1 + "/dT_" + index);
+			}
+
+			cache = prevOn == on ? cache
 					: (back == 0 ? output().add(y.negative()).product(transition.sigmoidPrime())
 							: y.multiply(next.weight.transpose()).product(transition.sigmoidPrime()));
+			q = cache;
+			System.out.println("cache\t\t" + q.rows() + " x " + q.columns());
+
+			final Matrix delta = cache;
 			prevOn = on;
+
+			System.out.println("wi == index\t\t" + (wi == index));
+			if (wi == index) {
+				q = layer.transpose().multiply(delta);
+				System.out.println("layer+delta\t\t" + q.rows() + " x " + q.columns());
+			}
+
 			return wi == index ? layer.transpose().multiply(delta) : prev.backward(delta, wi, back - 1);
 		}
 
@@ -188,17 +252,32 @@ public final class Convolutional implements AI {
 				}
 			}
 			transition = new Matrix(result);
-			return next.forward(transition.sigmoid());
+			out = transition.sigmoid();
+			return next.forward(out);
 		}
 
 		@Override
 		Matrix backward(Matrix y, int wi, int back) {
-			if (prevOn != on) {
-				if (back == -fullLayers()) {
-					delta = y.multiply(next.weight.transpose()).product(transition.sigmoidPrime());
-				} else {
+			Matrix q;
+			System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+			if (index == wi) {
+				System.out.println("Desired Weight: " + weight.rows() + " x " + weight.columns());
+			}
+			System.out.println("y\t\t" + y.rows() + " x " + y.columns());
+			int ip1 = index + 1;
+			System.out.println("***\t\t dT_" + ip1 + "/dL_" + ip1 + " dL_" + ip1 + "/dT_" + index);
+			if (back == -fullLayers()) {
+				cache = prevOn == on ? cache : y.multiply(next.weight.transpose()).product(transition.sigmoidPrime());
+			} else {
+				System.out.println("~~~~~");
+				if (prevOn != on) {
 					final int nextFilter = sqrt(next.weight.columns());
 					final int nextImage = sqrt(y.columns());
+					System.out.println("sqr(newWidth)\t" + sqr(newWidth));
+					System.out.println("filterWidth\t" + filterWidth);
+					System.out.println("newWidth\t" + newWidth);
+					System.out.println("nextFilter\t" + nextFilter);
+					System.out.println("nextImage\t" + nextImage);
 					final double[][] d = new double[y.rows()][sqr(newWidth)];
 					for (int m = 0; m < y.rows(); m++) {
 						for (int i = 0; i < nextFilter; i++) {
@@ -215,14 +294,24 @@ public final class Convolutional implements AI {
 							}
 						}
 					}
-					delta = new Matrix(d);
+					cache = new Matrix(d);
 				}
 			}
+
+			q = cache;
+			System.out.println("cache\t\t" + q.rows() + " x " + q.columns());
+
+			final Matrix delta = cache;
 			prevOn = on;
+
+			System.out.println("wi == index\t\t" + (wi == index));
 			if (wi != index) {
 				return prev.backward(delta, wi, back - 1);
 			}
+
+			System.out.println("***\t\t dT_" + index + "/dW_" + index);
 			final double[] derivative = new double[sqr(filterWidth)];
+
 			for (int i = 0; i < filterWidth; i++) {
 				for (int j = 0; j < filterWidth; j++) {
 					double sum = 0.0;
@@ -238,6 +327,7 @@ public final class Convolutional implements AI {
 					derivative[coordToOrdinal(i, j, filterWidth)] = sum;
 				}
 			}
+
 			return new Matrix(false, derivative);
 		}
 
