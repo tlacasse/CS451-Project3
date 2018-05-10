@@ -4,6 +4,9 @@ import static ttt.util.TTTUtil.coordToOrdinal;
 
 import java.util.Arrays;
 
+/**
+ * Attempted Convolutional Neural Network
+ */
 public final class Convolutional implements AI {
 
 	private final int[] imgSize, convLayers, fullLayers;
@@ -26,9 +29,9 @@ public final class Convolutional implements AI {
 			weights[i] = Matrix.random(1, sqr(convLayers[i]));
 			imgSize[i + 1] = postConvWidth(imgSize[i], convLayers[i]);
 		}
-		weights[convLayers()] = Matrix.random(sqr(imgSize[convLayers()]), fullLayers[0], 0.5);
+		weights[convLayers()] = Matrix.random(sqr(imgSize[convLayers()]), fullLayers[0], 0.35);
 		for (int i = 0; i < fullLayers() - 1; i++) {
-			weights[convLayers() + i + 1] = Matrix.random(fullLayers[i], fullLayers[i + 1], 0.5);
+			weights[convLayers() + i + 1] = Matrix.random(fullLayers[i], fullLayers[i + 1], 0.35);
 		}
 
 		int i = 0;
@@ -99,7 +102,7 @@ public final class Convolutional implements AI {
 	public Matrix[] costPrime(Matrix y) {
 		final Matrix[] derivative = new Matrix[layers()];
 		for (int i = 0; i < layers(); i++) {
-			derivative[i] = layers[layers.length - 1].backward(y, i);
+			derivative[i] = layers[layers.length - 1].backward(y, i).scalar(0.001);
 		}
 		on++;
 		return derivative;

@@ -29,15 +29,19 @@ public class Game {
 	private byte players;
 	private short count;
 
-	public Game(int players) {
-		this.players = checkRange(players);
+	private Game(byte players, boolean notUsed) {
+		this.players = players;
 		moves = new LinkedList<>();
 		count = 0;
 		winner = -1;
 	}
 
+	public Game(int players) {
+		this(checkRange(players), true);
+	}
+
 	public Game() {
-		this(-1);
+		this((byte) -1, true);
 	}
 
 	public void setPlayerCount(int players) {

@@ -31,8 +31,8 @@ final class ConvNetTest {
 
 		double[][] yda = new double[3][169];
 		yda[0][5] = 1.0;
-		yda[0][50] = 1.0;
-		yda[0][127] = 1.0;
+		yda[1][50] = 1.0;
+		yda[2][127] = 1.0;
 		Matrix y = new Matrix(yda);
 
 		Convolutional cnn = new Convolutional(Board.SIZE, new int[] { 3, 5 }, new int[] { 50, Board.CELLS });
@@ -47,9 +47,9 @@ final class ConvNetTest {
 			else
 				System.out.println("null");
 		}
-		// dCdW[0].display();
-		// dCdW[1].display();
-		// dCdW[2].display();
+		dCdW[0].display();
+		dCdW[1].display();
+		dCdW[2].display();
 	}
 
 }

@@ -70,14 +70,12 @@ public class Training {
 		NN_NETWORKS[i++] = new int[] { Board.CELLS, 8, 8, Board.CELLS };
 
 		i = 0;
-		CNN_NETWORKS = new int[CNN_NETWORK_COUNT = 1][][];
+		CNN_NETWORKS = new int[CNN_NETWORK_COUNT = 5][][];
 		CNN_NETWORKS[i++] = new int[][] { new int[] { 5, 5 }, new int[] { 50, Board.CELLS } };
-		// CNN_NETWORKS[i++] = new int[][] { new int[] { 3, 3 }, new int[] { 50,
-		// Board.CELLS } };
-		// CNN_NETWORKS[i++] = new int[][] { new int[] { 3, 3, 3 }, new int[] {
-		// 13, Board.CELLS } };
-		// CNN_NETWORKS[i++] = new int[][] { new int[] { 5, 5 }, new int[] { 13,
-		// 26, Board.CELLS } };
+		CNN_NETWORKS[i++] = new int[][] { new int[] { 5, 5 }, new int[] { 50, Board.CELLS } };
+		CNN_NETWORKS[i++] = new int[][] { new int[] { 3, 3 }, new int[] { 50, Board.CELLS } };
+		CNN_NETWORKS[i++] = new int[][] { new int[] { 3, 3, 3 }, new int[] { 13, Board.CELLS } };
+		CNN_NETWORKS[i++] = new int[][] { new int[] { 5, 5 }, new int[] { 13, 26, Board.CELLS } };
 
 		// these are not good
 		// NETWORKS[i++] = new int[] { Board.CELLS, 5, Board.CELLS };
@@ -104,8 +102,7 @@ public class Training {
 	private static List<AI> loadNetworks() throws FileNotFoundException, IOException {
 		final List<AI> list = new LinkedList<>();
 		for (int i = 0; i < NN_NETWORKS.length; i++) {
-			// list.add(GameIO.loadNetwork(NeuralNetwork.fileName(NN_NETWORKS[i]),
-			// false));
+			list.add(GameIO.loadNetwork(NeuralNetwork.fileName(NN_NETWORKS[i])));
 		}
 		for (int i = 0; i < CNN_NETWORKS.length; i++) {
 			list.add(GameIO.loadNetwork(Convolutional.fileName(Board.SIZE, CNN_NETWORKS[i][0], CNN_NETWORKS[i][1])));
@@ -133,7 +130,6 @@ public class Training {
 				}
 
 				Matrix[] derivative, weights;
-				// reference -> no need to set again
 				weights = nn.getWeights();
 
 				nn.calculate(winData().getKey());
@@ -142,6 +138,7 @@ public class Training {
 					// win data -> move downhill -> negative derivative
 					weights[w] = weights[w].add(derivative[w].negative());
 				}
+				nn.setWeights(weights);
 				if (useLosses) {
 					nn.calculate(lossData().getKey());
 					derivative = nn.costPrime(lossData().getValue());
@@ -150,6 +147,7 @@ public class Training {
 						// don't change as much)
 						weights[w] = weights[w].add(derivative[w].scalar(0.5));
 					}
+					nn.setWeights(weights);
 				}
 			}
 			GameIO.saveNetwork(nn);

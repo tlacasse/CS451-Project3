@@ -91,7 +91,9 @@ public class Player extends SocketSide implements AutoCloseable {
 	private int[] choose() {
 		if (first) {
 			first = false;
-			return new int[] { RANDOM.nextInt(Board.SIZE), RANDOM.nextInt(Board.SIZE) };
+			final int[] pos = new int[] { RANDOM.nextInt(Board.SIZE), RANDOM.nextInt(Board.SIZE) };
+			board.set(pos[0], pos[1], SELF);
+			return pos;
 		}
 		// row matrix
 		final Matrix out = nn.calculate(new Matrix(false, board.asDoubleArray()));
@@ -117,7 +119,7 @@ public class Player extends SocketSide implements AutoCloseable {
 	}
 
 	private AI pickRandomNN() throws IOException {
-		if (RANDOM.nextBoolean() && false) {
+		if (RANDOM.nextBoolean()) {
 			return GameIO.loadNetwork(
 					NeuralNetwork.fileName(Training.NN_NETWORKS[RANDOM.nextInt(Training.NN_NETWORK_COUNT)]));
 		} else {
